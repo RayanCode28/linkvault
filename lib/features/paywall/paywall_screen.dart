@@ -21,7 +21,7 @@ class PaywallScreen extends StatelessWidget {
                 Align(
                   alignment: Alignment.topRight,
                   child: IconButton(
-                    icon: Icon(Icons.close_rounded, color: AppColors.textSec),
+                    icon: const Icon(Icons.close_rounded, color: AppColors.textSec),
                     onPressed: () => Navigator.pop(context),
                   ),
                 ),
@@ -39,7 +39,7 @@ class PaywallScreen extends StatelessWidget {
                         border: Border.all(color: AppColors.accentBorder, width: 2),
                         boxShadow: AppShadows.sheet,
                       ),
-                      child: Center(
+                      child: const Center(
                         child: Icon(Icons.link_rounded, color: AppColors.accent, size: 38),
                       ),
                     ),
@@ -48,7 +48,7 @@ class PaywallScreen extends StatelessWidget {
                       right: -12,
                       child: Container(
                         padding: const EdgeInsets.symmetric(vertical: 3, horizontal: 8),
-                        decoration: BoxDecoration(
+                        decoration: const BoxDecoration(
                           color: AppColors.accent,
                           borderRadius: AppRadius.badge,
                         ),
@@ -65,7 +65,7 @@ class PaywallScreen extends StatelessWidget {
                   textAlign: TextAlign.center,
                 ),
                 const SizedBox(height: 10),
-                Text(
+                const Text(
                   'Upgrade to LinkVault Pro',
                   style: TextStyle(color: AppColors.textSec, fontSize: 14),
                 ),
@@ -88,8 +88,8 @@ class PaywallScreen extends StatelessWidget {
                       Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          Text(f.label, style: TextStyle(color: AppColors.text, fontSize: 14, fontWeight: FontWeight.w600)),
-                          Text(f.sub, style: TextStyle(color: AppColors.textSec, fontSize: 12.5)),
+                          Text(f.label, style: const TextStyle(color: AppColors.text, fontSize: 14, fontWeight: FontWeight.w600)),
+                          Text(f.sub, style: const TextStyle(color: AppColors.textSec, fontSize: 12.5)),
                         ],
                       ),
                     ],
@@ -97,7 +97,7 @@ class PaywallScreen extends StatelessWidget {
                 )),
                 const SizedBox(height: 8),
                 // Pricing cards
-                Row(
+                const Row(
                   children: [
                     Expanded(child: _PricingCard(
                       label: 'MONTHLY',
@@ -105,7 +105,7 @@ class PaywallScreen extends StatelessWidget {
                       sub: 'per month',
                       highlighted: false,
                     )),
-                    const SizedBox(width: 10),
+                    SizedBox(width: 10),
                     Expanded(child: _PricingCard(
                       label: 'YEARLY',
                       price: r'$9.99',
@@ -120,7 +120,7 @@ class PaywallScreen extends StatelessWidget {
                   onPressed: () => Navigator.pop(context),
                 ),
                 const SizedBox(height: 12),
-                Text(
+                const Text(
                   '3-day free trial · Cancel anytime · Restore purchases',
                   style: TextStyle(color: AppColors.textMuted, fontSize: 11),
                   textAlign: TextAlign.center,
@@ -175,7 +175,7 @@ class _PricingCard extends StatelessWidget {
       ),
       child: Column(
         children: [
-          Text(label, style: TextStyle(fontSize: 11, fontWeight: FontWeight.w600, color: AppColors.textSec)),
+          Text(label, style: const TextStyle(fontSize: 11, fontWeight: FontWeight.w600, color: AppColors.textSec)),
           const SizedBox(height: 4),
           Text(
             price,
@@ -186,7 +186,7 @@ class _PricingCard extends StatelessWidget {
             ),
           ),
           const SizedBox(height: 2),
-          Text(sub, style: TextStyle(fontSize: 10.5, color: AppColors.textSec)),
+          Text(sub, style: const TextStyle(fontSize: 10.5, color: AppColors.textSec)),
         ],
       ),
     );

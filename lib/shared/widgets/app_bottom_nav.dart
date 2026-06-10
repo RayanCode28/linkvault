@@ -58,7 +58,7 @@ class _NavItem extends StatelessWidget {
                     decoration: BoxDecoration(
                       boxShadow: [
                         BoxShadow(
-                          color: AppColors.accent.withOpacity(0.35),
+                          color: AppColors.accent.withValues(alpha: 0.35),
                           blurRadius: 10,
                         ),
                       ],

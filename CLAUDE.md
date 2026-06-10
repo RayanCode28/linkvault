@@ -7,6 +7,10 @@ Desarrollador: Rayan / RayanCode28 · Bundle ID: `com.rayancode98.linkvault`
 ## Stack
 - Flutter 3.44.1 (instalado via Homebrew) · Dart 3.12.1
 - go_router ^14 · provider ^6 · shared_preferences ^2 · url_launcher ^6 · google_fonts ^6
+- sqflite ^2 · http ^1 · html_unescape ^2 · flutter_sharing_intent ^2
+- share_plus ^12 · file_picker ^10 · cached_network_image ^3 · package_info_plus ^9
+  - ⚠️ share_plus/file_picker/package_info_plus están fijados a esas majors por un
+    conflicto de `win32` (solo afecta resolución, no Android). No subirlos por separado.
 - Target: Android (Google Play Store)
 
 ## Diseño — Variación Neon
@@ -18,31 +22,39 @@ Desarrollador: Rayan / RayanCode28 · Bundle ID: `com.rayancode98.linkvault`
 ## Estructura
 ```
 lib/
-├── main.dart                        # Entry point, SystemUI, async router init
-├── app.dart                         # MaterialApp.router + ChangeNotifierProvider
+├── main.dart                        # Entry point, SystemUI, init provider+router
+├── app.dart                         # MaterialApp.router, listener de Share Intent, scaffoldMessengerKey global
 ├── core/
 │   ├── theme.dart                   # AppColors, AppShadows, AppRadius, AppTextStyles, buildAppTheme()
-│   ├── models.dart                  # LinkItem, Collection, LinkFilter enum
-│   ├── mock_data.dart               # mockLinks (7 items), mockCollections (6 items)
-│   └── links_provider.dart          # LinksProvider (ChangeNotifier): filtered, search, byCollection, toggleFavorite, markRead, deleteLink
+│   ├── models.dart                  # LinkItem, Collection (inmutables, toMap/fromMap), LinkFilter, parseWebUrl(), formatDate()
+│   ├── links_provider.dart          # LinksProvider: CRUD links/colecciones sobre SQLite, search, filtros, export/importJson, límite Free
+│   ├── metadata_service.dart        # Fetch Open Graph (og:title/description/image) con límites de tamaño/timeout
+│   └── share_intent_service.dart    # Recibe texto del Share Sheet y extrae la URL
+├── database/
+│   └── database_helper.dart         # sqflite singleton: tablas links + collections, FK ON DELETE SET NULL, seed 2 colecciones
 ├── features/
 │   ├── onboarding/onboarding_screen.dart    # 3 pasos, PageView manual, SharedPreferences 'onboarded'
 │   ├── home/
-│   │   ├── home_screen.dart                 # AppBar, search bar tappable, FilterChipsBar, ListView, FAB
-│   │   ├── link_card.dart                   # Card con thumbnail, título, dominio, colección, status dot/heart
+│   │   ├── home_screen.dart                 # AppBar, search bar tappable, FilterChipsBar, lista, FAB → AddLinkSheet
+│   │   ├── add_link_sheet.dart              # Bottom sheet: URL + paste + CollectionPicker, valida con parseWebUrl
+│   │   ├── link_card.dart                   # Card con thumbnail (og:image), título, dominio, colección, status dot/heart
 │   │   └── filter_chips_bar.dart            # All | Unread | Read | ♥ Saved
 │   ├── collections/
-│   │   ├── collections_screen.dart          # Lista colecciones + fila "New collection" (→ paywall)
-│   │   └── collection_detail_screen.dart    # LinkCards filtradas por collectionId
-│   ├── search/search_screen.dart            # TextField autofocus, FilterChipsBar, resultados en tiempo real
-│   ├── link_detail/link_detail_sheet.dart   # showModalBottomSheet: thumbnail, meta, badges, 5 acciones
-│   ├── settings/settings_screen.dart        # Banner Pro, secciones APPEARANCE/DATA/ABOUT
+│   │   ├── collections_screen.dart          # Lista + crear (límite Free 3 → paywall) + long-press rename/delete
+│   │   ├── collection_form_sheet.dart       # Crear/renombrar colección con picker de emoji
+│   │   └── collection_detail_screen.dart    # Links por collectionId (desde provider), FAB agrega a la colección
+│   ├── search/search_screen.dart            # TextField autofocus, busca título/dominio/url/descripción
+│   ├── link_detail/
+│   │   ├── link_detail_sheet.dart           # Sheet: thumbnail, URL real, badges, Share/Favorite/Edit/Delete(confirm)/Open
+│   │   └── edit_link_sheet.dart             # Editar título + colección
+│   ├── settings/settings_screen.dart        # Pro banner, Export/Import JSON, Rate (Play Store), Feedback (mailto), versión real
 │   └── paywall/paywall_screen.dart          # Icon+PRO badge, features, pricing cards monthly/yearly, NeonButton
 └── shared/
-    ├── router.dart                  # GoRouter: /onboarding, /, /collections, /search, /settings, /collections/:id, /paywall
+    ├── router.dart                  # GoRouter; MainShell deriva el tab activo de la ruta
     └── widgets/
         ├── app_bottom_nav.dart      # 4 tabs: Links/Collections/Search/Settings, glow en activo
-        ├── link_thumbnail.dart      # Container 60x60 con thumbBg + thumbEmoji centrado
+        ├── link_thumbnail.dart      # CachedNetworkImage de og:image con fallback 🔗
+        ├── collection_picker.dart   # Chips horizontales para elegir colección (None + todas)
         ├── neon_button.dart         # ElevatedButton accent + AppShadows.ctaButton glow
         └── neon_bg.dart             # RadialGradient cyan sutil en parte superior
 ```
@@ -55,45 +67,50 @@ lib/
 | `/collections` | CollectionsScreen |
 | `/search` | SearchScreen |
 | `/settings` | SettingsScreen |
-| `/collections/:id` | CollectionDetailScreen (push sobre el shell) |
+| `/collections/:id` | CollectionDetailScreen (push sobre el shell; resuelve la colección desde el provider) |
 | `/paywall` | PaywallScreen (push sobre el shell) |
 
-Link detail NO es ruta — se abre con `showLinkDetailSheet(context, link)`.
+Link detail, add link, edit link y collection form NO son rutas — son bottom sheets
+(`showLinkDetailSheet`, `showAddLinkSheet`, `showEditLinkSheet`, `showCollectionFormSheet`).
+
+## Seguridad — reglas que ya aplica el código
+- `parseWebUrl()` en `models.dart` es la única puerta de validación de URLs: solo
+  http/https, host con punto. TODO lo que llega a `launchUrl` o a la red pasa por ahí
+  (input manual, share intent, import JSON, og:image).
+- `MetadataService` limita respuesta a 512 KB, timeout 8 s, máx 4 redirects, solo text/html.
+- SQLite siempre con `whereArgs` parametrizados (nunca interpolar strings en SQL).
+- `importJson` valida tipo por tipo, re-valida URLs, cap 5 MB / 5000 links / 200 colecciones,
+  deduplica por URL. Lanza `FormatException` si no es backup de LinkVault.
+- Delete de link pide confirmación con AlertDialog.
 
 ## Estado del Proyecto
 
 ### ✅ Completado (Sesión 1)
-- Proyecto Flutter creado y configurado
-- pubspec.yaml con todas las dependencias
-- Design tokens completos (theme.dart)
-- Modelos y mock data (7 links, 6 colecciones)
-- LinksProvider con ChangeNotifier
-- Todas las pantallas implementadas con diseño Neon
-- Router go_router con gate de onboarding
-- APK debug compilado y verificado ✅
+- UI completa con diseño Neon, router, onboarding, APK debug
 - Repositorio en GitHub: https://github.com/RayanCode28/linkvault
 
+### ✅ Completado (Sesión 2)
+1. SQLite (`lib/database/database_helper.dart`) — reemplaza mock_data (eliminado); DB vacía con 2 colecciones seed (Watch later, Read later)
+2. Share Sheet — `flutter_sharing_intent`, intent-filter `text/plain`, `launchMode="singleTask"`, snackbar "Link saved"
+3. Fetch Open Graph — título/descripción/imagen al guardar (en background, el link aparece al instante)
+4. Thumbnails reales — `cached_network_image` con fallback 🔗
+5. Add Link dialog — FAB en Home y en detalle de colección
+6. Export/Import JSON — Settings (share_plus / file_picker), con validación estricta
+7. CRUD de colecciones — crear/renombrar/eliminar; límite Free de 3 (`kFreeCollectionLimit`) → paywall; `LinksProvider.isPro` stub para RevenueCat
+8. Edit link (título + colección), Share, Open (URL real validada), Delete con confirmación
+9. Settings: Rate (Play Store), Feedback (mailto), versión desde package_info_plus
+10. Tests unitarios en `test/widget_test.dart` (parseWebUrl, extractUrl, parser OG, modelo) — `flutter test` ✅
+11. `flutter analyze` limpio (0 issues) — se aplicó `dart fix` (const, withValues)
+
 ### 🔲 Pendiente (próximas sesiones)
-1. **SQLite** — reemplazar mock_data con sqflite; crear `lib/database/database_helper.dart`
-   - Tablas: `links` y `collections` (esquema en el doc de reconstrucción)
-   - LinksProvider debe leer/escribir desde DB en vez de lista en memoria
-2. **Share Sheet** — recibir links desde otras apps
-   - Agregar `flutter_sharing_intent` al pubspec
-   - Configurar `AndroidManifest.xml` con intent-filter para `text/plain`
-   - `launchMode="singleTask"` en MainActivity
-3. **Fetch Open Graph** — al guardar un link, obtener título/imagen/descripción
-   - Agregar `http` y `html_unescape` al pubspec
-   - Parsear meta tags og:title, og:image, og:description
-4. **RevenueCat** — paywall funcional
+1. **RevenueCat** — paywall funcional
    - Agregar `purchases_flutter` y `purchases_ui_flutter`
-   - Entitlement: `Link Vault Pro` · Producto: `lifetime` · API test key: `test_DOJBOjwrlqTWnvHPBcPdJrUChQW`
-   - Reactivar límite de 3 colecciones con check real de isPro()
-5. **AdMob** — banner en Home solo para usuarios Free
-   - Agregar `google_mobile_ads`
-6. **Imágenes reales en thumbnails** — usar `cached_network_image` para og:image
-7. **Add Link dialog** — el FAB del Home debe abrir un dialog para pegar URL manualmente
-8. **Export/Import JSON** — funcionalidad de backup en Settings
-9. **Onboarding assets** — las 3 pantallas usan arte vectorial generado en código (no imágenes externas)
+   - Entitlement: `Link Vault Pro` · Producto: `lifetime` · API key de test en RevenueCat dashboard (no committearla al repo)
+   - Conectar `LinksProvider.isPro` al entitlement real
+2. **AdMob** — banner en Home solo para usuarios Free (`google_mobile_ads`)
+3. **Firma release** — crear keystore propio y `key.properties` (NO committear); `build.gradle.kts` aún firma release con debug keys
+4. **Onboarding assets** — las 3 pantallas usan arte vectorial generado en código (no imágenes externas)
+5. (Opcional) Tema claro / idioma — las filas de Settings son informativas por ahora
 
 ## Comandos Útiles
 ```bash
@@ -101,10 +118,14 @@ Link detail NO es ruta — se abre con `showLinkDetailSheet(context, link)`.
 cd "/Users/bsalgado/Desktop/Brayan/Link Vault/linkvault"
 flutter run
 
+# Tests y análisis
+flutter test
+flutter analyze
+
 # Build APK debug
 flutter build apk --debug
 
-# Build AAB para Play Store
+# Build AAB para Play Store (requiere firma release real)
 flutter build appbundle --release
 
 # Limpiar cache
@@ -115,10 +136,10 @@ flutter clean && flutter pub get
 | Servicio | Estado | Notas |
 |----------|--------|-------|
 | Google Play Console | En verificación | Bundle ID: com.rayancode98.linkvault |
-| RevenueCat | Configurado (test) | Ver API key arriba |
+| RevenueCat | Configurado (test) | API key en el dashboard de RevenueCat — no committearla |
 | GitHub | Activo | github.com/RayanCode28/linkvault |
 
 ## Notas Importantes
-- `withOpacity` genera warnings de deprecación en Flutter 3.44 — ignorar por ahora, son solo `info`
-- El bot nav actualiza el índice visual con `setState` y navega con `context.go()` — si el índice se desincroniza al usar `context.push()`, es esperado (push no vive dentro del shell)
+- Gradle directo requiere `JAVA_HOME="/Applications/Android Studio.app/Contents/jbr/Contents/Home"` (no hay JDK del sistema); `flutter build` lo resuelve solo
 - Para testing: agregar `await prefs.setBool('onboarded', false)` en main.dart para resetear onboarding
+- El emoji/color de thumbnail ya no existe en el modelo — el thumbnail es og:image o 🔗

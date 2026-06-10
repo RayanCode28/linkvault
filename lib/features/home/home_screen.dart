@@ -5,6 +5,7 @@ import '../../core/models.dart';
 import '../../core/theme.dart';
 import '../../core/links_provider.dart';
 import '../../shared/widgets/neon_bg.dart';
+import 'add_link_sheet.dart';
 import 'filter_chips_bar.dart';
 import 'link_card.dart';
 
@@ -28,7 +29,7 @@ class _HomeScreenState extends State<HomeScreen> {
           title: Text('LinkVault', style: AppTextStyles.appBar),
           actions: [
             IconButton(
-              icon: Icon(Icons.settings_rounded, color: AppColors.textSec),
+              icon: const Icon(Icons.settings_rounded, color: AppColors.textSec),
               onPressed: () => context.go('/settings'),
             ),
           ],
@@ -55,10 +56,10 @@ class _HomeScreenState extends State<HomeScreen> {
                                 borderRadius: AppRadius.card,
                                 border: Border.all(color: AppColors.border, width: 1),
                               ),
-                              child: Row(
+                              child: const Row(
                                 children: [
                                   Icon(Icons.search_rounded, color: AppColors.textMuted, size: 17),
-                                  const SizedBox(width: 8),
+                                  SizedBox(width: 8),
                                   Text(
                                     'Search links...',
                                     style: TextStyle(color: AppColors.textMuted, fontSize: 14),
@@ -81,9 +82,26 @@ class _HomeScreenState extends State<HomeScreen> {
                           child: Column(
                             mainAxisSize: MainAxisSize.min,
                             children: [
-                              const Text('🔍', style: TextStyle(fontSize: 32)),
+                              Text(provider.links.isEmpty ? '🔗' : '🔍',
+                                  style: const TextStyle(fontSize: 32)),
                               const SizedBox(height: 8),
-                              Text('No links here yet', style: TextStyle(color: AppColors.textSec, fontSize: 14)),
+                              Text(
+                                provider.links.isEmpty
+                                    ? 'No links saved yet'
+                                    : 'No links match this filter',
+                                style: const TextStyle(color: AppColors.textSec, fontSize: 14),
+                              ),
+                              if (provider.links.isEmpty) ...[
+                                const SizedBox(height: 6),
+                                const Padding(
+                                  padding: EdgeInsets.symmetric(horizontal: 40),
+                                  child: Text(
+                                    'Tap + to add a link, or share one from any app',
+                                    textAlign: TextAlign.center,
+                                    style: TextStyle(color: AppColors.textMuted, fontSize: 12.5),
+                                  ),
+                                ),
+                              ],
                             ],
                           ),
                         ),
@@ -105,7 +123,7 @@ class _HomeScreenState extends State<HomeScreen> {
               bottom: 16,
               right: 16,
               child: GestureDetector(
-                onTap: () {},
+                onTap: () => showAddLinkSheet(context),
                 child: Container(
                   width: 52,
                   height: 52,

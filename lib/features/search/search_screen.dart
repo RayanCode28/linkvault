@@ -33,13 +33,13 @@ class _SearchScreenState extends State<SearchScreen> {
         appBar: AppBar(
           backgroundColor: Colors.transparent,
           leading: IconButton(
-            icon: Icon(Icons.arrow_back_rounded, color: AppColors.textSec),
+            icon: const Icon(Icons.arrow_back_rounded, color: AppColors.textSec),
             onPressed: () => Navigator.pop(context),
           ),
           title: TextField(
             controller: _controller,
             autofocus: true,
-            style: TextStyle(color: AppColors.text, fontSize: 15),
+            style: const TextStyle(color: AppColors.text, fontSize: 15),
             decoration: InputDecoration(
               hintText: 'Search links...',
               prefixIcon: Icon(
@@ -49,7 +49,7 @@ class _SearchScreenState extends State<SearchScreen> {
               ),
               suffixIcon: _query.isNotEmpty
                   ? IconButton(
-                      icon: Icon(Icons.close_rounded, color: AppColors.textMuted),
+                      icon: const Icon(Icons.close_rounded, color: AppColors.textMuted),
                       onPressed: () {
                         _controller.clear();
                         setState(() => _query = '');
@@ -106,12 +106,12 @@ class _SearchScreenState extends State<SearchScreen> {
                 const SizedBox(height: 8),
                 Expanded(
                   child: _query.isEmpty
-                      ? Center(
+                      ? const Center(
                           child: Column(
                             mainAxisSize: MainAxisSize.min,
                             children: [
                               Icon(Icons.search_rounded, color: AppColors.textMuted, size: 36),
-                              const SizedBox(height: 8),
+                              SizedBox(height: 8),
                               Text('Start typing...', style: TextStyle(color: AppColors.textSec, fontSize: 14)),
                             ],
                           ),
@@ -125,7 +125,7 @@ class _SearchScreenState extends State<SearchScreen> {
                                   const SizedBox(height: 8),
                                   Text(
                                     'No results for "$_query"',
-                                    style: TextStyle(color: AppColors.textSec, fontSize: 14),
+                                    style: const TextStyle(color: AppColors.textSec, fontSize: 14),
                                   ),
                                 ],
                               ),

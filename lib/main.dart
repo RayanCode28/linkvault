@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'core/links_provider.dart';
 import 'shared/router.dart';
 import 'app.dart';
 
@@ -11,6 +12,8 @@ void main() async {
     systemNavigationBarColor: Color(0xFF020905),
     systemNavigationBarIconBrightness: Brightness.light,
   ));
+  final provider = LinksProvider();
+  await provider.init();
   final router = await buildRouter();
-  runApp(LinkVaultApp(router: router));
+  runApp(LinkVaultApp(router: router, provider: provider));
 }

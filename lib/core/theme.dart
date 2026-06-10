@@ -9,17 +9,17 @@ abstract class AppColors {
   static const elevated = Color(0xFF0F2018);
 
   static const accent = Color(0xFF00FFD1);
-  static Color accentDim = const Color(0xFF00FFD1).withOpacity(0.15);
-  static Color accentGlow = const Color(0xFF00FFD1).withOpacity(0.18);
-  static Color chip = const Color(0xFF00FFD1).withOpacity(0.11);
+  static Color accentDim = const Color(0xFF00FFD1).withValues(alpha: 0.15);
+  static Color accentGlow = const Color(0xFF00FFD1).withValues(alpha: 0.18);
+  static Color chip = const Color(0xFF00FFD1).withValues(alpha: 0.11);
 
   static const text = Color(0xFFE4F5EE);
   static const textSec = Color(0xFF5E9278);
   static const textMuted = Color(0xFF284038);
 
-  static Color border = const Color(0xFF00FFD1).withOpacity(0.12);
-  static Color accentBorder = const Color(0xFF00FFD1).withOpacity(0.32);
-  static Color navBorder = const Color(0xFF00FFD1).withOpacity(0.20);
+  static Color border = const Color(0xFF00FFD1).withValues(alpha: 0.12);
+  static Color accentBorder = const Color(0xFF00FFD1).withValues(alpha: 0.32);
+  static Color navBorder = const Color(0xFF00FFD1).withValues(alpha: 0.20);
 
   static const navBg = Color(0xFF020905);
 
@@ -30,30 +30,30 @@ abstract class AppColors {
 
 abstract class AppShadows {
   static List<BoxShadow> get card => [
-    BoxShadow(color: const Color(0xFF00FFD1).withOpacity(0.12), blurRadius: 0, spreadRadius: 1),
-    BoxShadow(color: Colors.black.withOpacity(0.55), blurRadius: 24, offset: const Offset(0, 4)),
+    BoxShadow(color: const Color(0xFF00FFD1).withValues(alpha: 0.12), blurRadius: 0, spreadRadius: 1),
+    BoxShadow(color: Colors.black.withValues(alpha: 0.55), blurRadius: 24, offset: const Offset(0, 4)),
   ];
 
   static List<BoxShadow> get fab => [
-    BoxShadow(color: const Color(0xFF00FFD1).withOpacity(0.45), blurRadius: 24),
-    BoxShadow(color: Colors.black.withOpacity(0.5), blurRadius: 16, offset: const Offset(0, 4)),
+    BoxShadow(color: const Color(0xFF00FFD1).withValues(alpha: 0.45), blurRadius: 24),
+    BoxShadow(color: Colors.black.withValues(alpha: 0.5), blurRadius: 16, offset: const Offset(0, 4)),
   ];
 
   static List<BoxShadow> get dotPulse => [
-    BoxShadow(color: const Color(0xFF00FFD1).withOpacity(0.15), blurRadius: 0, spreadRadius: 4),
-    BoxShadow(color: const Color(0xFF00FFD1).withOpacity(0.40), blurRadius: 12),
+    BoxShadow(color: const Color(0xFF00FFD1).withValues(alpha: 0.15), blurRadius: 0, spreadRadius: 4),
+    BoxShadow(color: const Color(0xFF00FFD1).withValues(alpha: 0.40), blurRadius: 12),
   ];
 
   static List<BoxShadow> get chipActive => [
-    BoxShadow(color: const Color(0xFF00FFD1).withOpacity(0.25), blurRadius: 12),
+    BoxShadow(color: const Color(0xFF00FFD1).withValues(alpha: 0.25), blurRadius: 12),
   ];
 
   static List<BoxShadow> get sheet => [
-    BoxShadow(color: const Color(0xFF00FFD1).withOpacity(0.12), blurRadius: 40, offset: const Offset(0, -4)),
+    BoxShadow(color: const Color(0xFF00FFD1).withValues(alpha: 0.12), blurRadius: 40, offset: const Offset(0, -4)),
   ];
 
   static List<BoxShadow> get ctaButton => [
-    BoxShadow(color: const Color(0xFF00FFD1).withOpacity(0.45), blurRadius: 24, offset: const Offset(0, 4)),
+    BoxShadow(color: const Color(0xFF00FFD1).withValues(alpha: 0.45), blurRadius: 24, offset: const Offset(0, 4)),
   ];
 }
 
@@ -143,10 +143,10 @@ ThemeData buildAppTheme() {
     useMaterial3: true,
     brightness: Brightness.dark,
     scaffoldBackgroundColor: AppColors.bg,
-    colorScheme: ColorScheme.dark(
+    colorScheme: const ColorScheme.dark(
       surface: AppColors.surface,
       primary: AppColors.accent,
-      onPrimary: const Color(0xFF020A07),
+      onPrimary: Color(0xFF020A07),
       onSurface: AppColors.text,
       error: AppColors.danger,
     ),
@@ -157,7 +157,7 @@ ThemeData buildAppTheme() {
       scrolledUnderElevation: 0,
       titleTextStyle: AppTextStyles.appBar,
     ),
-    bottomNavigationBarTheme: BottomNavigationBarThemeData(
+    bottomNavigationBarTheme: const BottomNavigationBarThemeData(
       backgroundColor: AppColors.navBg,
       selectedItemColor: AppColors.accent,
       unselectedItemColor: AppColors.textMuted,

@@ -9,7 +9,6 @@ import '../features/collections/collection_detail_screen.dart';
 import '../features/search/search_screen.dart';
 import '../features/settings/settings_screen.dart';
 import '../features/paywall/paywall_screen.dart';
-import '../core/mock_data.dart';
 import 'widgets/app_bottom_nav.dart';
 
 Future<GoRouter> buildRouter() async {
@@ -34,11 +33,8 @@ Future<GoRouter> buildRouter() async {
       ),
       GoRoute(
         path: '/collections/:id',
-        builder: (ctx, state) {
-          final id = state.pathParameters['id']!;
-          final col = mockCollections.firstWhere((c) => c.id == id);
-          return CollectionDetailScreen(collection: col);
-        },
+        builder: (ctx, state) =>
+            CollectionDetailScreen(collectionId: state.pathParameters['id']!),
       ),
       GoRoute(
         path: '/paywall',
@@ -48,30 +44,24 @@ Future<GoRouter> buildRouter() async {
   );
 }
 
-class MainShell extends StatefulWidget {
+class MainShell extends StatelessWidget {
   final Widget child;
   const MainShell({super.key, required this.child});
-
-  @override
-  State<MainShell> createState() => _MainShellState();
-}
-
-class _MainShellState extends State<MainShell> {
-  int _index = 0;
 
   static const _routes = ['/', '/collections', '/search', '/settings'];
 
   @override
   Widget build(BuildContext context) {
+    // Derive the active tab from the current location so the indicator
+    // stays in sync no matter how the user navigated here.
+    final location = GoRouterState.of(context).uri.path;
+    final index = _routes.indexOf(location);
     return Scaffold(
       backgroundColor: Colors.transparent,
-      body: widget.child,
+      body: child,
       bottomNavigationBar: AppBottomNav(
-        currentIndex: _index,
-        onTap: (i) {
-          setState(() => _index = i);
-          context.go(_routes[i]);
-        },
+        currentIndex: index == -1 ? 0 : index,
+        onTap: (i) => context.go(_routes[i]),
       ),
     );
   }

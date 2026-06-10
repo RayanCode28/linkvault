@@ -47,7 +47,7 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                 child: _page < 2
                     ? TextButton(
                         onPressed: _finish,
-                        child: Text('Skip', style: TextStyle(color: AppColors.textSec, fontSize: 14)),
+                        child: const Text('Skip', style: TextStyle(color: AppColors.textSec, fontSize: 14)),
                       )
                     : const SizedBox(height: 48),
               ),
@@ -154,9 +154,9 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                   decoration: BoxDecoration(
                     shape: BoxShape.circle,
                     color: AppColors.accentDim,
-                    boxShadow: [BoxShadow(color: AppColors.accent.withOpacity(0.2), blurRadius: 20)],
+                    boxShadow: [BoxShadow(color: AppColors.accent.withValues(alpha: 0.2), blurRadius: 20)],
                   ),
-                  child: Center(
+                  child: const Center(
                     child: Icon(Icons.link_rounded, color: AppColors.accent, size: 34),
                   ),
                 ),
@@ -165,15 +165,15 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
           ),
         );
       case 1:
-        return SizedBox(
+        return const SizedBox(
           height: 180,
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
               _MiniCard(emoji: '▶', label: 'YouTube video', opacity: 1.0, showDot: true),
-              const SizedBox(height: 6),
+              SizedBox(height: 6),
               _MiniCard(emoji: '📸', label: 'Instagram reel', opacity: 0.7, showDot: false),
-              const SizedBox(height: 6),
+              SizedBox(height: 6),
               _MiniCard(emoji: '🔗', label: 'Reddit thread', opacity: 0.9, showDot: false),
             ],
           ),
@@ -200,7 +200,7 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                   borderRadius: BorderRadius.circular(12),
                   border: Border.all(color: AppColors.accentBorder, width: 1),
                 ),
-                child: Text('${c.$1} ${c.$2}', style: TextStyle(color: AppColors.text, fontSize: 13)),
+                child: Text('${c.$1} ${c.$2}', style: const TextStyle(color: AppColors.text, fontSize: 13)),
               )).toList(),
             ),
           ),
@@ -238,7 +238,7 @@ class _MiniCard extends StatelessWidget {
           children: [
             Text(emoji, style: const TextStyle(fontSize: 16)),
             const SizedBox(width: 8),
-            Text(label, style: TextStyle(color: AppColors.text, fontSize: 13)),
+            Text(label, style: const TextStyle(color: AppColors.text, fontSize: 13)),
             if (showDot) ...[
               const SizedBox(width: 8),
               Container(

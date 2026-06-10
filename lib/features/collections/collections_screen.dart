@@ -1,13 +1,57 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:provider/provider.dart';
-import '../../core/mock_data.dart';
+import '../../core/models.dart';
 import '../../core/theme.dart';
 import '../../core/links_provider.dart';
 import '../../shared/widgets/neon_bg.dart';
+import 'collection_form_sheet.dart';
 
 class CollectionsScreen extends StatelessWidget {
   const CollectionsScreen({super.key});
+
+  void _onAddTap(BuildContext context) {
+    final provider = context.read<LinksProvider>();
+    if (provider.canAddCollection) {
+      showCollectionFormSheet(context);
+    } else {
+      context.push('/paywall');
+    }
+  }
+
+  void _showOptions(BuildContext context, Collection col) {
+    final provider = context.read<LinksProvider>();
+    showModalBottomSheet(
+      context: context,
+      backgroundColor: AppColors.elevated,
+      shape: const RoundedRectangleBorder(borderRadius: AppRadius.sheetTop),
+      builder: (ctx) => SafeArea(
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            ListTile(
+              leading: const Icon(Icons.edit_rounded, color: AppColors.accent),
+              title: const Text('Rename', style: TextStyle(color: AppColors.text)),
+              onTap: () {
+                Navigator.pop(ctx);
+                showCollectionFormSheet(context, collection: col);
+              },
+            ),
+            ListTile(
+              leading: const Icon(Icons.delete_outline_rounded, color: AppColors.danger),
+              title: const Text('Delete', style: TextStyle(color: AppColors.danger)),
+              subtitle: const Text('Links inside are kept and unfiled',
+                  style: TextStyle(color: AppColors.textSec, fontSize: 12)),
+              onTap: () async {
+                Navigator.pop(ctx);
+                await provider.deleteCollection(col.id);
+              },
+            ),
+          ],
+        ),
+      ),
+    );
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -25,21 +69,27 @@ class CollectionsScreen extends StatelessWidget {
               Expanded(
                 child: Consumer<LinksProvider>(
                   builder: (ctx, provider, _) {
+                    final collections = provider.collections;
                     return ListView.separated(
                       padding: const EdgeInsets.fromLTRB(16, 0, 16, 8),
-                      itemCount: mockCollections.length + 1,
+                      itemCount: collections.length + 1,
                       separatorBuilder: (_, __) => const SizedBox(height: 8),
                       itemBuilder: (ctx, i) {
-                        if (i == mockCollections.length) {
-                          return _AddCollectionRow(onTap: () => context.push('/paywall'));
+                        if (i == collections.length) {
+                          return _AddCollectionRow(
+                            canAdd: provider.canAddCollection,
+                            used: collections.length,
+                            onTap: () => _onAddTap(context),
+                          );
                         }
-                        final col = mockCollections[i];
+                        final col = collections[i];
                         final count = provider.byCollection(col.id).length;
                         return _CollectionRow(
                           emoji: col.emoji,
                           name: col.name,
                           count: count,
                           onTap: () => context.push('/collections/${col.id}'),
+                          onLongPress: () => _showOptions(context, col),
                         );
                       },
                     );
@@ -59,18 +109,21 @@ class _CollectionRow extends StatelessWidget {
   final String name;
   final int count;
   final VoidCallback onTap;
+  final VoidCallback onLongPress;
 
   const _CollectionRow({
     required this.emoji,
     required this.name,
     required this.count,
     required this.onTap,
+    required this.onLongPress,
   });
 
   @override
   Widget build(BuildContext context) {
     return GestureDetector(
       onTap: onTap,
+      onLongPress: onLongPress,
       child: Container(
         padding: const EdgeInsets.symmetric(vertical: 14, horizontal: 16),
         decoration: BoxDecoration(
@@ -100,7 +153,7 @@ class _CollectionRow extends StatelessWidget {
                 ],
               ),
             ),
-            Icon(Icons.chevron_right_rounded, color: AppColors.textMuted, size: 18),
+            const Icon(Icons.chevron_right_rounded, color: AppColors.textMuted, size: 18),
           ],
         ),
       ),
@@ -109,9 +162,11 @@ class _CollectionRow extends StatelessWidget {
 }
 
 class _AddCollectionRow extends StatelessWidget {
+  final bool canAdd;
+  final int used;
   final VoidCallback onTap;
 
-  const _AddCollectionRow({required this.onTap});
+  const _AddCollectionRow({required this.canAdd, required this.used, required this.onTap});
 
   @override
   Widget build(BuildContext context) {
@@ -133,15 +188,25 @@ class _AddCollectionRow extends StatelessWidget {
                 borderRadius: AppRadius.colIcon,
               ),
               child: Center(
-                child: Icon(Icons.add_rounded, color: AppColors.accent, size: 20),
+                child: Icon(
+                  canAdd ? Icons.add_rounded : Icons.lock_rounded,
+                  color: AppColors.accent,
+                  size: 20,
+                ),
               ),
             ),
             const SizedBox(width: 14),
             Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text('New collection', style: TextStyle(fontSize: 15, fontWeight: FontWeight.w500, color: AppColors.textSec)),
-                Text('Free: 3/3 used · Unlock more with Pro', style: TextStyle(fontSize: 12, color: AppColors.textMuted)),
+                const Text('New collection',
+                    style: TextStyle(fontSize: 15, fontWeight: FontWeight.w500, color: AppColors.textSec)),
+                Text(
+                  canAdd
+                      ? 'Free: $used/$kFreeCollectionLimit used'
+                      : 'Free: $used/$kFreeCollectionLimit used · Unlock more with Pro',
+                  style: const TextStyle(fontSize: 12, color: AppColors.textMuted),
+                ),
               ],
             ),
           ],

@@ -1,3 +1,4 @@
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import '../../core/models.dart';
 import '../../core/theme.dart';
@@ -10,16 +11,28 @@ class LinkThumbnail extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final imageUrl = link.imageUrl;
     return Container(
       width: size,
       height: size,
-      decoration: BoxDecoration(
-        color: link.thumbBg,
+      clipBehavior: Clip.hardEdge,
+      decoration: const BoxDecoration(
+        color: AppColors.surfaceHover,
         borderRadius: AppRadius.thumb,
       ),
-      child: Center(
-        child: Text(link.thumbEmoji, style: TextStyle(fontSize: size * 0.38)),
-      ),
+      child: imageUrl == null
+          ? _fallback()
+          : CachedNetworkImage(
+              imageUrl: imageUrl,
+              fit: BoxFit.cover,
+              fadeInDuration: const Duration(milliseconds: 150),
+              placeholder: (_, __) => _fallback(),
+              errorWidget: (_, __, ___) => _fallback(),
+            ),
     );
   }
+
+  Widget _fallback() => Center(
+        child: Text('🔗', style: TextStyle(fontSize: size * 0.38)),
+      );
 }

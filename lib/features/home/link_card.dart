@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 import '../../core/models.dart';
 import '../../core/theme.dart';
-import '../../core/mock_data.dart';
+import '../../core/links_provider.dart';
 import '../../shared/widgets/link_thumbnail.dart';
 import '../link_detail/link_detail_sheet.dart';
 
@@ -12,10 +13,8 @@ class LinkCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final collection = mockCollections.firstWhere(
-      (c) => c.id == link.collectionId,
-      orElse: () => const Collection(id: '', name: '', emoji: ''),
-    );
+    final collection =
+        context.watch<LinksProvider>().collectionById(link.collectionId);
 
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 4),
@@ -25,7 +24,7 @@ class LinkCard extends StatelessWidget {
           onTap: () => showLinkDetailSheet(context, link),
           borderRadius: AppRadius.card,
           splashColor: Colors.transparent,
-          highlightColor: AppColors.surfaceHover.withOpacity(0.5),
+          highlightColor: AppColors.surfaceHover.withValues(alpha: 0.5),
           child: Container(
             padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 16),
             decoration: BoxDecoration(
@@ -50,17 +49,13 @@ class LinkCard extends StatelessWidget {
                         overflow: TextOverflow.ellipsis,
                       ),
                       const SizedBox(height: 4),
-                      Row(
-                        children: [
-                          Text(link.domain, style: AppTextStyles.cardMeta),
-                          if (collection.name.isNotEmpty) ...[
-                            Text(' · ', style: AppTextStyles.cardMeta),
-                            Text(
-                              '${collection.emoji} ${collection.name}',
-                              style: AppTextStyles.cardMeta,
-                            ),
-                          ],
-                        ],
+                      Text(
+                        collection == null
+                            ? link.domain
+                            : '${link.domain} · ${collection.emoji} ${collection.name}',
+                        style: AppTextStyles.cardMeta,
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
                       ),
                       const SizedBox(height: 2),
                       Text(link.date, style: AppTextStyles.cardDate),
@@ -98,7 +93,7 @@ class _StatusIndicator extends StatelessWidget {
       );
     }
     if (link.favorite) {
-      return Text(
+      return const Text(
         '♥',
         style: TextStyle(color: AppColors.heart, fontSize: 12),
       );
