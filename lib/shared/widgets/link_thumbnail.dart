@@ -21,14 +21,34 @@ class LinkThumbnail extends StatelessWidget {
         borderRadius: AppRadius.thumb,
       ),
       child: imageUrl == null
-          ? _fallback()
+          ? _favicon()
           : CachedNetworkImage(
               imageUrl: imageUrl,
               fit: BoxFit.cover,
               fadeInDuration: const Duration(milliseconds: 150),
-              placeholder: (_, __) => _fallback(),
-              errorWidget: (_, __, ___) => _fallback(),
+              placeholder: (_, __) => _favicon(),
+              errorWidget: (_, __, ___) => _favicon(),
             ),
+    );
+  }
+
+  /// When the page has no og:image, show the site favicon instead of
+  /// a bare emoji so the card still hints at what the link is about.
+  Widget _favicon() {
+    final domain = link.domain;
+    if (domain.isEmpty) return _fallback();
+    return Center(
+      child: SizedBox(
+        width: size * 0.5,
+        height: size * 0.5,
+        child: CachedNetworkImage(
+          imageUrl: 'https://www.google.com/s2/favicons?domain=$domain&sz=128',
+          fit: BoxFit.contain,
+          fadeInDuration: const Duration(milliseconds: 150),
+          placeholder: (_, __) => _fallback(),
+          errorWidget: (_, __, ___) => _fallback(),
+        ),
+      ),
     );
   }
 

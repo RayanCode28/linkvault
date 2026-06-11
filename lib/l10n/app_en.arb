@@ -1,0 +1,155 @@
+{
+  "@@locale": "en",
+  "languageName": "English",
+  "onboardingTitle1": "Stop losing\nyour links.",
+  "onboardingTitle2": "Save from\nany app.",
+  "onboardingTitle3": "Your vault,\nyour way.",
+  "onboardingSub1": "Links sent to yourself, screenshots, browser tabs lost forever. Sound familiar?",
+  "onboardingSub2": "Share any link directly to LinkVault in 2 taps. Works with YouTube, Instagram, TikTok and more.",
+  "onboardingSub3": "Organize into collections. Filter by unread or favorites. Find anything instantly.",
+  "skip": "Skip",
+  "continueLabel": "Continue",
+  "getStarted": "Get Started",
+  "searchHint": "Search links...",
+  "emptyNoLinks": "No links saved yet",
+  "emptyNoMatch": "No links match this filter",
+  "emptyHint": "Tap + to add a link, or share one from any app",
+  "filterAll": "All",
+  "filterUnread": "Unread",
+  "filterRead": "Read",
+  "filterSaved": "♥ Saved",
+  "addLink": "Add link",
+  "urlInvalid": "Enter a valid web address (http/https)",
+  "paste": "Paste",
+  "collectionSection": "COLLECTION",
+  "saveLink": "Save link",
+  "savingLink": "Saving...",
+  "linkSaved": "Link saved · {domain}",
+  "@linkSaved": {
+    "placeholders": {
+      "domain": {
+        "type": "String"
+      }
+    }
+  },
+  "noCollection": "No collection",
+  "collectionsTitle": "Collections",
+  "rename": "Rename",
+  "delete": "Delete",
+  "deleteCollectionNote": "Links inside are kept and unfiled",
+  "linkCount": "{count, plural, =1{1 link} other{{count} links}}",
+  "@linkCount": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "newCollection": "New collection",
+  "editCollection": "Edit collection",
+  "freeUsage": "Free: {used}/{limit} used",
+  "@freeUsage": {
+    "placeholders": {
+      "used": {
+        "type": "int"
+      },
+      "limit": {
+        "type": "int"
+      }
+    }
+  },
+  "freeUsageLocked": "Free: {used}/{limit} used · Unlock more with Pro",
+  "@freeUsageLocked": {
+    "placeholders": {
+      "used": {
+        "type": "int"
+      },
+      "limit": {
+        "type": "int"
+      }
+    }
+  },
+  "collectionNameHint": "Name",
+  "collectionNameError": "Give it a name",
+  "iconSection": "ICON",
+  "createCollection": "Create collection",
+  "saveChanges": "Save changes",
+  "collectionNotFound": "Collection not found",
+  "noLinksYet": "No links yet",
+  "startTyping": "Start typing...",
+  "noResults": "No results for \"{query}\"",
+  "@noResults": {
+    "placeholders": {
+      "query": {
+        "type": "String"
+      }
+    }
+  },
+  "deleteLinkTitle": "Delete link?",
+  "deleteLinkBody": "This cannot be undone.",
+  "cancel": "Cancel",
+  "readBadge": "Read",
+  "unreadBadge": "Unread",
+  "savedBadge": "♥ Saved",
+  "share": "Share",
+  "favorite": "Favorite",
+  "edit": "Edit",
+  "open": "Open",
+  "editLink": "Edit link",
+  "titleHint": "Title",
+  "settingsTitle": "Settings",
+  "upgradeToPro": "Upgrade to Pro",
+  "upgradeSub": "Unlimited collections & more",
+  "sectionAppearance": "APPEARANCE",
+  "theme": "Theme",
+  "themeDark": "Dark",
+  "language": "Language",
+  "languageSystem": "Automatic (system)",
+  "sectionData": "DATA",
+  "exportLinks": "Export links",
+  "importLinks": "Import links",
+  "cloudBackup": "Cloud backup",
+  "sectionAbout": "ABOUT",
+  "rateApp": "Rate LinkVault",
+  "sendFeedback": "Send feedback",
+  "version": "Version",
+  "nothingToExport": "Nothing to export yet",
+  "exportFailed": "Export failed",
+  "fileTooLarge": "File too large (max 5 MB)",
+  "fileReadError": "Could not read file",
+  "importSuccess": "Imported {links} links, {collections} collections",
+  "@importSuccess": {
+    "placeholders": {
+      "links": {
+        "type": "int"
+      },
+      "collections": {
+        "type": "int"
+      }
+    }
+  },
+  "importInvalid": "Not a valid LinkVault backup",
+  "importFailed": "Import failed",
+  "openLinkError": "Could not open link",
+  "noEmailApp": "No email app found",
+  "paywallHeadline": "You save a lot.\nNever lose any of it.",
+  "paywallSub": "Upgrade to LinkVault Pro",
+  "featCollections": "Unlimited collections",
+  "featCollectionsSub": "Organize without limits",
+  "featCloud": "Cloud backup",
+  "featCloudSub": "Your links, safe forever",
+  "featNoAds": "No ads, ever",
+  "featNoAdsSub": "Pure, distraction-free saving",
+  "featSupport": "Priority support",
+  "featSupportSub": "We've got your back",
+  "monthly": "MONTHLY",
+  "yearly": "YEARLY",
+  "perMonth": "per month",
+  "perYear": "per year",
+  "startFreeTrial": "Start Free Trial",
+  "trialNote": "3-day free trial · Cancel anytime · Restore purchases",
+  "navLinks": "Links",
+  "navCollections": "Collections",
+  "navSearch": "Search",
+  "navSettings": "Settings"
+}

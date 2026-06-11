@@ -3,6 +3,7 @@ import 'package:provider/provider.dart';
 import '../../core/links_provider.dart';
 import '../../core/models.dart';
 import '../../core/theme.dart';
+import '../../shared/l10n.dart';
 import '../../shared/widgets/neon_button.dart';
 
 const _emojiChoices = [
@@ -54,7 +55,7 @@ class _CollectionFormSheetState extends State<CollectionFormSheet> {
   Future<void> _save() async {
     final name = _nameController.text.trim();
     if (name.isEmpty) {
-      setState(() => _error = 'Give it a name');
+      setState(() => _error = context.l10n.collectionNameError);
       return;
     }
     final provider = context.read<LinksProvider>();
@@ -99,7 +100,9 @@ class _CollectionFormSheetState extends State<CollectionFormSheet> {
               ),
             ),
             Text(
-              widget.collection == null ? 'New collection' : 'Edit collection',
+              widget.collection == null
+                  ? context.l10n.newCollection
+                  : context.l10n.editCollection,
               style: AppTextStyles.sheetTitle,
             ),
             const SizedBox(height: 14),
@@ -109,7 +112,7 @@ class _CollectionFormSheetState extends State<CollectionFormSheet> {
               maxLength: 40,
               style: const TextStyle(color: AppColors.text, fontSize: 15),
               decoration: InputDecoration(
-                hintText: 'Name',
+                hintText: context.l10n.collectionNameHint,
                 errorText: _error,
                 counterText: '',
               ),
@@ -120,7 +123,7 @@ class _CollectionFormSheetState extends State<CollectionFormSheet> {
               onSubmitted: (_) => _save(),
             ),
             const SizedBox(height: 14),
-            Text('ICON', style: AppTextStyles.sectionHeader),
+            Text(context.l10n.iconSection, style: AppTextStyles.sectionHeader),
             const SizedBox(height: 8),
             Wrap(
               spacing: 8,
@@ -146,7 +149,9 @@ class _CollectionFormSheetState extends State<CollectionFormSheet> {
             ),
             const SizedBox(height: 18),
             NeonButton(
-              label: widget.collection == null ? 'Create collection' : 'Save changes',
+              label: widget.collection == null
+                  ? context.l10n.createCollection
+                  : context.l10n.saveChanges,
               onPressed: _save,
             ),
           ],

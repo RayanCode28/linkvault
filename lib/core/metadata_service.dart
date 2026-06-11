@@ -39,13 +39,23 @@ class MetadataService {
       final request = http.Request('GET', url)
         ..followRedirects = true
         ..maxRedirects = 4
-        ..headers['User-Agent'] = 'LinkVault/1.0 (+Android)'
-        ..headers['Accept'] = 'text/html';
+        // Browser-like UA: many sites (Instagram, X, Amazon, news sites)
+        // refuse or strip Open Graph tags for unknown clients.
+        ..headers['User-Agent'] =
+            'Mozilla/5.0 (Linux; Android 14) AppleWebKit/537.36 '
+                '(KHTML, like Gecko) Chrome/124.0.0.0 Mobile Safari/537.36'
+        ..headers['Accept'] =
+            'text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8'
+        ..headers['Accept-Language'] = 'en-US,en;q=0.9';
       final response = await client.send(request).timeout(_timeout);
-      if (response.statusCode != 200) return const LinkMetadata();
+      if (response.statusCode < 200 || response.statusCode >= 300) {
+        return const LinkMetadata();
+      }
 
       final contentType = response.headers['content-type'] ?? '';
-      if (!contentType.contains('text/html') && contentType.isNotEmpty) {
+      if (contentType.isNotEmpty &&
+          !contentType.contains('text/html') &&
+          !contentType.contains('application/xhtml')) {
         return const LinkMetadata();
       }
 

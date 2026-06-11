@@ -4,7 +4,7 @@ import 'package:provider/provider.dart';
 import '../../core/models.dart';
 import '../../core/theme.dart';
 import '../../core/links_provider.dart';
-import '../../shared/widgets/neon_bg.dart';
+import '../../shared/l10n.dart';
 import 'add_link_sheet.dart';
 import 'filter_chips_bar.dart';
 import 'link_card.dart';
@@ -21,8 +21,7 @@ class _HomeScreenState extends State<HomeScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return NeonBg(
-      child: Scaffold(
+    return Scaffold(
         backgroundColor: Colors.transparent,
         appBar: AppBar(
           backgroundColor: Colors.transparent,
@@ -56,13 +55,13 @@ class _HomeScreenState extends State<HomeScreen> {
                                 borderRadius: AppRadius.card,
                                 border: Border.all(color: AppColors.border, width: 1),
                               ),
-                              child: const Row(
+                              child: Row(
                                 children: [
-                                  Icon(Icons.search_rounded, color: AppColors.textMuted, size: 17),
-                                  SizedBox(width: 8),
+                                  const Icon(Icons.search_rounded, color: AppColors.textMuted, size: 17),
+                                  const SizedBox(width: 8),
                                   Text(
-                                    'Search links...',
-                                    style: TextStyle(color: AppColors.textMuted, fontSize: 14),
+                                    context.l10n.searchHint,
+                                    style: const TextStyle(color: AppColors.textMuted, fontSize: 14),
                                   ),
                                 ],
                               ),
@@ -87,18 +86,18 @@ class _HomeScreenState extends State<HomeScreen> {
                               const SizedBox(height: 8),
                               Text(
                                 provider.links.isEmpty
-                                    ? 'No links saved yet'
-                                    : 'No links match this filter',
+                                    ? context.l10n.emptyNoLinks
+                                    : context.l10n.emptyNoMatch,
                                 style: const TextStyle(color: AppColors.textSec, fontSize: 14),
                               ),
                               if (provider.links.isEmpty) ...[
                                 const SizedBox(height: 6),
-                                const Padding(
-                                  padding: EdgeInsets.symmetric(horizontal: 40),
+                                Padding(
+                                  padding: const EdgeInsets.symmetric(horizontal: 40),
                                   child: Text(
-                                    'Tap + to add a link, or share one from any app',
+                                    context.l10n.emptyHint,
                                     textAlign: TextAlign.center,
-                                    style: TextStyle(color: AppColors.textMuted, fontSize: 12.5),
+                                    style: const TextStyle(color: AppColors.textMuted, fontSize: 12.5),
                                   ),
                                 ),
                               ],
@@ -138,7 +137,6 @@ class _HomeScreenState extends State<HomeScreen> {
             ),
           ],
         ),
-      ),
     );
   }
 }

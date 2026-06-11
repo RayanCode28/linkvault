@@ -4,6 +4,7 @@ import 'package:provider/provider.dart';
 import '../../core/links_provider.dart';
 import '../../core/models.dart';
 import '../../core/theme.dart';
+import '../../shared/l10n.dart';
 import '../../shared/widgets/collection_picker.dart';
 import '../../shared/widgets/neon_button.dart';
 
@@ -61,7 +62,7 @@ class _AddLinkSheetState extends State<AddLinkSheet> {
     if (_saving) return;
     final uri = parseWebUrl(_controller.text);
     if (uri == null) {
-      setState(() => _error = 'Enter a valid web address (http/https)');
+      setState(() => _error = context.l10n.urlInvalid);
       return;
     }
     setState(() => _saving = true);
@@ -72,7 +73,7 @@ class _AddLinkSheetState extends State<AddLinkSheet> {
     if (link != null) {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
-          content: Text('Link saved · ${link.domain}'),
+          content: Text(context.l10n.linkSaved(link.domain)),
           behavior: SnackBarBehavior.floating,
         ),
       );
@@ -111,7 +112,7 @@ class _AddLinkSheetState extends State<AddLinkSheet> {
                 ),
               ),
             ),
-            Text('Add link', style: AppTextStyles.sheetTitle),
+            Text(context.l10n.addLink, style: AppTextStyles.sheetTitle),
             const SizedBox(height: 14),
             TextField(
               controller: _controller,
@@ -125,7 +126,7 @@ class _AddLinkSheetState extends State<AddLinkSheet> {
                 prefixIcon: const Icon(Icons.link_rounded, color: AppColors.textMuted, size: 20),
                 suffixIcon: IconButton(
                   icon: const Icon(Icons.content_paste_rounded, color: AppColors.accent, size: 18),
-                  tooltip: 'Paste',
+                  tooltip: context.l10n.paste,
                   onPressed: _paste,
                 ),
               ),
@@ -135,14 +136,17 @@ class _AddLinkSheetState extends State<AddLinkSheet> {
               onSubmitted: (_) => _save(),
             ),
             const SizedBox(height: 14),
-            Text('COLLECTION', style: AppTextStyles.sectionHeader),
+            Text(context.l10n.collectionSection, style: AppTextStyles.sectionHeader),
             const SizedBox(height: 8),
             CollectionPicker(
               selectedId: _collectionId,
               onChanged: (id) => setState(() => _collectionId = id),
             ),
             const SizedBox(height: 18),
-            NeonButton(label: _saving ? 'Saving...' : 'Save link', onPressed: _save),
+            NeonButton(
+              label: _saving ? context.l10n.savingLink : context.l10n.saveLink,
+              onPressed: _save,
+            ),
           ],
         ),
       ),

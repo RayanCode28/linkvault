@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import '../../core/theme.dart';
+import '../../shared/l10n.dart';
 import '../../shared/widgets/neon_bg.dart';
 import '../../shared/widgets/neon_button.dart';
 
@@ -15,17 +16,17 @@ class OnboardingScreen extends StatefulWidget {
 class _OnboardingScreenState extends State<OnboardingScreen> {
   int _page = 0;
 
-  static const _titles = [
-    'Stop losing\nyour links.',
-    'Save from\nany app.',
-    'Your vault,\nyour way.',
-  ];
+  List<String> _titles(BuildContext context) => [
+        context.l10n.onboardingTitle1,
+        context.l10n.onboardingTitle2,
+        context.l10n.onboardingTitle3,
+      ];
 
-  static const _subs = [
-    'Links sent to yourself, screenshots, browser tabs lost forever. Sound familiar?',
-    'Share any link directly to LinkVault in 2 taps. Works with YouTube, Instagram, TikTok and more.',
-    'Organize into collections. Filter by unread or favorites. Find anything instantly.',
-  ];
+  List<String> _subs(BuildContext context) => [
+        context.l10n.onboardingSub1,
+        context.l10n.onboardingSub2,
+        context.l10n.onboardingSub3,
+      ];
 
   Future<void> _finish() async {
     final prefs = await SharedPreferences.getInstance();
@@ -47,7 +48,8 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                 child: _page < 2
                     ? TextButton(
                         onPressed: _finish,
-                        child: const Text('Skip', style: TextStyle(color: AppColors.textSec, fontSize: 14)),
+                        child: Text(context.l10n.skip,
+                            style: const TextStyle(color: AppColors.textSec, fontSize: 14)),
                       )
                     : const SizedBox(height: 48),
               ),
@@ -61,13 +63,13 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                       _buildArt(_page),
                       const SizedBox(height: 40),
                       Text(
-                        _titles[_page],
+                        _titles(context)[_page],
                         style: AppTextStyles.onboardingTitle,
                         textAlign: TextAlign.center,
                       ),
                       const SizedBox(height: 14),
                       Text(
-                        _subs[_page],
+                        _subs(context)[_page],
                         style: AppTextStyles.onboardingSub,
                         textAlign: TextAlign.center,
                       ),
@@ -100,7 +102,7 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                     ),
                     const SizedBox(height: 20),
                     NeonButton(
-                      label: _page < 2 ? 'Continue' : 'Get Started',
+                      label: _page < 2 ? context.l10n.continueLabel : context.l10n.getStarted,
                       onPressed: () {
                         if (_page < 2) {
                           setState(() => _page++);

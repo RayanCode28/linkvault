@@ -4,7 +4,7 @@ import 'package:provider/provider.dart';
 import '../../core/models.dart';
 import '../../core/theme.dart';
 import '../../core/links_provider.dart';
-import '../../shared/widgets/neon_bg.dart';
+import '../../shared/l10n.dart';
 import 'collection_form_sheet.dart';
 
 class CollectionsScreen extends StatelessWidget {
@@ -31,7 +31,7 @@ class CollectionsScreen extends StatelessWidget {
           children: [
             ListTile(
               leading: const Icon(Icons.edit_rounded, color: AppColors.accent),
-              title: const Text('Rename', style: TextStyle(color: AppColors.text)),
+              title: Text(context.l10n.rename, style: const TextStyle(color: AppColors.text)),
               onTap: () {
                 Navigator.pop(ctx);
                 showCollectionFormSheet(context, collection: col);
@@ -39,9 +39,9 @@ class CollectionsScreen extends StatelessWidget {
             ),
             ListTile(
               leading: const Icon(Icons.delete_outline_rounded, color: AppColors.danger),
-              title: const Text('Delete', style: TextStyle(color: AppColors.danger)),
-              subtitle: const Text('Links inside are kept and unfiled',
-                  style: TextStyle(color: AppColors.textSec, fontSize: 12)),
+              title: Text(context.l10n.delete, style: const TextStyle(color: AppColors.danger)),
+              subtitle: Text(context.l10n.deleteCollectionNote,
+                  style: const TextStyle(color: AppColors.textSec, fontSize: 12)),
               onTap: () async {
                 Navigator.pop(ctx);
                 await provider.deleteCollection(col.id);
@@ -55,8 +55,7 @@ class CollectionsScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return NeonBg(
-      child: Scaffold(
+    return Scaffold(
         backgroundColor: Colors.transparent,
         body: SafeArea(
           child: Column(
@@ -64,7 +63,7 @@ class CollectionsScreen extends StatelessWidget {
             children: [
               Padding(
                 padding: const EdgeInsets.fromLTRB(20, 6, 20, 14),
-                child: Text('Collections', style: AppTextStyles.screenTitle),
+                child: Text(context.l10n.collectionsTitle, style: AppTextStyles.screenTitle),
               ),
               Expanded(
                 child: Consumer<LinksProvider>(
@@ -99,7 +98,6 @@ class CollectionsScreen extends StatelessWidget {
             ],
           ),
         ),
-      ),
     );
   }
 }
@@ -149,7 +147,7 @@ class _CollectionRow extends StatelessWidget {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(name, style: AppTextStyles.collectionName),
-                  Text('$count links', style: AppTextStyles.collectionCount),
+                  Text(context.l10n.linkCount(count), style: AppTextStyles.collectionCount),
                 ],
               ),
             ),
@@ -199,12 +197,12 @@ class _AddCollectionRow extends StatelessWidget {
             Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                const Text('New collection',
-                    style: TextStyle(fontSize: 15, fontWeight: FontWeight.w500, color: AppColors.textSec)),
+                Text(context.l10n.newCollection,
+                    style: const TextStyle(fontSize: 15, fontWeight: FontWeight.w500, color: AppColors.textSec)),
                 Text(
                   canAdd
-                      ? 'Free: $used/$kFreeCollectionLimit used'
-                      : 'Free: $used/$kFreeCollectionLimit used · Unlock more with Pro',
+                      ? context.l10n.freeUsage(used, kFreeCollectionLimit)
+                      : context.l10n.freeUsageLocked(used, kFreeCollectionLimit),
                   style: const TextStyle(fontSize: 12, color: AppColors.textMuted),
                 ),
               ],

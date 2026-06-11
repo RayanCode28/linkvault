@@ -33,6 +33,17 @@ class LinksProvider extends ChangeNotifier {
     _collections = await _db.getCollections();
     _loaded = true;
     notifyListeners();
+    _backfillMetadata();
+  }
+
+  /// Links saved before metadata fetching worked (or whose fetch failed)
+  /// get another chance each session, a few at a time.
+  void _backfillMetadata() {
+    final pending =
+        _links.where((l) => l.imageUrl == null).take(10).toList();
+    for (final link in pending) {
+      _enrich(link);
+    }
   }
 
   // ---- Links ----
@@ -52,7 +63,12 @@ class LinksProvider extends ChangeNotifier {
     if (uri == null) return null;
 
     final existing = _links.where((l) => l.url == uri.toString());
-    if (existing.isNotEmpty) return existing.first;
+    if (existing.isNotEmpty) {
+      final link = existing.first;
+      // Re-adding a link whose metadata never arrived retries the fetch.
+      if (link.imageUrl == null) _enrich(link);
+      return link;
+    }
 
     var link = LinkItem(
       url: uri.toString(),

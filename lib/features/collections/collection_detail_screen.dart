@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../../core/theme.dart';
 import '../../core/links_provider.dart';
+import '../../shared/l10n.dart';
 import '../../shared/widgets/neon_bg.dart';
 import '../home/add_link_sheet.dart';
 import '../home/link_card.dart';
@@ -28,9 +29,9 @@ class CollectionDetailScreen extends StatelessWidget {
                   onPressed: () => Navigator.pop(context),
                 ),
               ),
-              body: const Center(
-                child: Text('Collection not found',
-                    style: TextStyle(color: AppColors.textSec, fontSize: 14)),
+              body: Center(
+                child: Text(context.l10n.collectionNotFound,
+                    style: const TextStyle(color: AppColors.textSec, fontSize: 14)),
               ),
             );
           }
@@ -52,7 +53,8 @@ class CollectionDetailScreen extends StatelessWidget {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Text(collection.name, style: AppTextStyles.collectionName),
-                      Text('${items.length} links', style: AppTextStyles.collectionCount),
+                      Text(context.l10n.linkCount(items.length),
+                          style: AppTextStyles.collectionCount),
                     ],
                   ),
                 ],
@@ -72,8 +74,8 @@ class CollectionDetailScreen extends StatelessWidget {
                       children: [
                         Text(collection.emoji, style: const TextStyle(fontSize: 32)),
                         const SizedBox(height: 8),
-                        const Text('No links yet',
-                            style: TextStyle(color: AppColors.textSec, fontSize: 14)),
+                        Text(context.l10n.noLinksYet,
+                            style: const TextStyle(color: AppColors.textSec, fontSize: 14)),
                       ],
                     ),
                   )

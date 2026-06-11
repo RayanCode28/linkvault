@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
 import '../../core/models.dart';
 import '../../core/theme.dart';
@@ -58,7 +59,11 @@ class LinkCard extends StatelessWidget {
                         overflow: TextOverflow.ellipsis,
                       ),
                       const SizedBox(height: 2),
-                      Text(link.date, style: AppTextStyles.cardDate),
+                      Text(
+                        DateFormat.yMMMd(Localizations.localeOf(context).toString())
+                            .format(link.createdAt),
+                        style: AppTextStyles.cardDate,
+                      ),
                     ],
                   ),
                 ),

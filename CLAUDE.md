@@ -9,6 +9,7 @@ Desarrollador: Rayan / RayanCode28 · Bundle ID: `com.rayancode98.linkvault`
 - go_router ^14 · provider ^6 · shared_preferences ^2 · url_launcher ^6 · google_fonts ^6
 - sqflite ^2 · http ^1 · html_unescape ^2 · flutter_sharing_intent ^2
 - share_plus ^12 · file_picker ^10 · cached_network_image ^3 · package_info_plus ^9
+- flutter_localizations (SDK) + intl — i18n con gen-l10n (ver sección Internacionalización)
   - ⚠️ share_plus/file_picker/package_info_plus están fijados a esas majors por un
     conflicto de `win32` (solo afecta resolución, no Android). No subirlos por separado.
 - Target: Android (Google Play Store)
@@ -28,8 +29,9 @@ lib/
 │   ├── theme.dart                   # AppColors, AppShadows, AppRadius, AppTextStyles, buildAppTheme()
 │   ├── models.dart                  # LinkItem, Collection (inmutables, toMap/fromMap), LinkFilter, parseWebUrl(), formatDate()
 │   ├── links_provider.dart          # LinksProvider: CRUD links/colecciones sobre SQLite, search, filtros, export/importJson, límite Free
-│   ├── metadata_service.dart        # Fetch Open Graph (og:title/description/image) con límites de tamaño/timeout
+│   ├── metadata_service.dart        # Fetch Open Graph (og:title/description/image) con límites de tamaño/timeout, UA de navegador
 │   └── share_intent_service.dart    # Recibe texto del Share Sheet y extrae la URL
+├── l10n/                            # ARB por idioma (en/es/pt/fr/de) + app_localizations*.dart generados (gen-l10n)
 ├── database/
 │   └── database_helper.dart         # sqflite singleton: tablas links + collections, FK ON DELETE SET NULL, seed 2 colecciones
 ├── features/
@@ -51,10 +53,11 @@ lib/
 │   └── paywall/paywall_screen.dart          # Icon+PRO badge, features, pricing cards monthly/yearly, NeonButton
 └── shared/
     ├── router.dart                  # GoRouter; MainShell deriva el tab activo de la ruta
+    ├── l10n.dart                    # export de AppLocalizations + extensión context.l10n
     └── widgets/
         ├── app_bottom_nav.dart      # 4 tabs: Links/Collections/Search/Settings, glow en activo
-        ├── link_thumbnail.dart      # CachedNetworkImage de og:image con fallback 🔗
-        ├── collection_picker.dart   # Chips horizontales para elegir colección (None + todas)
+        ├── link_thumbnail.dart      # CachedNetworkImage de og:image → fallback favicon (Google s2) → 🔗
+        ├── collection_picker.dart   # DropdownButtonFormField para elegir colección (Sin colección + todas)
         ├── neon_button.dart         # ElevatedButton accent + AppShadows.ctaButton glow
         └── neon_bg.dart             # RadialGradient cyan sutil en parte superior
 ```
@@ -72,6 +75,18 @@ lib/
 
 Link detail, add link, edit link y collection form NO son rutas — son bottom sheets
 (`showLinkDetailSheet`, `showAddLinkSheet`, `showEditLinkSheet`, `showCollectionFormSheet`).
+
+## Internacionalización
+- 5 idiomas: en (plantilla), es, pt, fr, de — ARB en `lib/l10n/`, config en `l10n.yaml`
+  (`nullable-getter: false`). La app sigue el idioma del dispositivo automáticamente
+  (fallback: inglés). Los `app_localizations*.dart` se regeneran con `flutter gen-l10n`
+  (también en cada build por `generate: true` en pubspec).
+- Acceso en widgets: `context.l10n.<clave>` via la extensión de `lib/shared/l10n.dart`.
+- Para agregar un string: añadirlo a `app_en.arb` (con metadata si lleva placeholders),
+  traducirlo en los otros 4 ARB y correr `flutter gen-l10n`.
+- Fechas localizadas con `DateFormat.yMMMd(locale)` (intl) en link_card y link_detail_sheet;
+  `formatDate()` de models.dart queda como formato fijo en inglés (lo usan los tests).
+- El snackbar del Share Intent (app.dart) localiza usando `scaffoldMessengerKey.currentContext`.
 
 ## Seguridad — reglas que ya aplica el código
 - `parseWebUrl()` en `models.dart` es la única puerta de validación de URLs: solo
@@ -101,6 +116,14 @@ Link detail, add link, edit link y collection form NO son rutas — son bottom s
 9. Settings: Rate (Play Store), Feedback (mailto), versión desde package_info_plus
 10. Tests unitarios en `test/widget_test.dart` (parseWebUrl, extractUrl, parser OG, modelo) — `flutter test` ✅
 11. `flutter analyze` limpio (0 issues) — se aplicó `dart fix` (const, withValues)
+
+### ✅ Completado (Sesión 3)
+1. i18n completo — 5 idiomas (en/es/pt/fr/de) con gen-l10n, selección automática por idioma del sistema
+2. CollectionPicker pasó de chips horizontales a dropdown (afecta Add Link y Edit Link)
+3. Miniaturas: UA de navegador en MetadataService (sitios que bloqueaban el UA custom ya
+   devuelven Open Graph), acepta 2xx/xhtml, y LinkThumbnail cae a favicon del dominio
+   (`google.com/s2/favicons`) cuando no hay og:image, antes del emoji 🔗
+4. Settings: fila Language muestra el idioma activo; toasts con guards `mounted`
 
 ### 🔲 Pendiente (próximas sesiones)
 1. **RevenueCat** — paywall funcional

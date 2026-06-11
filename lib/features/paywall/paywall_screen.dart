@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import '../../core/theme.dart';
+import '../../shared/l10n.dart';
 import '../../shared/widgets/neon_bg.dart';
 import '../../shared/widgets/neon_button.dart';
 
@@ -60,18 +61,18 @@ class PaywallScreen extends StatelessWidget {
                 const SizedBox(height: 20),
                 // Headline
                 Text(
-                  'You save a lot.\nNever lose any of it.',
+                  context.l10n.paywallHeadline,
                   style: AppTextStyles.paywallHeadline,
                   textAlign: TextAlign.center,
                 ),
                 const SizedBox(height: 10),
-                const Text(
-                  'Upgrade to LinkVault Pro',
-                  style: TextStyle(color: AppColors.textSec, fontSize: 14),
+                Text(
+                  context.l10n.paywallSub,
+                  style: const TextStyle(color: AppColors.textSec, fontSize: 14),
                 ),
                 const SizedBox(height: 28),
                 // Features
-                ..._features.map((f) => Padding(
+                ..._features(context).map((f) => Padding(
                   padding: const EdgeInsets.only(bottom: 14),
                   child: Row(
                     children: [
@@ -97,32 +98,32 @@ class PaywallScreen extends StatelessWidget {
                 )),
                 const SizedBox(height: 8),
                 // Pricing cards
-                const Row(
+                Row(
                   children: [
                     Expanded(child: _PricingCard(
-                      label: 'MONTHLY',
+                      label: context.l10n.monthly,
                       price: r'$1.99',
-                      sub: 'per month',
+                      sub: context.l10n.perMonth,
                       highlighted: false,
                     )),
-                    SizedBox(width: 10),
+                    const SizedBox(width: 10),
                     Expanded(child: _PricingCard(
-                      label: 'YEARLY',
+                      label: context.l10n.yearly,
                       price: r'$9.99',
-                      sub: 'per year',
+                      sub: context.l10n.perYear,
                       highlighted: true,
                     )),
                   ],
                 ),
                 const SizedBox(height: 20),
                 NeonButton(
-                  label: 'Start Free Trial',
+                  label: context.l10n.startFreeTrial,
                   onPressed: () => Navigator.pop(context),
                 ),
                 const SizedBox(height: 12),
-                const Text(
-                  '3-day free trial · Cancel anytime · Restore purchases',
-                  style: TextStyle(color: AppColors.textMuted, fontSize: 11),
+                Text(
+                  context.l10n.trialNote,
+                  style: const TextStyle(color: AppColors.textMuted, fontSize: 11),
                   textAlign: TextAlign.center,
                 ),
               ],
@@ -141,12 +142,12 @@ class _Feature {
   const _Feature(this.icon, this.label, this.sub);
 }
 
-const _features = [
-  _Feature(Icons.grid_view_rounded, 'Unlimited collections', 'Organize without limits'),
-  _Feature(Icons.cloud_rounded, 'Cloud backup', 'Your links, safe forever'),
-  _Feature(Icons.shield_rounded, 'No ads, ever', 'Pure, distraction-free saving'),
-  _Feature(Icons.star_rounded, 'Priority support', 'We\'ve got your back'),
-];
+List<_Feature> _features(BuildContext context) => [
+      _Feature(Icons.grid_view_rounded, context.l10n.featCollections, context.l10n.featCollectionsSub),
+      _Feature(Icons.cloud_rounded, context.l10n.featCloud, context.l10n.featCloudSub),
+      _Feature(Icons.shield_rounded, context.l10n.featNoAds, context.l10n.featNoAdsSub),
+      _Feature(Icons.star_rounded, context.l10n.featSupport, context.l10n.featSupportSub),
+    ];
 
 class _PricingCard extends StatelessWidget {
   final String label;

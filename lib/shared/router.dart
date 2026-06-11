@@ -10,6 +10,7 @@ import '../features/search/search_screen.dart';
 import '../features/settings/settings_screen.dart';
 import '../features/paywall/paywall_screen.dart';
 import 'widgets/app_bottom_nav.dart';
+import 'widgets/neon_bg.dart';
 
 Future<GoRouter> buildRouter() async {
   final prefs = await SharedPreferences.getInstance();
@@ -25,10 +26,24 @@ Future<GoRouter> buildRouter() async {
       ShellRoute(
         builder: (ctx, state, child) => MainShell(child: child),
         routes: [
-          GoRoute(path: '/', builder: (ctx, state) => const HomeScreen()),
-          GoRoute(path: '/collections', builder: (ctx, state) => const CollectionsScreen()),
-          GoRoute(path: '/search', builder: (ctx, state) => const SearchScreen()),
-          GoRoute(path: '/settings', builder: (ctx, state) => const SettingsScreen()),
+          // NoTransitionPage: switching tabs must not animate, otherwise the
+          // page fade flashes against the root background behind the shell.
+          GoRoute(
+            path: '/',
+            pageBuilder: (ctx, state) => const NoTransitionPage(child: HomeScreen()),
+          ),
+          GoRoute(
+            path: '/collections',
+            pageBuilder: (ctx, state) => const NoTransitionPage(child: CollectionsScreen()),
+          ),
+          GoRoute(
+            path: '/search',
+            pageBuilder: (ctx, state) => const NoTransitionPage(child: SearchScreen()),
+          ),
+          GoRoute(
+            path: '/settings',
+            pageBuilder: (ctx, state) => const NoTransitionPage(child: SettingsScreen()),
+          ),
         ],
       ),
       GoRoute(
@@ -56,12 +71,16 @@ class MainShell extends StatelessWidget {
     // stays in sync no matter how the user navigated here.
     final location = GoRouterState.of(context).uri.path;
     final index = _routes.indexOf(location);
-    return Scaffold(
-      backgroundColor: Colors.transparent,
-      body: child,
-      bottomNavigationBar: AppBottomNav(
-        currentIndex: index == -1 ? 0 : index,
-        onTap: (i) => context.go(_routes[i]),
+    // The neon gradient lives here, behind every tab, so switching tabs
+    // never repaints (or flashes) the background.
+    return NeonBg(
+      child: Scaffold(
+        backgroundColor: Colors.transparent,
+        body: child,
+        bottomNavigationBar: AppBottomNav(
+          currentIndex: index == -1 ? 0 : index,
+          onTap: (i) => context.go(_routes[i]),
+        ),
       ),
     );
   }

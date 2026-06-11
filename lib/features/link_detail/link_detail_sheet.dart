@@ -1,10 +1,12 @@
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
 import 'package:share_plus/share_plus.dart';
 import 'package:url_launcher/url_launcher.dart';
 import '../../core/models.dart';
 import '../../core/theme.dart';
 import '../../core/links_provider.dart';
+import '../../shared/l10n.dart';
 import '../../shared/widgets/link_thumbnail.dart';
 import 'edit_link_sheet.dart';
 
@@ -42,16 +44,16 @@ class LinkDetailSheet extends StatelessWidget {
       context: context,
       builder: (ctx) => AlertDialog(
         backgroundColor: AppColors.elevated,
-        title: Text('Delete link?', style: AppTextStyles.sheetTitle),
-        content: Text('This cannot be undone.', style: AppTextStyles.sheetDesc),
+        title: Text(ctx.l10n.deleteLinkTitle, style: AppTextStyles.sheetTitle),
+        content: Text(ctx.l10n.deleteLinkBody, style: AppTextStyles.sheetDesc),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(ctx, false),
-            child: const Text('Cancel', style: TextStyle(color: AppColors.textSec)),
+            child: Text(ctx.l10n.cancel, style: const TextStyle(color: AppColors.textSec)),
           ),
           TextButton(
             onPressed: () => Navigator.pop(ctx, true),
-            child: const Text('Delete', style: TextStyle(color: AppColors.danger)),
+            child: Text(ctx.l10n.delete, style: const TextStyle(color: AppColors.danger)),
           ),
         ],
       ),
@@ -116,7 +118,10 @@ class LinkDetailSheet extends StatelessWidget {
                               ' · ${collection.emoji} ${collection.name}',
                               style: AppTextStyles.cardMeta,
                             ),
-                          Text(' · ${link.date}', style: AppTextStyles.cardDate),
+                          Text(
+                            ' · ${DateFormat.yMMMd(Localizations.localeOf(context).toString()).format(link.createdAt)}',
+                            style: AppTextStyles.cardDate,
+                          ),
                         ],
                       ),
                       const SizedBox(height: 6),
@@ -134,14 +139,16 @@ class LinkDetailSheet extends StatelessWidget {
                       Row(
                         children: [
                           _Badge(
-                            label: link.read ? 'Read' : 'Unread',
+                            label: link.read
+                                ? context.l10n.readBadge
+                                : context.l10n.unreadBadge,
                             bg: AppColors.accentDim,
                             fg: AppColors.accent,
                           ),
                           if (link.favorite) ...[
                             const SizedBox(width: 8),
                             _Badge(
-                              label: '♥ Saved',
+                              label: context.l10n.savedBadge,
                               bg: AppColors.heart.withValues(alpha: 0.15),
                               fg: AppColors.heart,
                             ),
@@ -164,7 +171,7 @@ class LinkDetailSheet extends StatelessWidget {
                   children: [
                     _ActionBtn(
                       icon: Icons.share_rounded,
-                      label: 'Share',
+                      label: context.l10n.share,
                       color: AppColors.textSec,
                       onTap: () => SharePlus.instance.share(
                         ShareParams(text: link.url, subject: link.title),
@@ -174,25 +181,25 @@ class LinkDetailSheet extends StatelessWidget {
                       icon: link.favorite
                           ? Icons.favorite_rounded
                           : Icons.favorite_border_rounded,
-                      label: 'Favorite',
+                      label: context.l10n.favorite,
                       color: link.favorite ? AppColors.heart : AppColors.textSec,
                       onTap: () => provider.toggleFavorite(linkId),
                     ),
                     _ActionBtn(
                       icon: Icons.edit_rounded,
-                      label: 'Edit',
+                      label: context.l10n.edit,
                       color: AppColors.accent,
                       onTap: () => showEditLinkSheet(context, link),
                     ),
                     _ActionBtn(
                       icon: Icons.delete_outline_rounded,
-                      label: 'Delete',
+                      label: context.l10n.delete,
                       color: AppColors.danger,
                       onTap: () => _confirmDelete(context, provider),
                     ),
                     _ActionBtn(
                       icon: Icons.open_in_new_rounded,
-                      label: 'Open',
+                      label: context.l10n.open,
                       color: AppColors.text,
                       onTap: () => _open(context, provider, link),
                     ),

@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'core/links_provider.dart';
+import 'core/locale_provider.dart';
 import 'shared/router.dart';
 import 'app.dart';
 
@@ -14,6 +15,12 @@ void main() async {
   ));
   final provider = LinksProvider();
   await provider.init();
+  final localeProvider = LocaleProvider();
+  await localeProvider.init();
   final router = await buildRouter();
-  runApp(LinkVaultApp(router: router, provider: provider));
+  runApp(LinkVaultApp(
+    router: router,
+    provider: provider,
+    localeProvider: localeProvider,
+  ));
 }

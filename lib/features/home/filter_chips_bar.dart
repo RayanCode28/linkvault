@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import '../../core/models.dart';
 import '../../core/theme.dart';
+import '../../shared/l10n.dart';
 
 class FilterChipsBar extends StatelessWidget {
   final LinkFilter selected;
@@ -16,13 +17,13 @@ class FilterChipsBar extends StatelessWidget {
         scrollDirection: Axis.horizontal,
         padding: const EdgeInsets.symmetric(horizontal: 16),
         children: [
-          _Chip(label: 'All', filter: LinkFilter.all, selected: selected, onChanged: onChanged),
+          _Chip(label: context.l10n.filterAll, filter: LinkFilter.all, selected: selected, onChanged: onChanged),
           const SizedBox(width: 8),
-          _Chip(label: 'Unread', filter: LinkFilter.unread, selected: selected, onChanged: onChanged),
+          _Chip(label: context.l10n.filterUnread, filter: LinkFilter.unread, selected: selected, onChanged: onChanged),
           const SizedBox(width: 8),
-          _Chip(label: 'Read', filter: LinkFilter.read, selected: selected, onChanged: onChanged),
+          _Chip(label: context.l10n.filterRead, filter: LinkFilter.read, selected: selected, onChanged: onChanged),
           const SizedBox(width: 8),
-          _Chip(label: '♥ Saved', filter: LinkFilter.favorites, selected: selected, onChanged: onChanged),
+          _Chip(label: context.l10n.filterSaved, filter: LinkFilter.favorites, selected: selected, onChanged: onChanged),
         ],
       ),
     );

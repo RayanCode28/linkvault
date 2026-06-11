@@ -11,8 +11,9 @@ import 'package:share_plus/share_plus.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 import '../../core/links_provider.dart';
+import '../../core/locale_provider.dart';
 import '../../core/theme.dart';
-import '../../shared/widgets/neon_bg.dart';
+import '../../shared/l10n.dart';
 
 const _playStoreUrl =
     'https://play.google.com/store/apps/details?id=com.rayancode98.linkvault';
@@ -20,6 +21,15 @@ const _feedbackEmail = 'bryanagarcia28414@gmail.com';
 
 /// Imported backups are capped to protect against oversized files.
 const _maxImportBytes = 5 * 1024 * 1024;
+
+/// Native names for the supported app languages (shown untranslated).
+const _languageNames = {
+  'en': 'English',
+  'es': 'Español',
+  'pt': 'Português',
+  'fr': 'Français',
+  'de': 'Deutsch',
+};
 
 class SettingsScreen extends StatefulWidget {
   const SettingsScreen({super.key});
@@ -49,7 +59,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
   Future<void> _exportLinks() async {
     final provider = context.read<LinksProvider>();
     if (provider.links.isEmpty && provider.collections.isEmpty) {
-      _toast('Nothing to export yet');
+      _toast(context.l10n.nothingToExport);
       return;
     }
     try {
@@ -63,7 +73,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
         subject: 'LinkVault backup',
       ));
     } on Exception {
-      _toast('Export failed');
+      if (mounted) _toast(context.l10n.exportFailed);
     }
   }
 
@@ -75,33 +85,67 @@ class _SettingsScreenState extends State<SettingsScreen> {
         allowedExtensions: ['json'],
         withData: true,
       );
+      if (!mounted) return;
       final picked = result?.files.firstOrNull;
       if (picked == null) return;
       if (picked.size > _maxImportBytes) {
-        _toast('File too large (max 5 MB)');
+        _toast(context.l10n.fileTooLarge);
         return;
       }
       final bytes = picked.bytes ??
           (picked.path != null ? await File(picked.path!).readAsBytes() : null);
+      if (!mounted) return;
       if (bytes == null) {
-        _toast('Could not read file');
+        _toast(context.l10n.fileReadError);
         return;
       }
       final imported = await provider.importJson(utf8.decode(bytes));
-      _toast(
-          'Imported ${imported.links} links, ${imported.collections} collections');
+      if (!mounted) return;
+      _toast(context.l10n.importSuccess(imported.links, imported.collections));
     } on FormatException {
-      _toast('Not a valid LinkVault backup');
+      if (mounted) _toast(context.l10n.importInvalid);
     } on Exception {
-      _toast('Import failed');
+      if (mounted) _toast(context.l10n.importFailed);
     }
   }
 
   Future<void> _openUrl(String url) async {
     final uri = Uri.parse(url);
     if (!await launchUrl(uri, mode: LaunchMode.externalApplication)) {
-      _toast('Could not open link');
+      if (mounted) _toast(context.l10n.openLinkError);
     }
+  }
+
+  void _pickLanguage() {
+    final localeProvider = context.read<LocaleProvider>();
+    showModalBottomSheet(
+      context: context,
+      backgroundColor: AppColors.elevated,
+      shape: const RoundedRectangleBorder(borderRadius: AppRadius.sheetTop),
+      builder: (ctx) {
+        final current = localeProvider.locale?.languageCode;
+        Widget option(String? code, String label) => ListTile(
+              title: Text(label, style: const TextStyle(color: AppColors.text, fontSize: 14)),
+              trailing: code == current
+                  ? const Icon(Icons.check_rounded, color: AppColors.accent, size: 20)
+                  : null,
+              onTap: () {
+                localeProvider.setLocale(code == null ? null : Locale(code));
+                Navigator.pop(ctx);
+              },
+            );
+        return SafeArea(
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              option(null, ctx.l10n.languageSystem),
+              for (final entry in _languageNames.entries)
+                option(entry.key, entry.value),
+            ],
+          ),
+        );
+      },
+    );
   }
 
   Future<void> _sendFeedback() async {
@@ -111,14 +155,13 @@ class _SettingsScreenState extends State<SettingsScreen> {
       query: 'subject=LinkVault feedback',
     );
     if (!await launchUrl(uri)) {
-      _toast('No email app found');
+      if (mounted) _toast(context.l10n.noEmailApp);
     }
   }
 
   @override
   Widget build(BuildContext context) {
-    return NeonBg(
-      child: Scaffold(
+    return Scaffold(
         backgroundColor: Colors.transparent,
         body: SafeArea(
           child: ListView(
@@ -126,7 +169,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
             children: [
               Padding(
                 padding: const EdgeInsets.symmetric(vertical: 16),
-                child: Text('Settings', style: AppTextStyles.screenTitle),
+                child: Text(context.l10n.settingsTitle, style: AppTextStyles.screenTitle),
               ),
               // Pro banner
               GestureDetector(
@@ -151,12 +194,14 @@ class _SettingsScreenState extends State<SettingsScreen> {
                         child: const Icon(Icons.link_rounded, color: Color(0xFF020A07), size: 18),
                       ),
                       const SizedBox(width: 12),
-                      const Expanded(
+                      Expanded(
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
-                            Text('Upgrade to Pro', style: TextStyle(color: AppColors.accent, fontWeight: FontWeight.w700, fontSize: 14)),
-                            Text('Unlimited collections & more', style: TextStyle(color: AppColors.textSec, fontSize: 12)),
+                            Text(context.l10n.upgradeToPro,
+                                style: const TextStyle(color: AppColors.accent, fontWeight: FontWeight.w700, fontSize: 14)),
+                            Text(context.l10n.upgradeSub,
+                                style: const TextStyle(color: AppColors.textSec, fontSize: 12)),
                           ],
                         ),
                       ),
@@ -166,22 +211,29 @@ class _SettingsScreenState extends State<SettingsScreen> {
                 ),
               ),
               const SizedBox(height: AppSpacing.sectionGap),
-              const _SettingsSection(
-                title: 'APPEARANCE',
+              _SettingsSection(
+                title: context.l10n.sectionAppearance,
                 items: [
-                  _SettingsRow(emoji: '🌙', label: 'Theme', value: 'Dark'),
-                  _SettingsRow(emoji: '🌐', label: 'Language', value: 'English'),
+                  _SettingsRow(emoji: '🌙', label: context.l10n.theme, value: context.l10n.themeDark),
+                  _SettingsRow(
+                    emoji: '🌐',
+                    label: context.l10n.language,
+                    value: context.watch<LocaleProvider>().locale == null
+                        ? '${context.l10n.languageSystem} · ${context.l10n.languageName}'
+                        : context.l10n.languageName,
+                    onTap: _pickLanguage,
+                  ),
                 ],
               ),
               const SizedBox(height: AppSpacing.sectionGap),
               _SettingsSection(
-                title: 'DATA',
+                title: context.l10n.sectionData,
                 items: [
-                  _SettingsRow(emoji: '📤', label: 'Export links', onTap: _exportLinks),
-                  _SettingsRow(emoji: '📥', label: 'Import links', onTap: _importLinks),
+                  _SettingsRow(emoji: '📤', label: context.l10n.exportLinks, onTap: _exportLinks),
+                  _SettingsRow(emoji: '📥', label: context.l10n.importLinks, onTap: _importLinks),
                   _SettingsRow(
                     emoji: '☁️',
-                    label: 'Cloud backup',
+                    label: context.l10n.cloudBackup,
                     proBadge: true,
                     onTap: () => context.push('/paywall'),
                   ),
@@ -189,21 +241,20 @@ class _SettingsScreenState extends State<SettingsScreen> {
               ),
               const SizedBox(height: AppSpacing.sectionGap),
               _SettingsSection(
-                title: 'ABOUT',
+                title: context.l10n.sectionAbout,
                 items: [
                   _SettingsRow(
                     emoji: '⭐',
-                    label: 'Rate LinkVault',
+                    label: context.l10n.rateApp,
                     onTap: () => _openUrl(_playStoreUrl),
                   ),
-                  _SettingsRow(emoji: '💬', label: 'Send feedback', onTap: _sendFeedback),
-                  _SettingsRow(emoji: '🔖', label: 'Version', value: _version),
+                  _SettingsRow(emoji: '💬', label: context.l10n.sendFeedback, onTap: _sendFeedback),
+                  _SettingsRow(emoji: '🔖', label: context.l10n.version, value: _version),
                 ],
               ),
             ],
           ),
         ),
-      ),
     );
   }
 }

@@ -2,9 +2,10 @@
     <!-- Needed to fetch Open Graph metadata and thumbnails -->
     <uses-permission android:name="android.permission.INTERNET"/>
     <application
-        android:label="linkvault"
+        android:label="LinkVault"
         android:name="${applicationName}"
-        android:icon="@mipmap/ic_launcher">
+        android:icon="@mipmap/ic_launcher"
+        android:roundIcon="@mipmap/ic_launcher_round">
         <activity
             android:name=".MainActivity"
             android:exported="true"

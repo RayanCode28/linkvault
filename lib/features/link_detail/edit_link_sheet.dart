@@ -3,6 +3,7 @@ import 'package:provider/provider.dart';
 import '../../core/links_provider.dart';
 import '../../core/models.dart';
 import '../../core/theme.dart';
+import '../../shared/l10n.dart';
 import '../../shared/widgets/collection_picker.dart';
 import '../../shared/widgets/neon_button.dart';
 
@@ -89,24 +90,24 @@ class _EditLinkSheetState extends State<EditLinkSheet> {
                 ),
               ),
             ),
-            Text('Edit link', style: AppTextStyles.sheetTitle),
+            Text(context.l10n.editLink, style: AppTextStyles.sheetTitle),
             const SizedBox(height: 14),
             TextField(
               controller: _titleController,
               style: const TextStyle(color: AppColors.text, fontSize: 15),
-              decoration: const InputDecoration(hintText: 'Title'),
+              decoration: InputDecoration(hintText: context.l10n.titleHint),
               textInputAction: TextInputAction.done,
               onSubmitted: (_) => _save(),
             ),
             const SizedBox(height: 14),
-            Text('COLLECTION', style: AppTextStyles.sectionHeader),
+            Text(context.l10n.collectionSection, style: AppTextStyles.sectionHeader),
             const SizedBox(height: 8),
             CollectionPicker(
               selectedId: _collectionId,
               onChanged: (id) => setState(() => _collectionId = id),
             ),
             const SizedBox(height: 18),
-            NeonButton(label: 'Save changes', onPressed: _save),
+            NeonButton(label: context.l10n.saveChanges, onPressed: _save),
           ],
         ),
       ),

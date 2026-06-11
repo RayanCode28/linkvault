@@ -3,7 +3,7 @@ import 'package:provider/provider.dart';
 import '../../core/models.dart';
 import '../../core/theme.dart';
 import '../../core/links_provider.dart';
-import '../../shared/widgets/neon_bg.dart';
+import '../../shared/l10n.dart';
 import '../home/filter_chips_bar.dart';
 import '../home/link_card.dart';
 
@@ -27,8 +27,7 @@ class _SearchScreenState extends State<SearchScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return NeonBg(
-      child: Scaffold(
+    return Scaffold(
         backgroundColor: Colors.transparent,
         appBar: AppBar(
           backgroundColor: Colors.transparent,
@@ -41,7 +40,7 @@ class _SearchScreenState extends State<SearchScreen> {
             autofocus: true,
             style: const TextStyle(color: AppColors.text, fontSize: 15),
             decoration: InputDecoration(
-              hintText: 'Search links...',
+              hintText: context.l10n.searchHint,
               prefixIcon: Icon(
                 Icons.search_rounded,
                 color: _query.isNotEmpty ? AppColors.accent : AppColors.textMuted,
@@ -106,13 +105,14 @@ class _SearchScreenState extends State<SearchScreen> {
                 const SizedBox(height: 8),
                 Expanded(
                   child: _query.isEmpty
-                      ? const Center(
+                      ? Center(
                           child: Column(
                             mainAxisSize: MainAxisSize.min,
                             children: [
-                              Icon(Icons.search_rounded, color: AppColors.textMuted, size: 36),
-                              SizedBox(height: 8),
-                              Text('Start typing...', style: TextStyle(color: AppColors.textSec, fontSize: 14)),
+                              const Icon(Icons.search_rounded, color: AppColors.textMuted, size: 36),
+                              const SizedBox(height: 8),
+                              Text(context.l10n.startTyping,
+                                  style: const TextStyle(color: AppColors.textSec, fontSize: 14)),
                             ],
                           ),
                         )
@@ -124,7 +124,7 @@ class _SearchScreenState extends State<SearchScreen> {
                                   const Text('🔍', style: TextStyle(fontSize: 32)),
                                   const SizedBox(height: 8),
                                   Text(
-                                    'No results for "$_query"',
+                                    context.l10n.noResults(_query),
                                     style: const TextStyle(color: AppColors.textSec, fontSize: 14),
                                   ),
                                 ],
@@ -140,7 +140,6 @@ class _SearchScreenState extends State<SearchScreen> {
             );
           },
         ),
-      ),
     );
   }
 }
