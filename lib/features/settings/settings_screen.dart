@@ -171,45 +171,53 @@ class _SettingsScreenState extends State<SettingsScreen> {
                 padding: const EdgeInsets.symmetric(vertical: 16),
                 child: Text(context.l10n.settingsTitle, style: AppTextStyles.screenTitle),
               ),
-              // Pro banner
-              GestureDetector(
-                onTap: () => context.push('/paywall'),
-                child: Container(
-                  margin: const EdgeInsets.only(bottom: 16),
-                  padding: const EdgeInsets.symmetric(vertical: 14, horizontal: 16),
-                  decoration: BoxDecoration(
-                    color: AppColors.accentDim,
-                    borderRadius: BorderRadius.circular(16),
-                    border: Border.all(color: AppColors.accentBorder, width: 1),
-                  ),
-                  child: Row(
-                    children: [
-                      Container(
-                        width: 36,
-                        height: 36,
-                        decoration: BoxDecoration(
-                          color: AppColors.accent,
-                          borderRadius: BorderRadius.circular(10),
+              // Pro banner: upgrade CTA for Free users, active state for Pro.
+              Builder(builder: (context) {
+                final isPro = context.watch<LinksProvider>().isPro;
+                return GestureDetector(
+                  onTap: isPro ? null : () => context.push('/paywall'),
+                  child: Container(
+                    margin: const EdgeInsets.only(bottom: 16),
+                    padding: const EdgeInsets.symmetric(vertical: 14, horizontal: 16),
+                    decoration: BoxDecoration(
+                      color: AppColors.accentDim,
+                      borderRadius: BorderRadius.circular(16),
+                      border: Border.all(color: AppColors.accentBorder, width: 1),
+                    ),
+                    child: Row(
+                      children: [
+                        Container(
+                          width: 36,
+                          height: 36,
+                          decoration: BoxDecoration(
+                            color: AppColors.accent,
+                            borderRadius: BorderRadius.circular(10),
+                          ),
+                          child: Icon(
+                            isPro ? Icons.check_rounded : Icons.link_rounded,
+                            color: const Color(0xFF020A07),
+                            size: 18,
+                          ),
                         ),
-                        child: const Icon(Icons.link_rounded, color: Color(0xFF020A07), size: 18),
-                      ),
-                      const SizedBox(width: 12),
-                      Expanded(
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Text(context.l10n.upgradeToPro,
-                                style: const TextStyle(color: AppColors.accent, fontWeight: FontWeight.w700, fontSize: 14)),
-                            Text(context.l10n.upgradeSub,
-                                style: const TextStyle(color: AppColors.textSec, fontSize: 12)),
-                          ],
+                        const SizedBox(width: 12),
+                        Expanded(
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Text(isPro ? context.l10n.proActive : context.l10n.upgradeToPro,
+                                  style: const TextStyle(color: AppColors.accent, fontWeight: FontWeight.w700, fontSize: 14)),
+                              Text(isPro ? context.l10n.proActiveSub : context.l10n.upgradeSub,
+                                  style: const TextStyle(color: AppColors.textSec, fontSize: 12)),
+                            ],
+                          ),
                         ),
-                      ),
-                      const Icon(Icons.chevron_right_rounded, color: AppColors.accent, size: 16),
-                    ],
+                        if (!isPro)
+                          const Icon(Icons.chevron_right_rounded, color: AppColors.accent, size: 16),
+                      ],
+                    ),
                   ),
-                ),
-              ),
+                );
+              }),
               const SizedBox(height: AppSpacing.sectionGap),
               _SettingsSection(
                 title: context.l10n.sectionAppearance,

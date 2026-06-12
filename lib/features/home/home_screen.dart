@@ -5,6 +5,7 @@ import '../../core/models.dart';
 import '../../core/theme.dart';
 import '../../core/links_provider.dart';
 import '../../shared/l10n.dart';
+import '../../shared/widgets/ad_banner.dart';
 import 'add_link_sheet.dart';
 import 'filter_chips_bar.dart';
 import 'link_card.dart';
@@ -33,7 +34,18 @@ class _HomeScreenState extends State<HomeScreen> {
             ),
           ],
         ),
-        body: Stack(
+        body: Column(
+          children: [
+            Expanded(child: _linksArea(context)),
+            // Banner for Free users; collapses for Pro.
+            const AdBanner(),
+          ],
+        ),
+    );
+  }
+
+  Widget _linksArea(BuildContext context) {
+    return Stack(
           children: [
             Consumer<LinksProvider>(
               builder: (ctx, provider, _) {
@@ -136,7 +148,6 @@ class _HomeScreenState extends State<HomeScreen> {
               ),
             ),
           ],
-        ),
     );
   }
 }

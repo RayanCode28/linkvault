@@ -316,11 +316,38 @@ class AppLocalizationsPt extends AppLocalizations {
   String get perYear => 'por ano';
 
   @override
-  String get startFreeTrial => 'Iniciar teste grátis';
+  String get lifetime => 'VITALÍCIO';
 
   @override
-  String get trialNote =>
-      '3 dias de teste grátis · Cancele quando quiser · Restaurar compras';
+  String get oneTimePayment => 'pagamento único';
+
+  @override
+  String get unlockPro => 'Desbloquear o Pro';
+
+  @override
+  String get restorePurchases => 'Restaurar compras';
+
+  @override
+  String get purchaseSuccess => 'Bem-vindo ao Pro! 🎉';
+
+  @override
+  String get purchaseFailed => 'A compra falhou. Tente novamente.';
+
+  @override
+  String get restoreSuccess => 'Pro restaurado';
+
+  @override
+  String get restoreNothing => 'Nenhuma compra anterior encontrada';
+
+  @override
+  String get purchasesUnavailable =>
+      'As compras não estão disponíveis no momento';
+
+  @override
+  String get proActive => 'Você já é membro Pro';
+
+  @override
+  String get proActiveSub => 'Todos os recursos desbloqueados';
 
   @override
   String get navLinks => 'Links';

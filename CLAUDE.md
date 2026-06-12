@@ -9,6 +9,7 @@ Desarrollador: Rayan / RayanCode28 · Bundle ID: `com.rayancode98.linkvault`
 - go_router ^14 · provider ^6 · shared_preferences ^2 · url_launcher ^6 · google_fonts ^6
 - sqflite ^2 · http ^1 · html_unescape ^2 · flutter_sharing_intent ^2
 - share_plus ^12 · file_picker ^10 · cached_network_image ^3 · package_info_plus ^9
+- purchases_flutter ^10 (RevenueCat) · google_mobile_ads ^9 (AdMob)
 - flutter_localizations (SDK) + intl — i18n con gen-l10n (ver sección Internacionalización)
   - ⚠️ share_plus/file_picker/package_info_plus están fijados a esas majors por un
     conflicto de `win32` (solo afecta resolución, no Android). No subirlos por separado.
@@ -30,6 +31,7 @@ lib/
 │   ├── models.dart                  # LinkItem, Collection (inmutables, toMap/fromMap), LinkFilter, parseWebUrl(), formatDate()
 │   ├── links_provider.dart          # LinksProvider: CRUD links/colecciones sobre SQLite, search, filtros, export/importJson, límite Free
 │   ├── metadata_service.dart        # Fetch Open Graph (og:title/description/image) con límites de tamaño/timeout, UA de navegador
+│   ├── purchase_service.dart        # Wrapper RevenueCat: entitlement "Link Vault Pro", offerings, compra, restore; no-op sin API key
 │   └── share_intent_service.dart    # Recibe texto del Share Sheet y extrae la URL
 ├── l10n/                            # ARB por idioma (en/es/pt/fr/de) + app_localizations*.dart generados (gen-l10n)
 ├── database/
@@ -55,6 +57,7 @@ lib/
     ├── router.dart                  # GoRouter; MainShell deriva el tab activo de la ruta
     ├── l10n.dart                    # export de AppLocalizations + extensión context.l10n
     └── widgets/
+        ├── ad_banner.dart           # Banner AdMob (solo Free); ad unit de test por defecto, override con --dart-define
         ├── app_bottom_nav.dart      # 4 tabs: Links/Collections/Search/Settings, glow en activo
         ├── link_thumbnail.dart      # CachedNetworkImage de og:image → fallback favicon (Google s2) → 🔗
         ├── collection_picker.dart   # DropdownButtonFormField para elegir colección (Sin colección + todas)
@@ -125,15 +128,27 @@ Link detail, add link, edit link y collection form NO son rutas — son bottom s
    (`google.com/s2/favicons`) cuando no hay og:image, antes del emoji 🔗
 4. Settings: fila Language muestra el idioma activo; toasts con guards `mounted`
 
+### ✅ Completado (Sesión 4)
+1. **RevenueCat** — paywall funcional (`purchases_flutter ^10`)
+   - `lib/core/purchase_service.dart`: configure + listener de CustomerInfo; entitlement `Link Vault Pro`
+   - API key vía `--dart-define=REVENUECAT_API_KEY=goog_xxx` (nunca en el repo); sin key todo es no-op y la app corre como Free
+   - `LinksProvider.isPro` real (`setPro`); paywall carga offerings (precios reales de la store), compra con manejo de cancelado/fallo, "Restaurar compras", estado "Ya eres Pro"; banner de Settings cambia según isPro
+   - 11 strings nuevos × 5 idiomas (se eliminaron `startFreeTrial`/`trialNote`)
+2. **AdMob** — `lib/shared/widgets/ad_banner.dart` al pie de Home, solo usuarios Free
+   - App ID de TEST hardcodeado en AndroidManifest.xml (reemplazar por el real antes del release)
+   - Ad unit de test por defecto; real vía `--dart-define=ADMOB_BANNER_ID=ca-app-pub-xxx/yyy`
+3. **Firma release** — keystore en `android/app/upload-keystore.jks` + `android/key.properties` (ambos gitignored)
+   - `build.gradle.kts` lee key.properties; sin él (CI/clones) cae a debug keys
+   - ⚠️ HACER BACKUP del keystore y key.properties fuera del repo — si se pierden no se puede actualizar la app en Play
+   - `ndkVersion` fijado a 28.2.13676358 (el instalado); se instaló cmdline-tools en el SDK → `flutter doctor` Android ✓
+   - `flutter build appbundle --release` ✓ (AAB firmado con el keystore propio, libs stripped + símbolos en BUNDLE-METADATA)
+
 ### 🔲 Pendiente (próximas sesiones)
-1. **RevenueCat** — paywall funcional
-   - Agregar `purchases_flutter` y `purchases_ui_flutter`
-   - Entitlement: `Link Vault Pro` · Producto: `lifetime` · API key de test en RevenueCat dashboard (no committearla al repo)
-   - Conectar `LinksProvider.isPro` al entitlement real
-2. **AdMob** — banner en Home solo para usuarios Free (`google_mobile_ads`)
-3. **Firma release** — crear keystore propio y `key.properties` (NO committear); `build.gradle.kts` aún firma release con debug keys
-4. **Onboarding assets** — las 3 pantallas usan arte vectorial generado en código (no imágenes externas)
-5. (Opcional) Tema claro / idioma — las filas de Settings son informativas por ahora
+1. **Play release** — reemplazar AdMob App ID de test en AndroidManifest.xml; compilar con
+   `--dart-define=REVENUECAT_API_KEY=... --dart-define=ADMOB_BANNER_ID=...`; subir AAB
+2. **Probar compras** — sandbox de Google Play con el producto `lifetime` (licencia de tester en Play Console)
+3. **Onboarding assets** — las 3 pantallas usan arte vectorial generado en código (no imágenes externas)
+4. (Opcional) Tema claro — la fila de Settings es informativa por ahora
 
 ## Comandos Útiles
 ```bash
@@ -148,8 +163,11 @@ flutter analyze
 # Build APK debug
 flutter build apk --debug
 
-# Build AAB para Play Store (requiere firma release real)
-flutter build appbundle --release
+# Build AAB para Play Store (firma con android/app/upload-keystore.jks via key.properties)
+# Para producción pasar las claves reales:
+flutter build appbundle --release \
+  --dart-define=REVENUECAT_API_KEY=goog_xxx \
+  --dart-define=ADMOB_BANNER_ID=ca-app-pub-xxx/yyy
 
 # Limpiar cache
 flutter clean && flutter pub get

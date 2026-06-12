@@ -674,17 +674,71 @@ abstract class AppLocalizations {
   /// **'per year'**
   String get perYear;
 
-  /// No description provided for @startFreeTrial.
+  /// No description provided for @lifetime.
   ///
   /// In en, this message translates to:
-  /// **'Start Free Trial'**
-  String get startFreeTrial;
+  /// **'LIFETIME'**
+  String get lifetime;
 
-  /// No description provided for @trialNote.
+  /// No description provided for @oneTimePayment.
   ///
   /// In en, this message translates to:
-  /// **'3-day free trial · Cancel anytime · Restore purchases'**
-  String get trialNote;
+  /// **'one-time payment'**
+  String get oneTimePayment;
+
+  /// No description provided for @unlockPro.
+  ///
+  /// In en, this message translates to:
+  /// **'Unlock Pro'**
+  String get unlockPro;
+
+  /// No description provided for @restorePurchases.
+  ///
+  /// In en, this message translates to:
+  /// **'Restore purchases'**
+  String get restorePurchases;
+
+  /// No description provided for @purchaseSuccess.
+  ///
+  /// In en, this message translates to:
+  /// **'Welcome to Pro! 🎉'**
+  String get purchaseSuccess;
+
+  /// No description provided for @purchaseFailed.
+  ///
+  /// In en, this message translates to:
+  /// **'Purchase failed. Please try again.'**
+  String get purchaseFailed;
+
+  /// No description provided for @restoreSuccess.
+  ///
+  /// In en, this message translates to:
+  /// **'Pro restored'**
+  String get restoreSuccess;
+
+  /// No description provided for @restoreNothing.
+  ///
+  /// In en, this message translates to:
+  /// **'No previous purchases found'**
+  String get restoreNothing;
+
+  /// No description provided for @purchasesUnavailable.
+  ///
+  /// In en, this message translates to:
+  /// **'Purchases are unavailable right now'**
+  String get purchasesUnavailable;
+
+  /// No description provided for @proActive.
+  ///
+  /// In en, this message translates to:
+  /// **'You\'re a Pro member'**
+  String get proActive;
+
+  /// No description provided for @proActiveSub.
+  ///
+  /// In en, this message translates to:
+  /// **'All features unlocked'**
+  String get proActiveSub;
 
   /// No description provided for @navLinks.
   ///

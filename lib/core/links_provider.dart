@@ -24,9 +24,16 @@ class LinksProvider extends ChangeNotifier {
   List<Collection> get collections => _collections;
   bool get loaded => _loaded;
 
-  // TODO(RevenueCat): replace with a real entitlement check.
-  bool get isPro => false;
+  // Driven by the RevenueCat entitlement via PurchaseService (see main.dart).
+  bool _isPro = false;
+  bool get isPro => _isPro;
   bool get canAddCollection => isPro || _collections.length < kFreeCollectionLimit;
+
+  void setPro(bool value) {
+    if (_isPro == value) return;
+    _isPro = value;
+    notifyListeners();
+  }
 
   Future<void> init() async {
     _links = await _db.getLinks();
