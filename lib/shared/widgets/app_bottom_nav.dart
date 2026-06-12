@@ -26,8 +26,7 @@ class AppBottomNav extends StatelessWidget {
             children: [
               _NavItem(icon: Icons.link_rounded, label: context.l10n.navLinks, active: currentIndex == 0, onTap: () => onTap(0)),
               _NavItem(icon: Icons.grid_view_rounded, label: context.l10n.navCollections, active: currentIndex == 1, onTap: () => onTap(1)),
-              _NavItem(icon: Icons.search_rounded, label: context.l10n.navSearch, active: currentIndex == 2, onTap: () => onTap(2)),
-              _NavItem(icon: Icons.settings_rounded, label: context.l10n.navSettings, active: currentIndex == 3, onTap: () => onTap(3)),
+              _NavItem(icon: Icons.settings_rounded, label: context.l10n.navSettings, active: currentIndex == 2, onTap: () => onTap(2)),
             ],
           ),
         ),

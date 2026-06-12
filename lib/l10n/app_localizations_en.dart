@@ -166,6 +166,16 @@ class AppLocalizationsEn extends AppLocalizations {
   String get deleteLinkBody => 'This cannot be undone.';
 
   @override
+  String get deleteLinkChoiceBody =>
+      'This link is in a collection. What would you like to do?';
+
+  @override
+  String get removeFromCollection => 'Remove from collection';
+
+  @override
+  String get deletePermanently => 'Delete permanently';
+
+  @override
   String get cancel => 'Cancel';
 
   @override

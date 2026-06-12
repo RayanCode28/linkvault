@@ -168,6 +168,16 @@ class AppLocalizationsDe extends AppLocalizations {
   String get deleteLinkBody => 'Das kann nicht rückgängig gemacht werden.';
 
   @override
+  String get deleteLinkChoiceBody =>
+      'Dieser Link ist in einer Sammlung. Was möchtest du tun?';
+
+  @override
+  String get removeFromCollection => 'Aus Sammlung entfernen';
+
+  @override
+  String get deletePermanently => 'Endgültig löschen';
+
+  @override
   String get cancel => 'Abbrechen';
 
   @override

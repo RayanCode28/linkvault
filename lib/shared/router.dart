@@ -23,28 +23,30 @@ Future<GoRouter> buildRouter() async {
         path: '/onboarding',
         builder: (ctx, state) => const OnboardingScreen(),
       ),
-      ShellRoute(
-        builder: (ctx, state, child) => MainShell(child: child),
-        routes: [
-          // NoTransitionPage: switching tabs must not animate, otherwise the
-          // page fade flashes against the root background behind the shell.
-          GoRoute(
-            path: '/',
-            pageBuilder: (ctx, state) => const NoTransitionPage(child: HomeScreen()),
-          ),
-          GoRoute(
-            path: '/collections',
-            pageBuilder: (ctx, state) => const NoTransitionPage(child: CollectionsScreen()),
-          ),
-          GoRoute(
-            path: '/search',
-            pageBuilder: (ctx, state) => const NoTransitionPage(child: SearchScreen()),
-          ),
-          GoRoute(
-            path: '/settings',
-            pageBuilder: (ctx, state) => const NoTransitionPage(child: SettingsScreen()),
-          ),
+      // IndexedStack keeps every tab alive and built once, so switching tabs
+      // is instant — no rebuild, no page transition, no background flash.
+      StatefulShellRoute.indexedStack(
+        builder: (ctx, state, navShell) => MainShell(navShell: navShell),
+        branches: [
+          StatefulShellBranch(routes: [
+            GoRoute(path: '/', builder: (ctx, state) => const HomeScreen()),
+          ]),
+          StatefulShellBranch(routes: [
+            GoRoute(
+                path: '/collections',
+                builder: (ctx, state) => const CollectionsScreen()),
+          ]),
+          StatefulShellBranch(routes: [
+            GoRoute(
+                path: '/settings',
+                builder: (ctx, state) => const SettingsScreen()),
+          ]),
         ],
+      ),
+      // Search is no longer a tab: it opens from the search bar on Links.
+      GoRoute(
+        path: '/search',
+        builder: (ctx, state) => const SearchScreen(),
       ),
       GoRoute(
         path: '/collections/:id',
@@ -60,26 +62,24 @@ Future<GoRouter> buildRouter() async {
 }
 
 class MainShell extends StatelessWidget {
-  final Widget child;
-  const MainShell({super.key, required this.child});
-
-  static const _routes = ['/', '/collections', '/search', '/settings'];
+  final StatefulNavigationShell navShell;
+  const MainShell({super.key, required this.navShell});
 
   @override
   Widget build(BuildContext context) {
-    // Derive the active tab from the current location so the indicator
-    // stays in sync no matter how the user navigated here.
-    final location = GoRouterState.of(context).uri.path;
-    final index = _routes.indexOf(location);
     // The neon gradient lives here, behind every tab, so switching tabs
     // never repaints (or flashes) the background.
     return NeonBg(
       child: Scaffold(
         backgroundColor: Colors.transparent,
-        body: child,
+        body: navShell,
         bottomNavigationBar: AppBottomNav(
-          currentIndex: index == -1 ? 0 : index,
-          onTap: (i) => context.go(_routes[i]),
+          currentIndex: navShell.currentIndex,
+          // Tapping the active tab again returns it to its initial location.
+          onTap: (i) => navShell.goBranch(
+            i,
+            initialLocation: i == navShell.currentIndex,
+          ),
         ),
       ),
     );

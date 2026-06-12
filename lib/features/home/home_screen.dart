@@ -58,7 +58,7 @@ class _HomeScreenState extends State<HomeScreen> {
                         children: [
                           // Tappable search bar
                           GestureDetector(
-                            onTap: () => context.go('/search'),
+                            onTap: () => context.push('/search'),
                             child: Container(
                               margin: const EdgeInsets.fromLTRB(16, 0, 16, 10),
                               padding: const EdgeInsets.symmetric(vertical: 11, horizontal: 14),

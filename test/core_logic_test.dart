@@ -74,6 +74,26 @@ void main() {
     });
   });
 
+  group('MetadataService.thumbnailForKnownPlatform', () {
+    String? thumb(String url) =>
+        MetadataService.thumbnailForKnownPlatform(Uri.parse(url));
+
+    test('derives the content thumbnail from YouTube URLs', () {
+      const expected = 'https://img.youtube.com/vi/dQw4w9WgXcQ/hqdefault.jpg';
+      expect(thumb('https://www.youtube.com/watch?v=dQw4w9WgXcQ'), expected);
+      expect(thumb('https://youtu.be/dQw4w9WgXcQ'), expected);
+      expect(thumb('https://m.youtube.com/watch?v=dQw4w9WgXcQ&t=10s'), expected);
+      expect(thumb('https://www.youtube.com/shorts/dQw4w9WgXcQ'), expected);
+      expect(thumb('https://www.youtube.com/embed/dQw4w9WgXcQ'), expected);
+    });
+
+    test('returns null for non-video or malformed YouTube URLs', () {
+      expect(thumb('https://www.youtube.com/'), isNull);
+      expect(thumb('https://www.youtube.com/watch?v=short'), isNull);
+      expect(thumb('https://example.com/watch?v=dQw4w9WgXcQ'), isNull);
+    });
+  });
+
   group('LinkItem', () {
     test('domain strips www and date formats correctly', () {
       final link = LinkItem(

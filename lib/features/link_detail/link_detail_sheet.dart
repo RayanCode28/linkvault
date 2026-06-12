@@ -24,6 +24,8 @@ void showLinkDetailSheet(BuildContext context, LinkItem link) {
   );
 }
 
+enum _DeleteChoice { cancel, unfile, delete }
+
 class LinkDetailSheet extends StatelessWidget {
   final int linkId;
   final LinkItem fallback;
@@ -39,7 +41,49 @@ class LinkDetailSheet extends StatelessWidget {
     }
   }
 
-  Future<void> _confirmDelete(BuildContext context, LinksProvider provider) async {
+  Future<void> _confirmDelete(
+      BuildContext context, LinksProvider provider, LinkItem link) async {
+    // A link inside a collection gets a third option: just unfile it,
+    // keeping the link itself. Links with no collection use the plain confirm.
+    if (link.collectionId != null) {
+      final choice = await showDialog<_DeleteChoice>(
+        context: context,
+        builder: (ctx) => AlertDialog(
+          backgroundColor: AppColors.elevated,
+          title: Text(ctx.l10n.deleteLinkTitle, style: AppTextStyles.sheetTitle),
+          content:
+              Text(ctx.l10n.deleteLinkChoiceBody, style: AppTextStyles.sheetDesc),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.pop(ctx, _DeleteChoice.cancel),
+              child: Text(ctx.l10n.cancel,
+                  style: const TextStyle(color: AppColors.textSec)),
+            ),
+            TextButton(
+              onPressed: () => Navigator.pop(ctx, _DeleteChoice.unfile),
+              child: Text(ctx.l10n.removeFromCollection,
+                  style: const TextStyle(color: AppColors.accent)),
+            ),
+            TextButton(
+              onPressed: () => Navigator.pop(ctx, _DeleteChoice.delete),
+              child: Text(ctx.l10n.deletePermanently,
+                  style: const TextStyle(color: AppColors.danger)),
+            ),
+          ],
+        ),
+      );
+      if (!context.mounted || choice == null || choice == _DeleteChoice.cancel) {
+        return;
+      }
+      if (choice == _DeleteChoice.unfile) {
+        await provider.updateLink(link.copyWith(clearCollection: true));
+      } else {
+        await provider.deleteLink(linkId);
+      }
+      if (context.mounted) Navigator.pop(context);
+      return;
+    }
+
     final confirmed = await showDialog<bool>(
       context: context,
       builder: (ctx) => AlertDialog(
@@ -195,7 +239,7 @@ class LinkDetailSheet extends StatelessWidget {
                       icon: Icons.delete_outline_rounded,
                       label: context.l10n.delete,
                       color: AppColors.danger,
-                      onTap: () => _confirmDelete(context, provider),
+                      onTap: () => _confirmDelete(context, provider, link),
                     ),
                     _ActionBtn(
                       icon: Icons.open_in_new_rounded,

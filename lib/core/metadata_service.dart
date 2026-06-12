@@ -34,6 +34,12 @@ class MetadataService {
     if (url.scheme != 'http' && url.scheme != 'https') {
       return const LinkMetadata();
     }
+    // Content thumbnail derived from the URL itself (e.g. the YouTube video
+    // frame). It is far more reliable than scraping og:image — those sites
+    // block bots or paint the preview with JS — and gives us the *content*
+    // image instead of the platform logo. Used as a fallback so a real
+    // og:image still wins when present.
+    final platformImage = thumbnailForKnownPlatform(url);
     final client = http.Client();
     try {
       final request = http.Request('GET', url)
@@ -49,14 +55,14 @@ class MetadataService {
         ..headers['Accept-Language'] = 'en-US,en;q=0.9';
       final response = await client.send(request).timeout(_timeout);
       if (response.statusCode < 200 || response.statusCode >= 300) {
-        return const LinkMetadata();
+        return LinkMetadata(imageUrl: platformImage);
       }
 
       final contentType = response.headers['content-type'] ?? '';
       if (contentType.isNotEmpty &&
           !contentType.contains('text/html') &&
           !contentType.contains('application/xhtml')) {
-        return const LinkMetadata();
+        return LinkMetadata(imageUrl: platformImage);
       }
 
       final bytes = <int>[];
@@ -65,14 +71,59 @@ class MetadataService {
         if (bytes.length >= _maxBytes) break;
       }
       final html = utf8.decode(bytes, allowMalformed: true);
-      return parse(html, url);
+      final meta = parse(html, url);
+      return meta.imageUrl == null
+          ? LinkMetadata(
+              title: meta.title,
+              description: meta.description,
+              imageUrl: platformImage,
+            )
+          : meta;
     } on Exception {
       // Network errors, timeouts and malformed responses are not fatal:
-      // the link is simply saved without enriched metadata.
-      return const LinkMetadata();
+      // the link is simply saved with whatever thumbnail we can derive.
+      return LinkMetadata(imageUrl: platformImage);
     } finally {
       client.close();
     }
+  }
+
+  /// Returns a content thumbnail derived purely from [url] for platforms
+  /// that expose a deterministic preview image, or null otherwise.
+  ///
+  /// YouTube: `https://img.youtube.com/vi/<id>/hqdefault.jpg` always exists
+  /// for a valid video id (unlike maxresdefault), so it is the safe choice.
+  static String? thumbnailForKnownPlatform(Uri url) {
+    final id = _youTubeId(url);
+    if (id != null) return 'https://img.youtube.com/vi/$id/hqdefault.jpg';
+    return null;
+  }
+
+  static final _ytIdRe = RegExp(r'^[A-Za-z0-9_-]{11}$');
+
+  /// Extracts the 11-char video id from the common YouTube URL shapes:
+  /// `youtu.be/<id>`, `youtube.com/watch?v=<id>`, `/shorts/<id>`,
+  /// `/embed/<id>`, `/live/<id>`. Returns null when not a YouTube video.
+  static String? _youTubeId(Uri url) {
+    var host = url.host.toLowerCase();
+    if (host.startsWith('www.')) host = host.substring(4);
+    if (host.startsWith('m.')) host = host.substring(2);
+
+    String? candidate;
+    if (host == 'youtu.be') {
+      candidate = url.pathSegments.isNotEmpty ? url.pathSegments.first : null;
+    } else if (host == 'youtube.com' ||
+        host == 'music.youtube.com' ||
+        host == 'gaming.youtube.com') {
+      final seg = url.pathSegments;
+      if (seg.isNotEmpty &&
+          (seg.first == 'shorts' || seg.first == 'embed' || seg.first == 'live')) {
+        candidate = seg.length > 1 ? seg[1] : null;
+      } else {
+        candidate = url.queryParameters['v'];
+      }
+    }
+    return candidate != null && _ytIdRe.hasMatch(candidate) ? candidate : null;
   }
 
   @visibleForTesting

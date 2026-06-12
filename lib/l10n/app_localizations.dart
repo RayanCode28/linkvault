@@ -380,6 +380,24 @@ abstract class AppLocalizations {
   /// **'This cannot be undone.'**
   String get deleteLinkBody;
 
+  /// No description provided for @deleteLinkChoiceBody.
+  ///
+  /// In en, this message translates to:
+  /// **'This link is in a collection. What would you like to do?'**
+  String get deleteLinkChoiceBody;
+
+  /// No description provided for @removeFromCollection.
+  ///
+  /// In en, this message translates to:
+  /// **'Remove from collection'**
+  String get removeFromCollection;
+
+  /// No description provided for @deletePermanently.
+  ///
+  /// In en, this message translates to:
+  /// **'Delete permanently'**
+  String get deletePermanently;
+
   /// No description provided for @cancel.
   ///
   /// In en, this message translates to:

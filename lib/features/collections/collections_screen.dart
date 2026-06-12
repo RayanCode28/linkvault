@@ -57,30 +57,50 @@ class CollectionsScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
         backgroundColor: Colors.transparent,
+        floatingActionButton: FloatingActionButton(
+          onPressed: () => _onAddTap(context),
+          backgroundColor: AppColors.accent,
+          foregroundColor: const Color(0xFF020A07),
+          shape: const RoundedRectangleBorder(borderRadius: AppRadius.fab),
+          child: const Icon(Icons.add_rounded, size: 22),
+        ),
         body: SafeArea(
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Padding(
-                padding: const EdgeInsets.fromLTRB(20, 6, 20, 14),
-                child: Text(context.l10n.collectionsTitle, style: AppTextStyles.screenTitle),
-              ),
-              Expanded(
-                child: Consumer<LinksProvider>(
-                  builder: (ctx, provider, _) {
-                    final collections = provider.collections;
-                    return ListView.separated(
-                      padding: const EdgeInsets.fromLTRB(16, 0, 16, 8),
-                      itemCount: collections.length + 1,
+          child: Consumer<LinksProvider>(
+            builder: (ctx, provider, _) {
+              final collections = provider.collections;
+              return Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Padding(
+                    padding: const EdgeInsets.fromLTRB(20, 6, 20, 14),
+                    child: Row(
+                      children: [
+                        Text(context.l10n.collectionsTitle, style: AppTextStyles.screenTitle),
+                        const SizedBox(width: 10),
+                        Container(
+                          padding: const EdgeInsets.symmetric(horizontal: 9, vertical: 3),
+                          decoration: BoxDecoration(
+                            color: AppColors.accentDim,
+                            borderRadius: BorderRadius.circular(20),
+                          ),
+                          child: Text(
+                            '${collections.length}',
+                            style: const TextStyle(
+                              color: AppColors.accent,
+                              fontSize: 13,
+                              fontWeight: FontWeight.w700,
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                  Expanded(
+                    child: ListView.separated(
+                      padding: const EdgeInsets.fromLTRB(16, 0, 16, 88),
+                      itemCount: collections.length,
                       separatorBuilder: (_, __) => const SizedBox(height: 8),
                       itemBuilder: (ctx, i) {
-                        if (i == collections.length) {
-                          return _AddCollectionRow(
-                            canAdd: provider.canAddCollection,
-                            used: collections.length,
-                            onTap: () => _onAddTap(context),
-                          );
-                        }
                         final col = collections[i];
                         final count = provider.byCollection(col.id).length;
                         return _CollectionRow(
@@ -91,11 +111,11 @@ class CollectionsScreen extends StatelessWidget {
                           onLongPress: () => _showOptions(context, col),
                         );
                       },
-                    );
-                  },
-                ),
-              ),
-            ],
+                    ),
+                  ),
+                ],
+              );
+            },
           ),
         ),
     );
@@ -151,7 +171,15 @@ class _CollectionRow extends StatelessWidget {
                 ],
               ),
             ),
-            const Icon(Icons.chevron_right_rounded, color: AppColors.textMuted, size: 18),
+            // Explicit edit/delete entry point (long-press still works too).
+            GestureDetector(
+              onTap: onLongPress,
+              behavior: HitTestBehavior.opaque,
+              child: const Padding(
+                padding: EdgeInsets.only(left: 4),
+                child: Icon(Icons.more_vert_rounded, color: AppColors.textMuted, size: 20),
+              ),
+            ),
           ],
         ),
       ),
@@ -159,57 +187,3 @@ class _CollectionRow extends StatelessWidget {
   }
 }
 
-class _AddCollectionRow extends StatelessWidget {
-  final bool canAdd;
-  final int used;
-  final VoidCallback onTap;
-
-  const _AddCollectionRow({required this.canAdd, required this.used, required this.onTap});
-
-  @override
-  Widget build(BuildContext context) {
-    return GestureDetector(
-      onTap: onTap,
-      child: Container(
-        padding: const EdgeInsets.symmetric(vertical: 14, horizontal: 16),
-        decoration: BoxDecoration(
-          borderRadius: AppRadius.collection,
-          border: Border.all(color: AppColors.border, width: 1.5),
-        ),
-        child: Row(
-          children: [
-            Container(
-              width: 44,
-              height: 44,
-              decoration: BoxDecoration(
-                color: AppColors.accentDim,
-                borderRadius: AppRadius.colIcon,
-              ),
-              child: Center(
-                child: Icon(
-                  canAdd ? Icons.add_rounded : Icons.lock_rounded,
-                  color: AppColors.accent,
-                  size: 20,
-                ),
-              ),
-            ),
-            const SizedBox(width: 14),
-            Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(context.l10n.newCollection,
-                    style: const TextStyle(fontSize: 15, fontWeight: FontWeight.w500, color: AppColors.textSec)),
-                Text(
-                  canAdd
-                      ? context.l10n.freeUsage(used, kFreeCollectionLimit)
-                      : context.l10n.freeUsageLocked(used, kFreeCollectionLimit),
-                  style: const TextStyle(fontSize: 12, color: AppColors.textMuted),
-                ),
-              ],
-            ),
-          ],
-        ),
-      ),
-    );
-  }
-}

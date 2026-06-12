@@ -167,6 +167,16 @@ class AppLocalizationsPt extends AppLocalizations {
   String get deleteLinkBody => 'Isso não pode ser desfeito.';
 
   @override
+  String get deleteLinkChoiceBody =>
+      'Este link está em uma coleção. O que deseja fazer?';
+
+  @override
+  String get removeFromCollection => 'Remover da coleção';
+
+  @override
+  String get deletePermanently => 'Excluir definitivamente';
+
+  @override
   String get cancel => 'Cancelar';
 
   @override

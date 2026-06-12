@@ -167,6 +167,16 @@ class AppLocalizationsFr extends AppLocalizations {
   String get deleteLinkBody => 'Cette action est irréversible.';
 
   @override
+  String get deleteLinkChoiceBody =>
+      'Ce lien est dans une collection. Que voulez-vous faire ?';
+
+  @override
+  String get removeFromCollection => 'Retirer de la collection';
+
+  @override
+  String get deletePermanently => 'Supprimer définitivement';
+
+  @override
   String get cancel => 'Annuler';
 
   @override

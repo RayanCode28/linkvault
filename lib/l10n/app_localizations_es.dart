@@ -167,6 +167,16 @@ class AppLocalizationsEs extends AppLocalizations {
   String get deleteLinkBody => 'Esta acción no se puede deshacer.';
 
   @override
+  String get deleteLinkChoiceBody =>
+      'Este enlace está en una colección. ¿Qué quieres hacer?';
+
+  @override
+  String get removeFromCollection => 'Quitar de la colección';
+
+  @override
+  String get deletePermanently => 'Eliminar definitivamente';
+
+  @override
   String get cancel => 'Cancelar';
 
   @override
