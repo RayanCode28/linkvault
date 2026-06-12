@@ -31,10 +31,23 @@ class MetadataService {
   static final _unescape = HtmlUnescape();
 
   static final _metaTagRe = RegExp(r'<meta\s[^>]*>', caseSensitive: false);
+  static final _linkTagRe = RegExp(r'<link\s[^>]*>', caseSensitive: false);
   static final _titleRe = RegExp(r'<title[^>]*>([\s\S]*?)</title>', caseSensitive: false);
   static final _attrRe = RegExp(
       '(property|name|content)\\s*=\\s*("([^"]*)"|\'([^\']*)\')',
       caseSensitive: false);
+  static final _anyAttrRe = RegExp(
+      '''([\\w:-]+)\\s*=\\s*("([^"]*)"|'([^']*)')''',
+      caseSensitive: false);
+
+  /// All attributes of a single tag as a lowercase-keyed map (first wins).
+  static Map<String, String> _attrs(String tag) {
+    final map = <String, String>{};
+    for (final a in _anyAttrRe.allMatches(tag)) {
+      map.putIfAbsent(a.group(1)!.toLowerCase(), () => a.group(3) ?? a.group(4) ?? '');
+    }
+    return map;
+  }
 
   static Future<LinkMetadata> fetch(Uri url) async {
     if (url.scheme != 'http' && url.scheme != 'https') {
@@ -83,7 +96,24 @@ class MetadataService {
         if (bytes.length >= _maxBytes) break;
       }
       final html = utf8.decode(bytes, allowMalformed: true);
-      final meta = parse(html, url);
+      var meta = parse(html, url);
+
+      // If the page scrape left gaps, try the oEmbed endpoint the page itself
+      // advertises — this generalises rich capture to any oEmbed-capable site.
+      if (meta.title == null || meta.imageUrl == null) {
+        final discovered = _discoverOEmbed(html, url);
+        if (discovered != null) {
+          final extra = await _fetchOEmbed(discovered, url, null);
+          if (extra != null) {
+            meta = LinkMetadata(
+              title: meta.title ?? extra.title,
+              description: meta.description ?? extra.description,
+              imageUrl: meta.imageUrl ?? extra.imageUrl,
+            );
+          }
+        }
+      }
+
       return meta.imageUrl == null
           ? LinkMetadata(
               title: meta.title,
@@ -219,15 +249,60 @@ class MetadataService {
 
     final rawTitle = og['og:title'] ??
         og['twitter:title'] ??
+        og['title'] ??
         _titleRe.firstMatch(html)?.group(1);
-    final rawDescription =
-        og['og:description'] ?? og['twitter:description'] ?? og['description'];
+    final rawDescription = og['og:description'] ??
+        og['twitter:description'] ??
+        og['description'];
+
+    // Image, best to worst: Open Graph / Twitter card, then a declared
+    // <link rel="image_src"> or apple-touch-icon so even sites without
+    // social cards still surface a representative image.
+    final rawImage = og['og:image'] ??
+        og['og:image:url'] ??
+        og['og:image:secure_url'] ??
+        og['twitter:image'] ??
+        og['twitter:image:src'] ??
+        _linkImage(html);
 
     return LinkMetadata(
       title: _clean(rawTitle),
       description: _clean(rawDescription),
-      imageUrl: _resolveImage(og['og:image'] ?? og['twitter:image'], pageUrl),
+      imageUrl: _resolveImage(rawImage, pageUrl),
     );
+  }
+
+  /// First image declared via a `<link>` tag (image_src is preferred; an
+  /// apple-touch-icon is a decent fallback). Returns the raw href.
+  static String? _linkImage(String html) {
+    String? touchIcon;
+    for (final m in _linkTagRe.allMatches(html)) {
+      final attrs = _attrs(m.group(0)!);
+      final rel = attrs['rel']?.toLowerCase();
+      final href = attrs['href'];
+      if (rel == null || href == null || href.isEmpty) continue;
+      if (rel == 'image_src') return href;
+      if (rel == 'apple-touch-icon' || rel == 'apple-touch-icon-precomposed') {
+        touchIcon ??= href;
+      }
+    }
+    return touchIcon;
+  }
+
+  /// Discovers a JSON oEmbed endpoint advertised in the page HTML, e.g.
+  /// `<link rel="alternate" type="application/json+oembed" href="...">`.
+  /// Many platforms (WordPress, Flickr, SoundCloud, Spotify, …) expose one,
+  /// which lets us enrich essentially any such site, not just hardcoded ones.
+  static String? _discoverOEmbed(String html, Uri pageUrl) {
+    for (final m in _linkTagRe.allMatches(html)) {
+      final attrs = _attrs(m.group(0)!);
+      final type = attrs['type']?.toLowerCase() ?? '';
+      final href = attrs['href'];
+      if (href != null && type.contains('oembed') && type.contains('json')) {
+        return parseWebUrl(pageUrl.resolve(href).toString())?.toString();
+      }
+    }
+    return null;
   }
 
   static String? _clean(String? value) {

@@ -17,7 +17,7 @@
   "filterAll": "All",
   "filterUnread": "Unread",
   "filterRead": "Read",
-  "filterSaved": "♥ Saved",
+  "filterSaved": "Saved",
   "addLink": "Add link",
   "urlInvalid": "Enter a valid web address (http/https)",
   "paste": "Paste",
@@ -76,6 +76,9 @@
   "saveChanges": "Save changes",
   "collectionNotFound": "Collection not found",
   "noLinksYet": "No links yet",
+  "uncategorized": "Uncategorized",
+  "collectionsEmptyTitle": "Create your first collection",
+  "collectionsEmptyHint": "Create one to organize your links",
   "startTyping": "Start typing...",
   "noResults": "No results for \"{query}\"",
   "@noResults": {

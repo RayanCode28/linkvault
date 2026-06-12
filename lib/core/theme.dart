@@ -92,7 +92,14 @@ abstract class AppTextStyles {
     fontSize: 15, fontWeight: FontWeight.w400, color: AppColors.textSec, height: 1.65,
   );
   static TextStyle get cardTitle => GoogleFonts.plusJakartaSans(
-    fontSize: 13.5, fontWeight: FontWeight.w600, color: AppColors.text, height: 1.35,
+    fontSize: 12.5, fontWeight: FontWeight.w600, color: AppColors.text, height: 1.35,
+  );
+  static TextStyle get filterActive => GoogleFonts.plusJakartaSans(
+    fontSize: 13, fontWeight: FontWeight.w700, color: AppColors.accent,
+    shadows: [Shadow(color: AppColors.accent.withValues(alpha: 0.45), blurRadius: 12)],
+  );
+  static TextStyle get filterInactive => GoogleFonts.plusJakartaSans(
+    fontSize: 13, fontWeight: FontWeight.w500, color: AppColors.textSec,
   );
   static TextStyle get cardMeta => GoogleFonts.plusJakartaSans(
     fontSize: 11.5, fontWeight: FontWeight.w400, color: AppColors.textSec,

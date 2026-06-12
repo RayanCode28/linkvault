@@ -7,6 +7,7 @@ import '../../core/links_provider.dart';
 import '../../shared/l10n.dart';
 import '../../shared/widgets/ad_banner.dart';
 import '../../shared/widgets/neon_fab.dart';
+import '../../shared/widgets/screen_header.dart';
 import 'add_link_sheet.dart';
 import 'filter_chips_bar.dart';
 import 'link_card.dart';
@@ -25,23 +26,19 @@ class _HomeScreenState extends State<HomeScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
         backgroundColor: Colors.transparent,
-        appBar: AppBar(
-          backgroundColor: Colors.transparent,
-          title: Text('LinkVault', style: AppTextStyles.appBar),
-          actions: [
-            IconButton(
-              icon: const Icon(Icons.settings_rounded, color: AppColors.textSec),
-              onPressed: () => context.go('/settings'),
-            ),
-          ],
+        floatingActionButton: NeonFab(
+          onPressed: () => showAddLinkSheet(context),
+          bottomGap: kFabLiftAboveAd,
         ),
-        floatingActionButton: NeonFab(onPressed: () => showAddLinkSheet(context)),
-        body: Column(
-          children: [
-            Expanded(child: _linksArea(context)),
-            // Banner for Free users; collapses for Pro.
-            const AdBanner(),
-          ],
+        body: SafeArea(
+          child: Column(
+            children: [
+              const ScreenHeader(title: 'LinkVault'),
+              Expanded(child: _linksArea(context)),
+              // Banner for Free users; collapses for Pro.
+              const AdBanner(),
+            ],
+          ),
         ),
     );
   }
@@ -124,7 +121,7 @@ class _HomeScreenState extends State<HomeScreen> {
                           childCount: items.length,
                         ),
                       ),
-                    const SliverToBoxAdapter(child: SizedBox(height: 80)),
+                    const SliverToBoxAdapter(child: SizedBox(height: 130)),
                   ],
                 );
               },

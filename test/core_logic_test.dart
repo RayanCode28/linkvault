@@ -72,6 +72,25 @@ void main() {
           '<meta property="og:image" content="javascript:alert(1)"/>';
       expect(MetadataService.parse(html, pageUrl).imageUrl, isNull);
     });
+
+    test('falls back to link image_src and meta name=title', () {
+      const html = '''
+        <html><head>
+          <meta name="title" content="Plain site"/>
+          <link rel="image_src" href="/thumb.png"/>
+        </head></html>
+      ''';
+      final meta = MetadataService.parse(html, pageUrl);
+      expect(meta.title, 'Plain site');
+      expect(meta.imageUrl, 'https://example.com/thumb.png');
+    });
+
+    test('uses apple-touch-icon when no other image exists', () {
+      const html =
+          '<link rel="apple-touch-icon" href="https://example.com/icon.png"/>';
+      expect(MetadataService.parse(html, pageUrl).imageUrl,
+          'https://example.com/icon.png');
+    });
   });
 
   group('MetadataService.thumbnailForKnownPlatform', () {

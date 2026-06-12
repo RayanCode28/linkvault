@@ -64,7 +64,7 @@ class AppLocalizationsDe extends AppLocalizations {
   String get filterRead => 'Gelesen';
 
   @override
-  String get filterSaved => '♥ Favoriten';
+  String get filterSaved => 'Favoriten';
 
   @override
   String get addLink => 'Link hinzufügen';
@@ -152,6 +152,15 @@ class AppLocalizationsDe extends AppLocalizations {
 
   @override
   String get noLinksYet => 'Noch keine Links';
+
+  @override
+  String get uncategorized => 'Ohne Kategorie';
+
+  @override
+  String get collectionsEmptyTitle => 'Erstelle deine erste Sammlung';
+
+  @override
+  String get collectionsEmptyHint => 'Erstelle eine, um deine Links zu ordnen';
 
   @override
   String get startTyping => 'Tippe etwas ein...';

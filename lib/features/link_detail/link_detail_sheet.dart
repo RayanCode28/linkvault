@@ -189,14 +189,6 @@ class LinkDetailSheet extends StatelessWidget {
                             bg: AppColors.accentDim,
                             fg: AppColors.accent,
                           ),
-                          if (link.favorite) ...[
-                            const SizedBox(width: 8),
-                            _Badge(
-                              label: context.l10n.savedBadge,
-                              bg: AppColors.heart.withValues(alpha: 0.15),
-                              fg: AppColors.heart,
-                            ),
-                          ],
                         ],
                       ),
                       const SizedBox(height: 14),

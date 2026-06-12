@@ -7,6 +7,14 @@ import 'models.dart';
 /// Free plan: up to this many collections; beyond that the paywall shows.
 const int kFreeCollectionLimit = 3;
 
+/// Virtual collection id for links with no real collection. It is not stored
+/// in the database — it surfaces the links whose collectionId is null.
+const String kUncategorizedId = '__uncategorized__';
+
+/// Ids of the collections seeded on first run. They count as "default", not
+/// user-created, so the empty-state shows until the user makes their own.
+const Set<String> kDefaultCollectionIds = {'watch-later', 'read-later'};
+
 class ImportResult {
   final int links;
   final int collections;
@@ -172,6 +180,16 @@ class LinksProvider extends ChangeNotifier {
 
   List<LinkItem> byCollection(String colId) =>
       _links.where((l) => l.collectionId == colId).toList();
+
+  /// Links that belong to no collection — shown in the virtual
+  /// "Uncategorized" collection.
+  List<LinkItem> get uncategorizedLinks =>
+      _links.where((l) => l.collectionId == null).toList();
+
+  /// True once the user has created at least one collection of their own
+  /// (i.e. beyond the seeded defaults).
+  bool get hasOwnCollections =>
+      _collections.any((c) => !kDefaultCollectionIds.contains(c.id));
 
   // ---- Collections ----
 

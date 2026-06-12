@@ -3,6 +3,8 @@ import '../../core/models.dart';
 import '../../core/theme.dart';
 import '../../shared/l10n.dart';
 
+/// Minimalist filter row: plain centered labels, the active one in neon cyan
+/// (with a subtle glow) — in the spirit of the bottom nav labels.
 class FilterChipsBar extends StatelessWidget {
   final LinkFilter selected;
   final ValueChanged<LinkFilter> onChanged;
@@ -11,32 +13,28 @@ class FilterChipsBar extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return SizedBox(
-      height: 40,
-      child: ListView(
-        scrollDirection: Axis.horizontal,
-        padding: const EdgeInsets.symmetric(horizontal: 16),
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 12),
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
         children: [
-          _Chip(label: context.l10n.filterAll, filter: LinkFilter.all, selected: selected, onChanged: onChanged),
-          const SizedBox(width: 8),
-          _Chip(label: context.l10n.filterUnread, filter: LinkFilter.unread, selected: selected, onChanged: onChanged),
-          const SizedBox(width: 8),
-          _Chip(label: context.l10n.filterRead, filter: LinkFilter.read, selected: selected, onChanged: onChanged),
-          const SizedBox(width: 8),
-          _Chip(label: context.l10n.filterSaved, filter: LinkFilter.favorites, selected: selected, onChanged: onChanged),
+          _Item(label: context.l10n.filterAll, filter: LinkFilter.all, selected: selected, onChanged: onChanged),
+          _Item(label: context.l10n.filterUnread, filter: LinkFilter.unread, selected: selected, onChanged: onChanged),
+          _Item(label: context.l10n.filterRead, filter: LinkFilter.read, selected: selected, onChanged: onChanged),
+          _Item(label: context.l10n.filterSaved, filter: LinkFilter.favorites, selected: selected, onChanged: onChanged),
         ],
       ),
     );
   }
 }
 
-class _Chip extends StatelessWidget {
+class _Item extends StatelessWidget {
   final String label;
   final LinkFilter filter;
   final LinkFilter selected;
   final ValueChanged<LinkFilter> onChanged;
 
-  const _Chip({
+  const _Item({
     required this.label,
     required this.filter,
     required this.selected,
@@ -48,18 +46,13 @@ class _Chip extends StatelessWidget {
     final isActive = filter == selected;
     return GestureDetector(
       onTap: () => onChanged(filter),
-      child: AnimatedContainer(
-        duration: const Duration(milliseconds: 180),
-        padding: const EdgeInsets.symmetric(vertical: 7, horizontal: 14),
-        decoration: BoxDecoration(
-          color: isActive ? AppColors.accent : AppColors.chip,
-          borderRadius: AppRadius.chip,
-          border: isActive ? null : Border.all(color: AppColors.border, width: 1),
-          boxShadow: isActive ? AppShadows.chipActive : null,
-        ),
-        child: Text(
-          label,
-          style: isActive ? AppTextStyles.chipActive : AppTextStyles.chipInactive,
+      behavior: HitTestBehavior.opaque,
+      child: Padding(
+        padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 6),
+        child: AnimatedDefaultTextStyle(
+          duration: const Duration(milliseconds: 180),
+          style: isActive ? AppTextStyles.filterActive : AppTextStyles.filterInactive,
+          child: Text(label),
         ),
       ),
     );

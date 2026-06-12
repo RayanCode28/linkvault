@@ -43,20 +43,45 @@ class LinkCard extends StatelessWidget {
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      Text(
-                        link.title,
-                        style: AppTextStyles.cardTitle,
-                        maxLines: 2,
-                        overflow: TextOverflow.ellipsis,
+                      Row(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Expanded(
+                            child: Text(
+                              link.title,
+                              style: AppTextStyles.cardTitle,
+                              maxLines: 1,
+                              overflow: TextOverflow.ellipsis,
+                            ),
+                          ),
+                          const SizedBox(width: 8),
+                          _StatusIndicator(link: link),
+                        ],
                       ),
                       const SizedBox(height: 4),
-                      Text(
-                        collection == null
-                            ? link.domain
-                            : '${link.domain} · ${collection.emoji} ${collection.name}',
-                        style: AppTextStyles.cardMeta,
-                        maxLines: 1,
-                        overflow: TextOverflow.ellipsis,
+                      Row(
+                        children: [
+                          Expanded(
+                            child: Text(
+                              link.domain,
+                              style: AppTextStyles.cardMeta,
+                              maxLines: 1,
+                              overflow: TextOverflow.ellipsis,
+                            ),
+                          ),
+                          if (collection != null) ...[
+                            const SizedBox(width: 10),
+                            Flexible(
+                              child: Text(
+                                '${collection.emoji} ${collection.name}',
+                                style: AppTextStyles.cardMeta,
+                                maxLines: 1,
+                                overflow: TextOverflow.ellipsis,
+                                textAlign: TextAlign.right,
+                              ),
+                            ),
+                          ],
+                        ],
                       ),
                       const SizedBox(height: 2),
                       Text(
@@ -67,8 +92,6 @@ class LinkCard extends StatelessWidget {
                     ],
                   ),
                 ),
-                const SizedBox(width: 8),
-                _StatusIndicator(link: link),
               ],
             ),
           ),

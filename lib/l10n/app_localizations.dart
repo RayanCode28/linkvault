@@ -209,7 +209,7 @@ abstract class AppLocalizations {
   /// No description provided for @filterSaved.
   ///
   /// In en, this message translates to:
-  /// **'♥ Saved'**
+  /// **'Saved'**
   String get filterSaved;
 
   /// No description provided for @addLink.
@@ -355,6 +355,24 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'No links yet'**
   String get noLinksYet;
+
+  /// No description provided for @uncategorized.
+  ///
+  /// In en, this message translates to:
+  /// **'Uncategorized'**
+  String get uncategorized;
+
+  /// No description provided for @collectionsEmptyTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Create your first collection'**
+  String get collectionsEmptyTitle;
+
+  /// No description provided for @collectionsEmptyHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Create one to organize your links'**
+  String get collectionsEmptyHint;
 
   /// No description provided for @startTyping.
   ///

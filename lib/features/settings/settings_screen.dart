@@ -14,6 +14,7 @@ import '../../core/links_provider.dart';
 import '../../core/locale_provider.dart';
 import '../../core/theme.dart';
 import '../../shared/l10n.dart';
+import '../../shared/widgets/screen_header.dart';
 
 const _playStoreUrl =
     'https://play.google.com/store/apps/details?id=com.rayancode98.linkvault';
@@ -164,13 +165,13 @@ class _SettingsScreenState extends State<SettingsScreen> {
     return Scaffold(
         backgroundColor: Colors.transparent,
         body: SafeArea(
-          child: ListView(
-            padding: const EdgeInsets.fromLTRB(16, 0, 16, 24),
+          child: Column(
             children: [
-              Padding(
-                padding: const EdgeInsets.symmetric(vertical: 16),
-                child: Text(context.l10n.settingsTitle, style: AppTextStyles.screenTitle),
-              ),
+              ScreenHeader(title: context.l10n.settingsTitle),
+              Expanded(
+                child: ListView(
+                  padding: const EdgeInsets.fromLTRB(16, 0, 16, 24),
+                  children: [
               // Pro banner: upgrade CTA for Free users, active state for Pro.
               Builder(builder: (context) {
                 final isPro = context.watch<LinksProvider>().isPro;
@@ -258,6 +259,9 @@ class _SettingsScreenState extends State<SettingsScreen> {
                   _SettingsRow(emoji: '💬', label: context.l10n.sendFeedback, onTap: _sendFeedback),
                   _SettingsRow(emoji: '🔖', label: context.l10n.version, value: _version),
                 ],
+              ),
+                  ],
+                ),
               ),
             ],
           ),

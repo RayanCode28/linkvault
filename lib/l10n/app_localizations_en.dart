@@ -63,7 +63,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get filterRead => 'Read';
 
   @override
-  String get filterSaved => '♥ Saved';
+  String get filterSaved => 'Saved';
 
   @override
   String get addLink => 'Add link';
@@ -150,6 +150,15 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get noLinksYet => 'No links yet';
+
+  @override
+  String get uncategorized => 'Uncategorized';
+
+  @override
+  String get collectionsEmptyTitle => 'Create your first collection';
+
+  @override
+  String get collectionsEmptyHint => 'Create one to organize your links';
 
   @override
   String get startTyping => 'Start typing...';
