@@ -5,6 +5,7 @@ import '../../core/models.dart';
 import '../../core/theme.dart';
 import '../../core/links_provider.dart';
 import '../../shared/l10n.dart';
+import '../../shared/widgets/neon_fab.dart';
 import 'collection_form_sheet.dart';
 
 class CollectionsScreen extends StatelessWidget {
@@ -57,13 +58,7 @@ class CollectionsScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
         backgroundColor: Colors.transparent,
-        floatingActionButton: FloatingActionButton(
-          onPressed: () => _onAddTap(context),
-          backgroundColor: AppColors.accent,
-          foregroundColor: const Color(0xFF020A07),
-          shape: const RoundedRectangleBorder(borderRadius: AppRadius.fab),
-          child: const Icon(Icons.add_rounded, size: 22),
-        ),
+        floatingActionButton: NeonFab(onPressed: () => _onAddTap(context)),
         body: SafeArea(
           child: Consumer<LinksProvider>(
             builder: (ctx, provider, _) {

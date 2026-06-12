@@ -4,6 +4,7 @@ import '../../core/theme.dart';
 import '../../core/links_provider.dart';
 import '../../shared/l10n.dart';
 import '../../shared/widgets/neon_bg.dart';
+import '../../shared/widgets/neon_fab.dart';
 import '../home/add_link_sheet.dart';
 import '../home/link_card.dart';
 
@@ -60,12 +61,8 @@ class CollectionDetailScreen extends StatelessWidget {
                 ],
               ),
             ),
-            floatingActionButton: FloatingActionButton(
+            floatingActionButton: NeonFab(
               onPressed: () => showAddLinkSheet(context, collectionId: collectionId),
-              backgroundColor: AppColors.accent,
-              foregroundColor: const Color(0xFF020A07),
-              shape: const RoundedRectangleBorder(borderRadius: AppRadius.fab),
-              child: const Icon(Icons.add_rounded, size: 22),
             ),
             body: items.isEmpty
                 ? Center(

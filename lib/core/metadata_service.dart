@@ -22,6 +22,12 @@ class MetadataService {
   static const _timeout = Duration(seconds: 8);
   static const _maxFieldLength = 500;
 
+  // Browser-like UA: many sites (Instagram, X, Amazon, news sites) refuse or
+  // strip Open Graph tags for unknown clients.
+  static const _browserUa =
+      'Mozilla/5.0 (Linux; Android 14) AppleWebKit/537.36 '
+      '(KHTML, like Gecko) Chrome/124.0.0.0 Mobile Safari/537.36';
+
   static final _unescape = HtmlUnescape();
 
   static final _metaTagRe = RegExp(r'<meta\s[^>]*>', caseSensitive: false);
@@ -40,16 +46,22 @@ class MetadataService {
     // image instead of the platform logo. Used as a fallback so a real
     // og:image still wins when present.
     final platformImage = thumbnailForKnownPlatform(url);
+
+    // Video platforms (YouTube, TikTok, Vimeo) serve a JS/consent wall to
+    // bots, so og scraping returns no title. Their public oEmbed endpoints
+    // return the real content title + thumbnail as JSON without any auth.
+    final oEmbed = _oEmbedEndpoint(url);
+    if (oEmbed != null) {
+      final meta = await _fetchOEmbed(oEmbed, url, platformImage);
+      if (meta != null) return meta;
+    }
+
     final client = http.Client();
     try {
       final request = http.Request('GET', url)
         ..followRedirects = true
         ..maxRedirects = 4
-        // Browser-like UA: many sites (Instagram, X, Amazon, news sites)
-        // refuse or strip Open Graph tags for unknown clients.
-        ..headers['User-Agent'] =
-            'Mozilla/5.0 (Linux; Android 14) AppleWebKit/537.36 '
-                '(KHTML, like Gecko) Chrome/124.0.0.0 Mobile Safari/537.36'
+        ..headers['User-Agent'] = _browserUa
         ..headers['Accept'] =
             'text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8'
         ..headers['Accept-Language'] = 'en-US,en;q=0.9';
@@ -83,6 +95,64 @@ class MetadataService {
       // Network errors, timeouts and malformed responses are not fatal:
       // the link is simply saved with whatever thumbnail we can derive.
       return LinkMetadata(imageUrl: platformImage);
+    } finally {
+      client.close();
+    }
+  }
+
+  /// Returns the oEmbed JSON endpoint for platforms that expose one, or null.
+  /// oEmbed gives the real content title + thumbnail without auth, which is
+  /// what these sites hide from a plain page scrape.
+  static String? _oEmbedEndpoint(Uri url) {
+    var host = url.host.toLowerCase();
+    if (host.startsWith('www.')) host = host.substring(4);
+    if (host.startsWith('m.')) host = host.substring(2);
+    final target = Uri.encodeComponent(url.toString());
+    if (host == 'youtube.com' ||
+        host == 'youtu.be' ||
+        host == 'music.youtube.com' ||
+        host == 'gaming.youtube.com') {
+      return 'https://www.youtube.com/oembed?url=$target&format=json';
+    }
+    if (host == 'tiktok.com') {
+      return 'https://www.tiktok.com/oembed?url=$target';
+    }
+    if (host == 'vimeo.com') {
+      return 'https://vimeo.com/api/oembed.json?url=$target';
+    }
+    return null;
+  }
+
+  /// Fetches and parses an oEmbed document. Returns null on any failure so
+  /// the caller can fall back to plain HTML scraping.
+  static Future<LinkMetadata?> _fetchOEmbed(
+      String endpoint, Uri pageUrl, String? fallbackImage) async {
+    final client = http.Client();
+    try {
+      final response = await client.get(
+        Uri.parse(endpoint),
+        headers: const {'User-Agent': _browserUa, 'Accept': 'application/json'},
+      ).timeout(_timeout);
+      if (response.statusCode != 200) return null;
+      if (response.bodyBytes.length > _maxBytes) return null;
+      final dynamic data =
+          json.decode(utf8.decode(response.bodyBytes, allowMalformed: true));
+      if (data is! Map) return null;
+
+      final title = _clean(data['title'] as String?);
+      final author = data['author_name'];
+      final thumb = data['thumbnail_url'];
+      final image =
+          (thumb is String ? _resolveImage(thumb, pageUrl) : null) ??
+              fallbackImage;
+      if (title == null && image == null) return null;
+      return LinkMetadata(
+        title: title,
+        description: author is String ? _clean(author) : null,
+        imageUrl: image,
+      );
+    } on Exception {
+      return null;
     } finally {
       client.close();
     }

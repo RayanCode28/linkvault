@@ -151,6 +151,12 @@ ThemeData buildAppTheme() {
       error: AppColors.danger,
     ),
     fontFamily: GoogleFonts.plusJakartaSans().fontFamily,
+    // The default M3 zoom transition paints a surface-coloured scrim while
+    // pushing a route (e.g. the paywall), which reads as a background flash.
+    // FadeUpwards transitions cleanly over the existing background.
+    pageTransitionsTheme: const PageTransitionsTheme(builders: {
+      TargetPlatform.android: FadeUpwardsPageTransitionsBuilder(),
+    }),
     appBarTheme: AppBarTheme(
       backgroundColor: AppColors.bg,
       elevation: 0,

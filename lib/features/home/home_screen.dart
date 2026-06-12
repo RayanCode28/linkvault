@@ -6,6 +6,7 @@ import '../../core/theme.dart';
 import '../../core/links_provider.dart';
 import '../../shared/l10n.dart';
 import '../../shared/widgets/ad_banner.dart';
+import '../../shared/widgets/neon_fab.dart';
 import 'add_link_sheet.dart';
 import 'filter_chips_bar.dart';
 import 'link_card.dart';
@@ -34,6 +35,7 @@ class _HomeScreenState extends State<HomeScreen> {
             ),
           ],
         ),
+        floatingActionButton: NeonFab(onPressed: () => showAddLinkSheet(context)),
         body: Column(
           children: [
             Expanded(child: _linksArea(context)),
@@ -45,9 +47,7 @@ class _HomeScreenState extends State<HomeScreen> {
   }
 
   Widget _linksArea(BuildContext context) {
-    return Stack(
-          children: [
-            Consumer<LinksProvider>(
+    return Consumer<LinksProvider>(
               builder: (ctx, provider, _) {
                 final items = provider.filtered(_filter);
                 return CustomScrollView(
@@ -128,26 +128,6 @@ class _HomeScreenState extends State<HomeScreen> {
                   ],
                 );
               },
-            ),
-            // FAB
-            Positioned(
-              bottom: 16,
-              right: 16,
-              child: GestureDetector(
-                onTap: () => showAddLinkSheet(context),
-                child: Container(
-                  width: 52,
-                  height: 52,
-                  decoration: BoxDecoration(
-                    color: AppColors.accent,
-                    borderRadius: AppRadius.fab,
-                    boxShadow: AppShadows.fab,
-                  ),
-                  child: const Icon(Icons.add_rounded, color: Color(0xFF020A07), size: 22),
-                ),
-              ),
-            ),
-          ],
     );
   }
 }

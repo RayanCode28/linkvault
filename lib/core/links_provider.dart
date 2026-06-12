@@ -46,11 +46,19 @@ class LinksProvider extends ChangeNotifier {
   /// Links saved before metadata fetching worked (or whose fetch failed)
   /// get another chance each session, a few at a time.
   void _backfillMetadata() {
-    final pending =
-        _links.where((l) => l.imageUrl == null).take(10).toList();
+    final pending = _links.where(_needsEnrich).take(10).toList();
     for (final link in pending) {
       _enrich(link);
     }
+  }
+
+  /// A link still needs enriching if it has no thumbnail or its title is
+  /// still the bare host (e.g. YouTube links that got a thumbnail but whose
+  /// real title only arrives via oEmbed).
+  static bool _needsEnrich(LinkItem l) {
+    if (l.imageUrl == null) return true;
+    final host = Uri.tryParse(l.url)?.host;
+    return host != null && l.title == host;
   }
 
   // ---- Links ----

@@ -222,7 +222,6 @@ class _SettingsScreenState extends State<SettingsScreen> {
               _SettingsSection(
                 title: context.l10n.sectionAppearance,
                 items: [
-                  _SettingsRow(emoji: '🌙', label: context.l10n.theme, value: context.l10n.themeDark),
                   _SettingsRow(
                     emoji: '🌐',
                     label: context.l10n.language,
