@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'dart:io';
 
+import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -20,6 +21,14 @@ void main() async {
   await testingPrefs.setBool('onboarded', false);
   await testingPrefs.remove('tour_done');
   // ===== end temp block =====
+  // Firebase powers the Pro cloud backup (Auth + Cloud Storage). Reads
+  // android/app/google-services.json; guarded so a missing config never
+  // crashes startup (the app just runs without cloud backup).
+  try {
+    await Firebase.initializeApp();
+  } catch (e) {
+    debugPrint('Firebase init failed: $e');
+  }
   SystemChrome.setSystemUIOverlayStyle(const SystemUiOverlayStyle(
     statusBarColor: Colors.transparent,
     statusBarIconBrightness: Brightness.light,

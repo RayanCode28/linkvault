@@ -306,6 +306,49 @@ class AppLocalizationsFr extends AppLocalizations {
   String get cloudBackup => 'Sauvegarde cloud';
 
   @override
+  String get cloudBackupDesc =>
+      'Connecte-toi avec Google pour sauvegarder tes liens dans le cloud et les restaurer sur n\'importe quel appareil.';
+
+  @override
+  String get signInWithGoogle => 'Se connecter avec Google';
+
+  @override
+  String get backupNow => 'Sauvegarder maintenant';
+
+  @override
+  String get restoreNow => 'Restaurer';
+
+  @override
+  String get signOut => 'Se déconnecter';
+
+  @override
+  String get backupComplete => 'Sauvegarde terminée';
+
+  @override
+  String get backupFailed => 'Échec de la sauvegarde. Réessaie.';
+
+  @override
+  String get restoreConfirmTitle => 'Restaurer la sauvegarde ?';
+
+  @override
+  String get restoreConfirmBody =>
+      'Ta sauvegarde cloud sera fusionnée avec cet appareil.';
+
+  @override
+  String get noBackupFound => 'Aucune sauvegarde trouvée';
+
+  @override
+  String get neverBackedUp => 'Aucune sauvegarde pour l\'instant';
+
+  @override
+  String get signInFailed => 'Échec de la connexion';
+
+  @override
+  String lastBackupAt(String date) {
+    return 'Dernière sauvegarde : $date';
+  }
+
+  @override
   String get sectionAbout => 'À PROPOS';
 
   @override
@@ -403,6 +446,9 @@ class AppLocalizationsFr extends AppLocalizations {
 
   @override
   String get restorePurchases => 'Restaurer les achats';
+
+  @override
+  String get manageSubscription => 'Gérer l\'abonnement';
 
   @override
   String get purchaseSuccess => 'Bienvenue dans Pro ! 🎉';

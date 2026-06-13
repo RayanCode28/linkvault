@@ -308,6 +308,49 @@ class AppLocalizationsEs extends AppLocalizations {
   String get cloudBackup => 'Respaldo en la nube';
 
   @override
+  String get cloudBackupDesc =>
+      'Inicia sesión con Google para respaldar tus enlaces en la nube y restaurarlos en cualquier dispositivo.';
+
+  @override
+  String get signInWithGoogle => 'Iniciar sesión con Google';
+
+  @override
+  String get backupNow => 'Respaldar ahora';
+
+  @override
+  String get restoreNow => 'Restaurar';
+
+  @override
+  String get signOut => 'Cerrar sesión';
+
+  @override
+  String get backupComplete => 'Respaldo completado';
+
+  @override
+  String get backupFailed => 'Falló el respaldo. Inténtalo de nuevo.';
+
+  @override
+  String get restoreConfirmTitle => '¿Restaurar respaldo?';
+
+  @override
+  String get restoreConfirmBody =>
+      'Tu respaldo en la nube se combinará con este dispositivo.';
+
+  @override
+  String get noBackupFound => 'No se encontró ningún respaldo';
+
+  @override
+  String get neverBackedUp => 'Aún no hay respaldos';
+
+  @override
+  String get signInFailed => 'Error al iniciar sesión';
+
+  @override
+  String lastBackupAt(String date) {
+    return 'Último respaldo: $date';
+  }
+
+  @override
   String get sectionAbout => 'ACERCA DE';
 
   @override
@@ -404,6 +447,9 @@ class AppLocalizationsEs extends AppLocalizations {
 
   @override
   String get restorePurchases => 'Restaurar compras';
+
+  @override
+  String get manageSubscription => 'Administrar suscripción';
 
   @override
   String get purchaseSuccess => '¡Bienvenido a Pro! 🎉';

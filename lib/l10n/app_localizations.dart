@@ -650,6 +650,84 @@ abstract class AppLocalizations {
   /// **'Cloud backup'**
   String get cloudBackup;
 
+  /// No description provided for @cloudBackupDesc.
+  ///
+  /// In en, this message translates to:
+  /// **'Sign in with Google to back up your links to the cloud and restore them on any device.'**
+  String get cloudBackupDesc;
+
+  /// No description provided for @signInWithGoogle.
+  ///
+  /// In en, this message translates to:
+  /// **'Sign in with Google'**
+  String get signInWithGoogle;
+
+  /// No description provided for @backupNow.
+  ///
+  /// In en, this message translates to:
+  /// **'Back up now'**
+  String get backupNow;
+
+  /// No description provided for @restoreNow.
+  ///
+  /// In en, this message translates to:
+  /// **'Restore'**
+  String get restoreNow;
+
+  /// No description provided for @signOut.
+  ///
+  /// In en, this message translates to:
+  /// **'Sign out'**
+  String get signOut;
+
+  /// No description provided for @backupComplete.
+  ///
+  /// In en, this message translates to:
+  /// **'Backup complete'**
+  String get backupComplete;
+
+  /// No description provided for @backupFailed.
+  ///
+  /// In en, this message translates to:
+  /// **'Backup failed. Please try again.'**
+  String get backupFailed;
+
+  /// No description provided for @restoreConfirmTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Restore backup?'**
+  String get restoreConfirmTitle;
+
+  /// No description provided for @restoreConfirmBody.
+  ///
+  /// In en, this message translates to:
+  /// **'Your cloud backup will be merged into this device.'**
+  String get restoreConfirmBody;
+
+  /// No description provided for @noBackupFound.
+  ///
+  /// In en, this message translates to:
+  /// **'No backup found'**
+  String get noBackupFound;
+
+  /// No description provided for @neverBackedUp.
+  ///
+  /// In en, this message translates to:
+  /// **'No backups yet'**
+  String get neverBackedUp;
+
+  /// No description provided for @signInFailed.
+  ///
+  /// In en, this message translates to:
+  /// **'Sign-in failed'**
+  String get signInFailed;
+
+  /// No description provided for @lastBackupAt.
+  ///
+  /// In en, this message translates to:
+  /// **'Last backup: {date}'**
+  String lastBackupAt(String date);
+
   /// No description provided for @sectionAbout.
   ///
   /// In en, this message translates to:
@@ -841,6 +919,12 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Restore purchases'**
   String get restorePurchases;
+
+  /// No description provided for @manageSubscription.
+  ///
+  /// In en, this message translates to:
+  /// **'Manage subscription'**
+  String get manageSubscription;
 
   /// No description provided for @purchaseSuccess.
   ///

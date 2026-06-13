@@ -14,6 +14,7 @@ import '../../core/locale_provider.dart';
 import '../../core/theme.dart';
 import '../../shared/l10n.dart';
 import '../../shared/widgets/screen_header.dart';
+import 'cloud_backup_sheet.dart';
 
 const _playStoreUrl =
     'https://play.google.com/store/apps/details?id=com.rayancode98.linkvault';
@@ -224,6 +225,34 @@ class _SettingsScreenState extends State<SettingsScreen> {
                   ),
                 );
               }),
+              // Manage subscription link (Pro only): opens Google Play, where
+              // the user can cancel or switch plans. Google handles those.
+              Builder(builder: (context) {
+                if (!context.watch<LinksProvider>().isPro) {
+                  return const SizedBox.shrink();
+                }
+                return Align(
+                  alignment: Alignment.centerLeft,
+                  child: TextButton(
+                    onPressed: () => _openUrl(
+                        'https://play.google.com/store/account/subscriptions'),
+                    style: TextButton.styleFrom(
+                      padding: const EdgeInsets.symmetric(horizontal: 4),
+                      minimumSize: const Size(0, 0),
+                      tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+                    ),
+                    child: Text(
+                      context.l10n.manageSubscription,
+                      style: const TextStyle(
+                        color: AppColors.textSec,
+                        fontSize: 13,
+                        decoration: TextDecoration.underline,
+                        decorationColor: AppColors.textSec,
+                      ),
+                    ),
+                  ),
+                );
+              }),
               const SizedBox(height: AppSpacing.sectionGap),
               _SettingsSection(
                 title: context.l10n.sectionAppearance,
@@ -247,8 +276,10 @@ class _SettingsScreenState extends State<SettingsScreen> {
                   _SettingsRow(
                     emoji: '☁️',
                     label: context.l10n.cloudBackup,
-                    proBadge: true,
-                    onTap: () => context.push('/paywall'),
+                    proBadge: !context.watch<LinksProvider>().isPro,
+                    onTap: context.watch<LinksProvider>().isPro
+                        ? () => showCloudBackupSheet(context)
+                        : () => context.push('/paywall'),
                   ),
                 ],
               ),

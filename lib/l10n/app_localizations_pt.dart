@@ -307,6 +307,49 @@ class AppLocalizationsPt extends AppLocalizations {
   String get cloudBackup => 'Backup na nuvem';
 
   @override
+  String get cloudBackupDesc =>
+      'Inicia sessão com o Google para fazer backup dos teus links na nuvem e restaurá-los em qualquer dispositivo.';
+
+  @override
+  String get signInWithGoogle => 'Iniciar sessão com o Google';
+
+  @override
+  String get backupNow => 'Fazer backup agora';
+
+  @override
+  String get restoreNow => 'Restaurar';
+
+  @override
+  String get signOut => 'Terminar sessão';
+
+  @override
+  String get backupComplete => 'Backup concluído';
+
+  @override
+  String get backupFailed => 'Falha no backup. Tenta novamente.';
+
+  @override
+  String get restoreConfirmTitle => 'Restaurar backup?';
+
+  @override
+  String get restoreConfirmBody =>
+      'O teu backup na nuvem será combinado com este dispositivo.';
+
+  @override
+  String get noBackupFound => 'Nenhum backup encontrado';
+
+  @override
+  String get neverBackedUp => 'Ainda não há backups';
+
+  @override
+  String get signInFailed => 'Falha ao iniciar sessão';
+
+  @override
+  String lastBackupAt(String date) {
+    return 'Último backup: $date';
+  }
+
+  @override
   String get sectionAbout => 'SOBRE';
 
   @override
@@ -403,6 +446,9 @@ class AppLocalizationsPt extends AppLocalizations {
 
   @override
   String get restorePurchases => 'Restaurar compras';
+
+  @override
+  String get manageSubscription => 'Gerir subscrição';
 
   @override
   String get purchaseSuccess => 'Bem-vindo ao Pro! 🎉';

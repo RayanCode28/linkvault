@@ -307,6 +307,49 @@ class AppLocalizationsEn extends AppLocalizations {
   String get cloudBackup => 'Cloud backup';
 
   @override
+  String get cloudBackupDesc =>
+      'Sign in with Google to back up your links to the cloud and restore them on any device.';
+
+  @override
+  String get signInWithGoogle => 'Sign in with Google';
+
+  @override
+  String get backupNow => 'Back up now';
+
+  @override
+  String get restoreNow => 'Restore';
+
+  @override
+  String get signOut => 'Sign out';
+
+  @override
+  String get backupComplete => 'Backup complete';
+
+  @override
+  String get backupFailed => 'Backup failed. Please try again.';
+
+  @override
+  String get restoreConfirmTitle => 'Restore backup?';
+
+  @override
+  String get restoreConfirmBody =>
+      'Your cloud backup will be merged into this device.';
+
+  @override
+  String get noBackupFound => 'No backup found';
+
+  @override
+  String get neverBackedUp => 'No backups yet';
+
+  @override
+  String get signInFailed => 'Sign-in failed';
+
+  @override
+  String lastBackupAt(String date) {
+    return 'Last backup: $date';
+  }
+
+  @override
   String get sectionAbout => 'ABOUT';
 
   @override
@@ -403,6 +446,9 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get restorePurchases => 'Restore purchases';
+
+  @override
+  String get manageSubscription => 'Manage subscription';
 
   @override
   String get purchaseSuccess => 'Welcome to Pro! 🎉';

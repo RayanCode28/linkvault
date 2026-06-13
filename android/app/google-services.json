@@ -1,0 +1,55 @@
+{
+  "project_info": {
+    "project_number": "166112005833",
+    "project_id": "linkvault-e0799",
+    "storage_bucket": "linkvault-e0799.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:166112005833:android:d8a9ff8ce9631d14ca0718",
+        "android_client_info": {
+          "package_name": "com.rayancode98.linkvault"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "166112005833-2gqf7ttkcitf93s8ak8kppvgr172qs4t.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.rayancode98.linkvault",
+            "certificate_hash": "f26d2116dbf6408a7982a719e13f84f1119abf36"
+          }
+        },
+        {
+          "client_id": "166112005833-p3fh2f4sr5b7nmp8tp4i585cs2lf8ono.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.rayancode98.linkvault",
+            "certificate_hash": "42f4ac4a2fd97ad4469727716553c6d1bbb55a44"
+          }
+        },
+        {
+          "client_id": "166112005833-10a3m3e7nfli0n1qqsrgl2bcvst9b4nf.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBKRRnpnEgXz6K4-d96mACo6-YY0qgnXi4"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "166112005833-10a3m3e7nfli0n1qqsrgl2bcvst9b4nf.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
