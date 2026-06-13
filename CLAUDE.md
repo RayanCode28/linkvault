@@ -10,6 +10,7 @@ Desarrollador: Rayan / RayanCode28 · Bundle ID: `com.rayancode98.linkvault`
 - sqflite ^2 · http ^1 · html_unescape ^2 · flutter_sharing_intent ^2
 - share_plus ^12 · file_picker ^10 · cached_network_image ^3 · package_info_plus ^9
 - purchases_flutter ^10 (RevenueCat) · google_mobile_ads ^9 (AdMob)
+- firebase_core ^4 · firebase_auth ^6 · firebase_storage ^13 · google_sign_in ^7 (cloud backup Pro)
 - flutter_localizations (SDK) + intl — i18n con gen-l10n (ver sección Internacionalización)
   - ⚠️ share_plus/file_picker/package_info_plus están fijados a esas majors por un
     conflicto de `win32` (solo afecta resolución, no Android). No subirlos por separado.
@@ -32,6 +33,7 @@ lib/
 │   ├── links_provider.dart          # LinksProvider: CRUD links/colecciones sobre SQLite, search, filtros, export/importJson, límite Free
 │   ├── metadata_service.dart        # Fetch Open Graph (og:title/description/image) con límites de tamaño/timeout, UA de navegador
 │   ├── purchase_service.dart        # Wrapper RevenueCat: entitlement "Link Vault Pro", offerings, compra, restore; no-op sin API key
+│   ├── backup_service.dart          # Cloud backup Pro: Google Sign-In (Firebase Auth) + Cloud Storage (blob JSON users/{uid}/backup.json)
 │   └── share_intent_service.dart    # Recibe texto del Share Sheet y extrae la URL
 ├── l10n/                            # ARB por idioma (en/es/pt/fr/de) + app_localizations*.dart generados (gen-l10n)
 ├── database/
@@ -51,7 +53,8 @@ lib/
 │   ├── link_detail/
 │   │   ├── link_detail_sheet.dart           # Sheet: thumbnail, URL real, badges, Share/Favorite/Edit/Delete(confirm)/Open
 │   │   └── edit_link_sheet.dart             # Editar título + colección
-│   ├── settings/settings_screen.dart        # Pro banner, Export/Import JSON, Rate (Play Store), Feedback (mailto), versión real
+│   ├── settings/settings_screen.dart        # Pro banner, Administrar suscripción (Pro), Export/Import JSON, Cloud backup, Rate, Feedback, versión
+│   ├── settings/cloud_backup_sheet.dart     # Sheet cloud backup (Pro): sign-in Google, respaldar, restaurar, último respaldo, salir
 │   └── paywall/paywall_screen.dart          # Icon+PRO badge, features, pricing cards monthly/yearly, NeonButton
 └── shared/
     ├── router.dart                  # GoRouter; MainShell deriva el tab activo de la ruta
@@ -171,12 +174,60 @@ Link detail, add link, edit link y collection form NO son rutas — son bottom s
 8. 4 strings nuevos × 5 idiomas: `selectCollectionHint`, `collectionRequired`, `exportSaved`,
    `myCollections`. `flutter analyze` limpio, 15 tests ✓.
 
+### ✅ Completado (Sesión 10) — commit 4c8fc67
+1. **RevenueCat — cuenta creada y validada (Test Store)**
+   - Organización **"Lunasof Apps"**; entitlement renombrado a `Link Vault Pro` (debe
+     coincidir con `kProEntitlement`); offering `default` **Current** con packages
+     **Monthly + Yearly** (modelo de precios elegido: Mensual + Anual, sin lifetime).
+   - Probado en emulador y móvil con la **`test_` key** (Test Store / `SimulatedStore`):
+     compra Pro funciona, `isPro` se activa. La key de producción `goog_` aparecerá al
+     conectar Google Play (pendiente de verificación de Play).
+2. **`--dart-define-from-file`** — la key vive en `dart_defines.json` (gitignored, NO subir).
+   Se corre con `flutter run --dart-define-from-file=dart_defines.json`. La run config de
+   Android Studio (`.idea/runConfigurations/main_dart.xml`) ya pasa ese flag.
+   ⚠️ El botón Run del IDE / tocar el ícono en el emulador SIN la key → app corre como Free
+   (RevenueCat es no-op; `isPro` no persiste, se deriva de RevenueCat en cada arranque).
+3. **Botón "Administrar suscripción"** en Ajustes (solo Pro, bajo el banner Pro) → abre
+   `https://play.google.com/store/account/subscriptions` (cancelar/cambiar plan). Reusa
+   `_openUrl`. Cancelaciones/reembolsos los gestiona Google; la app baja a Free sola al
+   expirar el entitlement (local-first, ya implementado). Falta configurar **RTDN** (Pub/Sub)
+   en Play↔RevenueCat para revocar al instante en reembolsos.
+4. **Cloud backup (Pro) con Firebase** — proyecto **`linkvault-e0799`**
+   - `core/backup_service.dart`: Google Sign-In (Firebase Auth) + Cloud Storage; un blob
+     `users/{uid}/backup.json` con el `exportJson()`. Local-first, best-effort en `try/catch`,
+     restaura con `importJson` (valida/capa 5MB). Web client ID hardcodeado (de google-services).
+   - `features/settings/cloud_backup_sheet.dart`: sign-in, respaldar, restaurar (con confirm),
+     último respaldo, cerrar sesión. La fila ☁️ de Ajustes: Pro abre el sheet, Free → paywall.
+   - `Firebase.initializeApp()` en `main.dart` (guardado con try/catch).
+   - Gradle: plugin `com.google.gms.google-services` en `settings.gradle.kts` + app; archivo
+     `android/app/google-services.json` **committeado** (repo privado).
+   - Firebase consola: Auth Google habilitado; SHA-1/256 de **debug + release** agregados;
+     Cloud Storage en plan **Blaze** (prepago $30 reembolsable + alerta de presupuesto);
+     reglas de Storage publicadas (cada uid solo accede a su archivo).
+   - Deps nuevas: `firebase_core`/`firebase_auth`/`firebase_storage`, `google_sign_in ^7`
+     (API v7: `GoogleSignIn.instance.initialize`/`authenticate`). `win32` NO se tocó.
+5. 14 strings nuevas × 5 idiomas (manageSubscription + 13 de cloud backup). `flutter analyze`
+   limpio, 15 tests ✓. APK release arm64 (24 MB) generado para probar en móvil real.
+
 ### 🔲 Pendiente (próximas sesiones)
-1. **Play release** — reemplazar AdMob App ID de test en AndroidManifest.xml; compilar con
-   `--dart-define=REVENUECAT_API_KEY=... --dart-define=ADMOB_BANNER_ID=...`; subir AAB
-2. **Probar compras** — sandbox de Google Play con el producto `lifetime` (licencia de tester en Play Console)
-3. **Onboarding assets** — las 3 pantallas usan arte vectorial generado en código (no imágenes externas)
-4. (Opcional) Tema claro — la fila de Settings es informativa por ahora
+1. **Probar cloud backup en móvil real** — sign-in con Google + respaldar/restaurar contra
+   Firebase (APK release ya instalado). Confirmar que funciona end-to-end.
+2. **AdMob** (cuenta en verificación) — al activarse: crear app (manual, sin Play) + ad unit
+   Banner; reemplazar App ID de test en `AndroidManifest.xml` (línea ~41) por el real
+   (`ca-app-pub-xxx~yyy`); el ad unit real va por `--dart-define=ADMOB_BANNER_ID=` SOLO en
+   release (en dev se dejan los de test para no arriesgar ban por auto-clics).
+3. **Google Play** (cuenta en verificación) — al activarse:
+   - Crear suscripciones `linkvault_pro_monthly` / `linkvault_pro_yearly` (mismos IDs en RevenueCat).
+   - Conectar Play↔RevenueCat (Service Account JSON) → aparece la key `goog_`; ponerla en
+     `dart_defines.json` para release.
+   - Agregar a Firebase la **SHA-1 de Play App Signing** (Google re-firma el AAB) o Google
+     Sign-In falla en la app publicada.
+   - Configurar RTDN (Pub/Sub) para revocar entitlement en reembolsos.
+   - Probar compras sandbox (tester licenciado), subir AAB.
+4. **Quitar bloque TEMP** de `main.dart` (resetea onboarding/tour cada arranque) antes del AAB de release.
+5. **Política de privacidad** — URL pública (obligatoria por anuncios + compras + datos).
+6. **Onboarding assets** — las 3 pantallas usan arte vectorial generado en código (no imágenes externas)
+7. (Opcional) Tema claro — la fila de Settings es informativa por ahora
 
 ## Comandos Útiles
 ```bash
@@ -188,13 +239,17 @@ flutter run
 flutter test
 flutter analyze
 
-# Build APK debug
-flutter build apk --debug
+# Correr con keys (RevenueCat) — necesario para probar Pro/cloud backup
+flutter run --dart-define-from-file=dart_defines.json
+
+# Build APK release para probar en móvil (liviano; arm64 = teléfonos modernos)
+flutter build apk --release --split-per-abi --dart-define-from-file=dart_defines.json
+#  → build/app/outputs/flutter-apk/app-arm64-v8a-release.apk
 
 # Build AAB para Play Store (firma con android/app/upload-keystore.jks via key.properties)
-# Para producción pasar las claves reales:
+# Para producción usar dart_defines.json con la key goog_ real + ADMOB real:
 flutter build appbundle --release \
-  --dart-define=REVENUECAT_API_KEY=goog_xxx \
+  --dart-define-from-file=dart_defines.json \
   --dart-define=ADMOB_BANNER_ID=ca-app-pub-xxx/yyy
 
 # Limpiar cache
@@ -205,8 +260,10 @@ flutter clean && flutter pub get
 | Servicio | Estado | Notas |
 |----------|--------|-------|
 | Google Play Console | En verificación | Bundle ID: com.rayancode98.linkvault |
-| RevenueCat | Configurado (test) | API key en el dashboard de RevenueCat — no committearla |
-| GitHub | Activo | github.com/RayanCode28/linkvault |
+| RevenueCat | Test Store OK | Org "Lunasof Apps"; entitlement `Link Vault Pro`; offering Monthly+Yearly. `test_` key en `dart_defines.json` (gitignored). Falta conectar Play → key `goog_` |
+| Firebase | Activo (Blaze) | Proyecto `linkvault-e0799`; Auth Google + Cloud Storage; reglas publicadas. `google-services.json` en `android/app/` (committeado, repo privado) |
+| AdMob | En verificación | IDs de TEST en código; reemplazar al activarse la cuenta |
+| GitHub | Activo (privado) | github.com/RayanCode28/linkvault |
 
 ## Notas Importantes
 - Gradle directo requiere `JAVA_HOME="/Applications/Android Studio.app/Contents/jbr/Contents/Home"` (no hay JDK del sistema); `flutter build` lo resuelve solo
