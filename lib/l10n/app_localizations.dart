@@ -344,11 +344,29 @@ abstract class AppLocalizations {
   /// **'No collection'**
   String get noCollection;
 
+  /// No description provided for @selectCollectionHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Choose a collection'**
+  String get selectCollectionHint;
+
+  /// No description provided for @collectionRequired.
+  ///
+  /// In en, this message translates to:
+  /// **'Pick a collection to keep your links organized'**
+  String get collectionRequired;
+
   /// No description provided for @collectionsTitle.
   ///
   /// In en, this message translates to:
   /// **'Collections'**
   String get collectionsTitle;
+
+  /// No description provided for @myCollections.
+  ///
+  /// In en, this message translates to:
+  /// **'My collections'**
+  String get myCollections;
 
   /// No description provided for @rename.
   ///
@@ -667,6 +685,12 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Export failed'**
   String get exportFailed;
+
+  /// No description provided for @exportSaved.
+  ///
+  /// In en, this message translates to:
+  /// **'Backup saved'**
+  String get exportSaved;
 
   /// No description provided for @fileTooLarge.
   ///

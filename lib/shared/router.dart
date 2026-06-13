@@ -12,11 +12,16 @@ import '../features/paywall/paywall_screen.dart';
 import 'widgets/app_bottom_nav.dart';
 import 'widgets/neon_bg.dart';
 
+/// Root navigator key — lets non-widget code (e.g. the share-intent handler
+/// in app.dart) open dialogs and bottom sheets above the whole app.
+final rootNavigatorKey = GlobalKey<NavigatorState>();
+
 Future<GoRouter> buildRouter() async {
   final prefs = await SharedPreferences.getInstance();
   final onboarded = prefs.getBool('onboarded') ?? false;
 
   return GoRouter(
+    navigatorKey: rootNavigatorKey,
     initialLocation: onboarded ? '/' : '/onboarding',
     routes: [
       GoRoute(

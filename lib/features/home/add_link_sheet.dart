@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:go_router/go_router.dart';
 import 'package:provider/provider.dart';
 import '../../core/links_provider.dart';
 import '../../core/models.dart';
@@ -7,8 +8,10 @@ import '../../core/theme.dart';
 import '../../shared/l10n.dart';
 import '../../shared/widgets/collection_picker.dart';
 import '../../shared/widgets/neon_button.dart';
+import '../collections/collection_form_sheet.dart';
 
-void showAddLinkSheet(BuildContext context, {String? collectionId}) {
+void showAddLinkSheet(BuildContext context,
+    {String? collectionId, String? initialUrl}) {
   showModalBottomSheet(
     context: context,
     isScrollControlled: true,
@@ -17,15 +20,19 @@ void showAddLinkSheet(BuildContext context, {String? collectionId}) {
     useSafeArea: true,
     builder: (ctx) => ChangeNotifierProvider.value(
       value: context.read<LinksProvider>(),
-      child: AddLinkSheet(initialCollectionId: collectionId),
+      child: AddLinkSheet(
+        initialCollectionId: collectionId,
+        initialUrl: initialUrl,
+      ),
     ),
   );
 }
 
 class AddLinkSheet extends StatefulWidget {
   final String? initialCollectionId;
+  final String? initialUrl;
 
-  const AddLinkSheet({super.key, this.initialCollectionId});
+  const AddLinkSheet({super.key, this.initialCollectionId, this.initialUrl});
 
   @override
   State<AddLinkSheet> createState() => _AddLinkSheetState();
@@ -35,12 +42,16 @@ class _AddLinkSheetState extends State<AddLinkSheet> {
   final _controller = TextEditingController();
   String? _collectionId;
   String? _error;
+  String? _collectionError;
   bool _saving = false;
 
   @override
   void initState() {
     super.initState();
     _collectionId = widget.initialCollectionId;
+    if (widget.initialUrl != null) {
+      _controller.text = widget.initialUrl!;
+    }
   }
 
   @override
@@ -58,11 +69,31 @@ class _AddLinkSheetState extends State<AddLinkSheet> {
     }
   }
 
+  /// Opens the collection form inline. If the user is at the free limit we
+  /// route them to the paywall instead. A created collection is auto-selected.
+  Future<void> _createCollection() async {
+    final provider = context.read<LinksProvider>();
+    if (!provider.canAddCollection) {
+      context.push('/paywall');
+      return;
+    }
+    final created = await showCollectionFormSheet(context);
+    if (!mounted || created == null) return;
+    setState(() {
+      _collectionId = created.id;
+      _collectionError = null;
+    });
+  }
+
   Future<void> _save() async {
     if (_saving) return;
     final uri = parseWebUrl(_controller.text);
     if (uri == null) {
       setState(() => _error = context.l10n.urlInvalid);
+      return;
+    }
+    if (_collectionId == null) {
+      setState(() => _collectionError = context.l10n.collectionRequired);
       return;
     }
     setState(() => _saving = true);
@@ -140,8 +171,20 @@ class _AddLinkSheetState extends State<AddLinkSheet> {
             const SizedBox(height: 8),
             CollectionPicker(
               selectedId: _collectionId,
-              onChanged: (id) => setState(() => _collectionId = id),
+              allowNone: false,
+              onCreateNew: _createCollection,
+              onChanged: (id) => setState(() {
+                _collectionId = id;
+                _collectionError = null;
+              }),
             ),
+            if (_collectionError != null) ...[
+              const SizedBox(height: 6),
+              Text(
+                _collectionError!,
+                style: const TextStyle(color: AppColors.danger, fontSize: 12),
+              ),
+            ],
             const SizedBox(height: 18),
             NeonButton(
               label: _saving ? context.l10n.savingLink : context.l10n.saveLink,

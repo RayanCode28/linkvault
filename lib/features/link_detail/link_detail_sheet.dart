@@ -129,29 +129,37 @@ class LinkDetailSheet extends StatelessWidget {
           child: Column(
             mainAxisSize: MainAxisSize.min,
             children: [
-              // Pull handle
-              Container(
-                margin: const EdgeInsets.only(top: 10, bottom: 4),
-                width: 36,
-                height: 4,
-                decoration: BoxDecoration(
-                  color: AppColors.border,
-                  borderRadius: BorderRadius.circular(2),
-                ),
+              // Full-bleed cover image: it reaches the card's top and side
+              // borders with the sheet's rounded top corners. The pull handle
+              // floats on top of it.
+              Stack(
+                alignment: Alignment.topCenter,
+                children: [
+                  LinkThumbnail(
+                    link: link,
+                    size: 200,
+                    width: double.infinity,
+                    height: 200,
+                    borderRadius: AppRadius.sheetTop,
+                  ),
+                  Container(
+                    margin: const EdgeInsets.only(top: 10),
+                    width: 36,
+                    height: 4,
+                    decoration: BoxDecoration(
+                      color: Colors.white.withValues(alpha: 0.7),
+                      borderRadius: BorderRadius.circular(2),
+                    ),
+                  ),
+                ],
               ),
               // Scrollable content
               Flexible(
                 child: SingleChildScrollView(
-                  padding: const EdgeInsets.fromLTRB(20, 0, 20, 0),
+                  padding: const EdgeInsets.fromLTRB(20, 16, 20, 0),
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      SizedBox(
-                        width: double.infinity,
-                        height: 160,
-                        child: LinkThumbnail(link: link, size: 160),
-                      ),
-                      const SizedBox(height: 16),
                       Text(link.title, style: AppTextStyles.sheetTitle),
                       const SizedBox(height: 8),
                       Wrap(

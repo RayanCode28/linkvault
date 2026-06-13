@@ -1,13 +1,12 @@
 import 'dart:convert';
 import 'dart:io';
+import 'dart:typed_data';
 
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:package_info_plus/package_info_plus.dart';
-import 'package:path/path.dart' as p;
 import 'package:provider/provider.dart';
-import 'package:share_plus/share_plus.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 import '../../core/links_provider.dart';
@@ -65,14 +64,20 @@ class _SettingsScreenState extends State<SettingsScreen> {
     }
     try {
       final jsonStr = provider.exportJson();
-      final dir = await Directory.systemTemp.createTemp('linkvault');
+      final bytes = Uint8List.fromList(utf8.encode(jsonStr));
       final stamp = DateTime.now().toIso8601String().split('T').first;
-      final file = File(p.join(dir.path, 'linkvault-backup-$stamp.json'));
-      await file.writeAsString(jsonStr);
-      await SharePlus.instance.share(ShareParams(
-        files: [XFile(file.path, mimeType: 'application/json')],
-        subject: 'LinkVault backup',
-      ));
+      // Abre el selector de archivos del sistema para guardar el respaldo
+      // directamente en el almacenamiento del móvil (sin menú de compartir).
+      final path = await FilePicker.platform.saveFile(
+        dialogTitle: context.l10n.exportLinks,
+        fileName: 'linkvault-backup-$stamp.json',
+        type: FileType.custom,
+        allowedExtensions: ['json'],
+        bytes: bytes,
+      );
+      if (!mounted) return;
+      // path == null cuando el usuario cancela el diálogo.
+      if (path != null) _toast(context.l10n.exportSaved);
     } on Exception {
       if (mounted) _toast(context.l10n.exportFailed);
     }

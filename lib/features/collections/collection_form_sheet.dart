@@ -11,8 +11,10 @@ const _emojiChoices = [
 ];
 
 /// Creates a collection when [collection] is null, renames it otherwise.
-void showCollectionFormSheet(BuildContext context, {Collection? collection}) {
-  showModalBottomSheet(
+/// Resolves to the created [Collection] (or null when cancelled / on rename).
+Future<Collection?> showCollectionFormSheet(BuildContext context,
+    {Collection? collection}) {
+  return showModalBottomSheet<Collection>(
     context: context,
     isScrollControlled: true,
     backgroundColor: Colors.transparent,
@@ -60,11 +62,12 @@ class _CollectionFormSheetState extends State<CollectionFormSheet> {
     }
     final provider = context.read<LinksProvider>();
     if (widget.collection == null) {
-      await provider.addCollection(name, _emoji);
+      final created = await provider.addCollection(name, _emoji);
+      if (mounted) Navigator.pop(context, created);
     } else {
       await provider.renameCollection(widget.collection!.id, name, _emoji);
+      if (mounted) Navigator.pop(context);
     }
-    if (mounted) Navigator.pop(context);
   }
 
   @override

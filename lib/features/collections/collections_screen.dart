@@ -93,6 +93,17 @@ class CollectionsScreen extends StatelessWidget {
         onTap: () => context.push('/collections/$kUncategorizedId'),
       ),
     ];
+    // Separador + encabezado que divide la colección virtual "Sin categoría"
+    // de las colecciones del usuario.
+    if (collections.isNotEmpty) {
+      rows.add(const SizedBox(height: 18));
+      rows.add(Divider(height: 1, color: AppColors.border));
+      rows.add(const SizedBox(height: 12));
+      rows.add(Padding(
+        padding: const EdgeInsets.only(left: 4, bottom: 4),
+        child: Text(context.l10n.myCollections, style: AppTextStyles.sectionHeader),
+      ));
+    }
     for (final col in collections) {
       rows.add(const SizedBox(height: 8));
       rows.add(_CollectionRow(

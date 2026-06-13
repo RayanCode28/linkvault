@@ -139,7 +139,17 @@ class AppLocalizationsDe extends AppLocalizations {
   String get noCollection => 'Keine Sammlung';
 
   @override
+  String get selectCollectionHint => 'Wähle eine Sammlung';
+
+  @override
+  String get collectionRequired =>
+      'Wähle eine Sammlung, um deine Links zu ordnen';
+
+  @override
   String get collectionsTitle => 'Sammlungen';
+
+  @override
+  String get myCollections => 'Meine Sammlungen';
 
   @override
   String get rename => 'Umbenennen';
@@ -315,6 +325,9 @@ class AppLocalizationsDe extends AppLocalizations {
 
   @override
   String get exportFailed => 'Export fehlgeschlagen';
+
+  @override
+  String get exportSaved => 'Backup gespeichert';
 
   @override
   String get fileTooLarge => 'Datei zu groß (max. 5 MB)';

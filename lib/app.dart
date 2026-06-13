@@ -5,7 +5,9 @@ import 'core/theme.dart';
 import 'core/links_provider.dart';
 import 'core/locale_provider.dart';
 import 'core/share_intent_service.dart';
+import 'features/home/add_link_sheet.dart';
 import 'shared/l10n.dart';
+import 'shared/router.dart';
 
 final scaffoldMessengerKey = GlobalKey<ScaffoldMessengerState>();
 
@@ -38,17 +40,13 @@ class _LinkVaultAppState extends State<LinkVaultApp> {
     super.dispose();
   }
 
-  Future<void> _onSharedUrl(Uri url) async {
-    final link = await widget.provider.addLink(url.toString());
-    if (link == null) return;
-    final messengerContext = scaffoldMessengerKey.currentContext;
-    if (messengerContext == null || !messengerContext.mounted) return;
-    scaffoldMessengerKey.currentState?.showSnackBar(
-      SnackBar(
-        content: Text(messengerContext.l10n.linkSaved(link.domain)),
-        behavior: SnackBarBehavior.floating,
-      ),
-    );
+  // A link shared from another app opens the Add Link sheet pre-filled with
+  // the URL, forcing the user to file it into a collection (or create one)
+  // so shared links stay organized instead of landing uncategorized.
+  void _onSharedUrl(Uri url) {
+    final navContext = rootNavigatorKey.currentContext;
+    if (navContext == null || !navContext.mounted) return;
+    showAddLinkSheet(navContext, initialUrl: url.toString());
   }
 
   @override

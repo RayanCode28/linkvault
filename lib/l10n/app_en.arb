@@ -47,7 +47,10 @@
     }
   },
   "noCollection": "No collection",
+  "selectCollectionHint": "Choose a collection",
+  "collectionRequired": "Pick a collection to keep your links organized",
   "collectionsTitle": "Collections",
+  "myCollections": "My collections",
   "rename": "Rename",
   "delete": "Delete",
   "deleteCollectionNote": "Links inside are kept and unfiled",
@@ -135,6 +138,7 @@
   "version": "Version",
   "nothingToExport": "Nothing to export yet",
   "exportFailed": "Export failed",
+  "exportSaved": "Backup saved",
   "fileTooLarge": "File too large (max 5 MB)",
   "fileReadError": "Could not read file",
   "importSuccess": "Imported {links} links, {collections} collections",
