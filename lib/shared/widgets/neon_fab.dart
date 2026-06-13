@@ -12,14 +12,22 @@ const double kFabLiftAboveAd = 52;
 class NeonFab extends StatelessWidget {
   final VoidCallback onPressed;
   final double bottomGap;
+  // Key placed on the button circle itself (for the feature-tour spotlight).
+  final Key? spotlightKey;
 
-  const NeonFab({super.key, required this.onPressed, this.bottomGap = 0});
+  const NeonFab({
+    super.key,
+    required this.onPressed,
+    this.bottomGap = 0,
+    this.spotlightKey,
+  });
 
   @override
   Widget build(BuildContext context) {
     return Padding(
       padding: EdgeInsets.only(bottom: bottomGap),
       child: Container(
+        key: spotlightKey,
         decoration: BoxDecoration(
           borderRadius: AppRadius.fab,
           boxShadow: AppShadows.fab,

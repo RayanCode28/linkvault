@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import '../../core/theme.dart';
+import '../../core/feature_tour.dart';
 import '../l10n.dart';
 
 class AppBottomNav extends StatelessWidget {
@@ -25,7 +26,7 @@ class AppBottomNav extends StatelessWidget {
             mainAxisAlignment: MainAxisAlignment.spaceAround,
             children: [
               _NavItem(icon: Icons.link_rounded, label: context.l10n.navLinks, active: currentIndex == 0, onTap: () => onTap(0)),
-              _NavItem(icon: Icons.grid_view_rounded, label: context.l10n.navCollections, active: currentIndex == 1, onTap: () => onTap(1)),
+              _NavItem(key: FeatureTour.collectionsTabKey, icon: Icons.grid_view_rounded, label: context.l10n.navCollections, active: currentIndex == 1, onTap: () => onTap(1)),
               _NavItem(icon: Icons.settings_rounded, label: context.l10n.navSettings, active: currentIndex == 2, onTap: () => onTap(2)),
             ],
           ),
@@ -41,7 +42,7 @@ class _NavItem extends StatelessWidget {
   final bool active;
   final VoidCallback onTap;
 
-  const _NavItem({required this.icon, required this.label, required this.active, required this.onTap});
+  const _NavItem({super.key, required this.icon, required this.label, required this.active, required this.onTap});
 
   @override
   Widget build(BuildContext context) {

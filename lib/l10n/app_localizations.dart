@@ -164,6 +164,90 @@ abstract class AppLocalizations {
   /// **'Get Started'**
   String get getStarted;
 
+  /// No description provided for @onboardingTitle4.
+  ///
+  /// In en, this message translates to:
+  /// **'Unlock everything with Pro'**
+  String get onboardingTitle4;
+
+  /// No description provided for @onboardingSub4.
+  ///
+  /// In en, this message translates to:
+  /// **'Unlimited collections, no ads and cloud backup. Upgrade whenever you like.'**
+  String get onboardingSub4;
+
+  /// No description provided for @continueFree.
+  ///
+  /// In en, this message translates to:
+  /// **'Continue for free'**
+  String get continueFree;
+
+  /// No description provided for @tourSkip.
+  ///
+  /// In en, this message translates to:
+  /// **'Skip'**
+  String get tourSkip;
+
+  /// No description provided for @tourNext.
+  ///
+  /// In en, this message translates to:
+  /// **'Next'**
+  String get tourNext;
+
+  /// No description provided for @tourDone.
+  ///
+  /// In en, this message translates to:
+  /// **'Got it!'**
+  String get tourDone;
+
+  /// No description provided for @tourAddTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Save a link'**
+  String get tourAddTitle;
+
+  /// No description provided for @tourAddBody.
+  ///
+  /// In en, this message translates to:
+  /// **'Tap + to add any link, or share one from another app.'**
+  String get tourAddBody;
+
+  /// No description provided for @tourSearchTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Find anything'**
+  String get tourSearchTitle;
+
+  /// No description provided for @tourSearchBody.
+  ///
+  /// In en, this message translates to:
+  /// **'Search your links by title, site or text.'**
+  String get tourSearchBody;
+
+  /// No description provided for @tourFilterTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Filter fast'**
+  String get tourFilterTitle;
+
+  /// No description provided for @tourFilterBody.
+  ///
+  /// In en, this message translates to:
+  /// **'Switch between All, Unread, Read and Favorites.'**
+  String get tourFilterBody;
+
+  /// No description provided for @tourCollectionsTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Organize'**
+  String get tourCollectionsTitle;
+
+  /// No description provided for @tourCollectionsBody.
+  ///
+  /// In en, this message translates to:
+  /// **'Group your links into collections from here.'**
+  String get tourCollectionsBody;
+
   /// No description provided for @searchHint.
   ///
   /// In en, this message translates to:

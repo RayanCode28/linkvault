@@ -4,6 +4,7 @@ import 'package:provider/provider.dart';
 import '../../core/models.dart';
 import '../../core/theme.dart';
 import '../../core/links_provider.dart';
+import '../../core/feature_tour.dart';
 import '../../shared/l10n.dart';
 import '../../shared/widgets/ad_banner.dart';
 import '../../shared/widgets/neon_fab.dart';
@@ -23,12 +24,22 @@ class _HomeScreenState extends State<HomeScreen> {
   LinkFilter _filter = LinkFilter.all;
 
   @override
+  void initState() {
+    super.initState();
+    // First-run spotlight tour, once the Home UI is laid out.
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (mounted) FeatureTour.maybeStart(context);
+    });
+  }
+
+  @override
   Widget build(BuildContext context) {
     return Scaffold(
         backgroundColor: Colors.transparent,
         floatingActionButton: NeonFab(
           onPressed: () => showAddLinkSheet(context),
           bottomGap: kFabLiftAboveAd,
+          spotlightKey: FeatureTour.fabKey,
         ),
         body: SafeArea(
           child: Column(
@@ -57,6 +68,7 @@ class _HomeScreenState extends State<HomeScreen> {
                           GestureDetector(
                             onTap: () => context.push('/search'),
                             child: Container(
+                              key: FeatureTour.searchKey,
                               margin: const EdgeInsets.fromLTRB(16, 0, 16, 10),
                               padding: const EdgeInsets.symmetric(vertical: 11, horizontal: 14),
                               decoration: BoxDecoration(
@@ -77,6 +89,7 @@ class _HomeScreenState extends State<HomeScreen> {
                             ),
                           ),
                           FilterChipsBar(
+                            key: FeatureTour.filtersKey,
                             selected: _filter,
                             onChanged: (f) => setState(() => _filter = f),
                           ),

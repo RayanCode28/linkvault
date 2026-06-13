@@ -5,6 +5,7 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:google_mobile_ads/google_mobile_ads.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'core/links_provider.dart';
 import 'core/locale_provider.dart';
 import 'core/purchase_service.dart';
@@ -13,6 +14,12 @@ import 'app.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
+  // ===== TEMP (testing): replay onboarding + feature tour every launch.
+  // Remove this block when done testing. =====
+  final testingPrefs = await SharedPreferences.getInstance();
+  await testingPrefs.setBool('onboarded', false);
+  await testingPrefs.remove('tour_done');
+  // ===== end temp block =====
   SystemChrome.setSystemUIOverlayStyle(const SystemUiOverlayStyle(
     statusBarColor: Colors.transparent,
     statusBarIconBrightness: Brightness.light,

@@ -42,6 +42,51 @@ class AppLocalizationsPt extends AppLocalizations {
   String get getStarted => 'Começar';
 
   @override
+  String get onboardingTitle4 => 'Desbloqueie tudo com o Pro';
+
+  @override
+  String get onboardingSub4 =>
+      'Coleções ilimitadas, sem anúncios e backup na nuvem. Faça upgrade quando quiser.';
+
+  @override
+  String get continueFree => 'Continuar grátis';
+
+  @override
+  String get tourSkip => 'Pular';
+
+  @override
+  String get tourNext => 'Próximo';
+
+  @override
+  String get tourDone => 'Entendi!';
+
+  @override
+  String get tourAddTitle => 'Salve um link';
+
+  @override
+  String get tourAddBody =>
+      'Toque em + para adicionar qualquer link, ou compartilhe de outro app.';
+
+  @override
+  String get tourSearchTitle => 'Encontre tudo';
+
+  @override
+  String get tourSearchBody => 'Busque seus links por título, site ou texto.';
+
+  @override
+  String get tourFilterTitle => 'Filtre rápido';
+
+  @override
+  String get tourFilterBody =>
+      'Alterne entre Todos, Não lidos, Lidos e Favoritos.';
+
+  @override
+  String get tourCollectionsTitle => 'Organize';
+
+  @override
+  String get tourCollectionsBody => 'Agrupe seus links em coleções aqui.';
+
+  @override
   String get searchHint => 'Buscar links...';
 
   @override
