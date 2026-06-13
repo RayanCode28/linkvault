@@ -143,6 +143,34 @@ Link detail, add link, edit link y collection form NO son rutas — son bottom s
    - `ndkVersion` fijado a 28.2.13676358 (el instalado); se instaló cmdline-tools en el SDK → `flutter doctor` Android ✓
    - `flutter build appbundle --release` ✓ (AAB firmado con el keystore propio, libs stripped + símbolos en BUNDLE-METADATA)
 
+### ✅ Completado (Sesión 9) — commit 3750f99
+1. **Detalle del enlace** — imagen de portada full-bleed: toca el borde superior y los
+   laterales con las esquinas superiores redondeadas (`AppRadius.sheetTop`); el tirador
+   flota sobre la imagen. `LinkThumbnail` ahora acepta `width`/`height`/`borderRadius`.
+2. **Card de enlaces (link_card.dart)** — rediseño horizontal:
+   - Miniatura pegada al borde izquierdo, de borde a borde, altura completa (recorte vía
+     `Container clipBehavior: Clip.antiAlias`); ancho 88, altura fija del card 88 (todos
+     los cards miden igual, con o sin metadata)
+   - Título en `Flexible` con `maxLines: 2` + elipsis (no desborda nunca)
+   - Corazón de favorito superpuesto arriba-izquierda (`Stack`+`Positioned`, fontSize 10,
+     con sombra), simétrico al punto verde de no-leído de la derecha
+3. **Share intent** — al compartir un enlace a la app ya NO se guarda en silencio: abre el
+   modal Agregar enlace con la URL pegada y obliga a elegir/crear colección. Se agregó
+   `rootNavigatorKey` en `router.dart` para abrir el sheet desde `app.dart`.
+4. **Colección obligatoria al agregar** — `AddLinkSheet` valida colección (acepta `initialUrl`);
+   `CollectionPicker` ganó `allowNone` (false al agregar, con hint) y `onCreateNew` (ítem
+   "Nueva colección" inline → form o paywall si llegó al límite Free). `showCollectionFormSheet`
+   devuelve la `Collection` creada. Editar enlace sigue permitiendo "Sin colección".
+5. **Exportar local** — `settings_screen` usa `FilePicker.platform.saveFile` (con `bytes`):
+   guarda el JSON directo en el almacenamiento del móvil vía el diálogo del sistema, sin
+   share sheet. Probado y funcionando. Import/export local son Free (solo "Cloud backup" es Pro).
+6. **Home** — barra de búsqueda + filtros (`FilterChipsBar`) fijos fuera del `CustomScrollView`;
+   solo la lista hace scroll.
+7. **Colecciones** — separador (`Divider`) + encabezado "Mis colecciones" tras la fila virtual
+   "Sin categoría" (solo si hay colecciones del usuario).
+8. 4 strings nuevos × 5 idiomas: `selectCollectionHint`, `collectionRequired`, `exportSaved`,
+   `myCollections`. `flutter analyze` limpio, 15 tests ✓.
+
 ### 🔲 Pendiente (próximas sesiones)
 1. **Play release** — reemplazar AdMob App ID de test en AndroidManifest.xml; compilar con
    `--dart-define=REVENUECAT_API_KEY=... --dart-define=ADMOB_BANNER_ID=...`; subir AAB
