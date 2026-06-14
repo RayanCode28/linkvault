@@ -207,7 +207,18 @@ Link detail, add link, edit link y collection form NO son rutas — son bottom s
    - Deps nuevas: `firebase_core`/`firebase_auth`/`firebase_storage`, `google_sign_in ^7`
      (API v7: `GoogleSignIn.instance.initialize`/`authenticate`). `win32` NO se tocó.
 5. 14 strings nuevas × 5 idiomas (manageSubscription + 13 de cloud backup). `flutter analyze`
-   limpio, 15 tests ✓. APK release arm64 (24 MB) generado para probar en móvil real.
+   limpio, 15 tests ✓. APK release arm64 generado para probar en móvil real.
+6. **Fix crash del build release** (commit aparte):
+   - AGP 9 activaba R8/minify por defecto → eliminaba clases de WorkManager/Room que usa
+     `google_mobile_ads` por reflexión → crash al arrancar. Solución: `isMinifyEnabled = false`
+     + `isShrinkResources = false` en el buildType release (`android/app/build.gradle.kts`).
+     Dart ya viene AOT, no hace falta minificar el wrapper Android. **Este fix se queda.**
+   - ⚠️ **RevenueCat crashea si la `test_` key va en un build RELEASE** (regla de RevenueCat;
+     la test key solo vale en debug). Para probar release HOY (sin la `goog_` aún): compilar
+     SIN la key (`flutter build apk --release --split-per-abi`, sin `--dart-define-from-file`).
+   - 🔧 **HACK LOCAL (NO committeado): `provider.setPro(true)` TEMP en `main.dart`** para
+     poder entrar a Cloud backup en ese release sin key. Vive solo en el working tree; `git
+     status` lo muestra como `lib/main.dart` modificado. Quitar antes del release real.
 
 ### 🔲 Pendiente (próximas sesiones)
 1. **Probar cloud backup en móvil real** — sign-in con Google + respaldar/restaurar contra
@@ -224,7 +235,9 @@ Link detail, add link, edit link y collection form NO son rutas — son bottom s
      Sign-In falla en la app publicada.
    - Configurar RTDN (Pub/Sub) para revocar entitlement en reembolsos.
    - Probar compras sandbox (tester licenciado), subir AAB.
-4. **Quitar bloque TEMP** de `main.dart` (resetea onboarding/tour cada arranque) antes del AAB de release.
+4. **Quitar los 2 bloques TEMP** de `main.dart` antes del AAB de release: (a) el que resetea
+   onboarding/tour cada arranque, y (b) el `provider.setPro(true)` de Pro forzado (este 2º
+   está SIN committear, solo en el working tree).
 5. **Política de privacidad** — URL pública (obligatoria por anuncios + compras + datos).
 6. **Onboarding assets** — las 3 pantallas usan arte vectorial generado en código (no imágenes externas)
 7. (Opcional) Tema claro — la fila de Settings es informativa por ahora
