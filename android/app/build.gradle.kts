@@ -58,6 +58,11 @@ android {
             } else {
                 signingConfigs.getByName("debug")
             }
+            // AGP 9 enables R8 by default, which strips WorkManager/Room classes
+            // that google_mobile_ads loads via reflection → startup crash. Dart
+            // is already AOT-compiled, so we don't need to minify the Android wrapper.
+            isMinifyEnabled = false
+            isShrinkResources = false
         }
     }
 }
