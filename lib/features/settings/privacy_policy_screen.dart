@@ -92,7 +92,7 @@ class _Policy {
   const _Policy({required this.updated, required this.intro, required this.sections});
 }
 
-const _contactEmail = 'bryanagarcia28414@gmail.com';
+const _contactEmail = 'lunasoftapps@gmail.com';
 
 const Map<String, _Policy> _policy = {
   'en': _Policy(
