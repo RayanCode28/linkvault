@@ -18,7 +18,7 @@ import 'cloud_backup_sheet.dart';
 
 const _playStoreUrl =
     'https://play.google.com/store/apps/details?id=com.rayancode98.linkvault';
-const _feedbackEmail = 'bryanagarcia28414@gmail.com';
+const _feedbackEmail = 'lunasoftapps@gmail.com';
 
 /// Imported backups are capped to protect against oversized files.
 const _maxImportBytes = 5 * 1024 * 1024;
