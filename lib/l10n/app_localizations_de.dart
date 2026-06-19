@@ -361,6 +361,9 @@ class AppLocalizationsDe extends AppLocalizations {
   String get sendFeedback => 'Feedback senden';
 
   @override
+  String get privacyPolicy => 'Datenschutzrichtlinie';
+
+  @override
   String get version => 'Version';
 
   @override

@@ -360,6 +360,9 @@ class AppLocalizationsEs extends AppLocalizations {
   String get sendFeedback => 'Enviar comentarios';
 
   @override
+  String get privacyPolicy => 'Política de privacidad';
+
+  @override
   String get version => 'Versión';
 
   @override

@@ -358,6 +358,9 @@ class AppLocalizationsFr extends AppLocalizations {
   String get sendFeedback => 'Envoyer un avis';
 
   @override
+  String get privacyPolicy => 'Politique de confidentialité';
+
+  @override
   String get version => 'Version';
 
   @override

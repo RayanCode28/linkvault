@@ -293,6 +293,11 @@ class _SettingsScreenState extends State<SettingsScreen> {
                     onTap: () => _openUrl(_playStoreUrl),
                   ),
                   _SettingsRow(emoji: '💬', label: context.l10n.sendFeedback, onTap: _sendFeedback),
+                  _SettingsRow(
+                    emoji: '🔒',
+                    label: context.l10n.privacyPolicy,
+                    onTap: () => context.push('/privacy'),
+                  ),
                   _SettingsRow(emoji: '🔖', label: context.l10n.version, value: _version),
                 ],
               ),

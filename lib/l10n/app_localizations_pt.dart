@@ -359,6 +359,9 @@ class AppLocalizationsPt extends AppLocalizations {
   String get sendFeedback => 'Enviar feedback';
 
   @override
+  String get privacyPolicy => 'Política de privacidade';
+
+  @override
   String get version => 'Versão';
 
   @override

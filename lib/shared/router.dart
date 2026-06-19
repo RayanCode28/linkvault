@@ -8,6 +8,7 @@ import '../features/collections/collections_screen.dart';
 import '../features/collections/collection_detail_screen.dart';
 import '../features/search/search_screen.dart';
 import '../features/settings/settings_screen.dart';
+import '../features/settings/privacy_policy_screen.dart';
 import '../features/paywall/paywall_screen.dart';
 import 'widgets/app_bottom_nav.dart';
 import 'widgets/neon_bg.dart';
@@ -61,6 +62,10 @@ Future<GoRouter> buildRouter() async {
       GoRoute(
         path: '/paywall',
         builder: (ctx, state) => const PaywallScreen(),
+      ),
+      GoRoute(
+        path: '/privacy',
+        builder: (ctx, state) => const PrivacyPolicyScreen(),
       ),
     ],
   );

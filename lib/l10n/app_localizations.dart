@@ -746,6 +746,12 @@ abstract class AppLocalizations {
   /// **'Send feedback'**
   String get sendFeedback;
 
+  /// No description provided for @privacyPolicy.
+  ///
+  /// In en, this message translates to:
+  /// **'Privacy policy'**
+  String get privacyPolicy;
+
   /// No description provided for @version.
   ///
   /// In en, this message translates to:
