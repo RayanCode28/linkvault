@@ -220,9 +220,41 @@ Link detail, add link, edit link y collection form NO son rutas — son bottom s
      poder entrar a Cloud backup en ese release sin key. Vive solo en el working tree; `git
      status` lo muestra como `lib/main.dart` modificado. Quitar antes del release real.
 
+### ✅ Completado (Sesión 11) — commit f06b9ef
+1. **main.dart limpio** (commit 9ab753b) — quitados los bloques TEMP de testing (reset de
+   onboarding/tour cada arranque). El `provider.setPro(true)` ya no estaba. Sin bloques TEMP.
+2. **Cloud backup validado end-to-end en móvil real** — sign-in Google + respaldar/restaurar
+   contra Firebase funcionó con la cuenta del dev. ✅
+3. **Política de privacidad** — `lib/features/settings/privacy_policy_screen.dart` (ruta
+   `/privacy`, fila 🔒 en Ajustes→Acerca de). Texto legal completo localizado en 5 idiomas
+   (el texto vive en el propio archivo, keyed por idioma + fallback en; solo la etiqueta
+   `privacyPolicy` en ARB), redactado según las actividades reales (datos locales, fetch OG,
+   cloud backup Firebase, compras Play+RevenueCat, AdMob, terceros, retención, menores).
+   - `docs/privacy-policy.html` — mismo texto, para hospedar en **GitHub Pages** (repo ya
+     hecho **PÚBLICO**). URL esperada: `https://rayancode28.github.io/linkvault/privacy-policy.html`.
+     ⚠️ Falta activar Pages (Settings→Pages, branch `main` carpeta `/docs`) y pegar la URL en
+     Play Console (Contenido de la app + Data Safety).
+   - Correo de contacto UNIFICADO en toda la app (política + feedback de Ajustes) =
+     **lunasoftapps@gmail.com** (commits 2ca11e0 + 1e5d1f5).
+4. **Play App Signing en Firebase** (commit f06b9ef) — SHA-1
+   `14:E6:D1:3A:18:94:10:C8:E3:5F:5F:47:A3:B3:75:C9:1E:C3:5C:1A` y SHA-256 de la clave de
+   firma de Play agregadas a Firebase; `google-services.json` actualizado y committeado
+   (conserva también las huellas de debug/upload para builds locales).
+5. **AAB de prueba interna PUBLICADO en Play Console** — `app-release.aab` v1.2.0+1, firmado
+   con upload keystore, **SIN `dart_defines`** (RevenueCat no-op → corre Free; evita el crash
+   de la `test_` key en release). AdMob con IDs de test. Estado en Play:
+   **"disponible para verificadores internos"**. Advertencia de "archivo de desofuscación
+   faltante" → ignorable (minify desactivado, no hay mapping). El requisito de **12 testers ×
+   14 días NO aplica a prueba interna** (es para prueba cerrada → producción con cuenta
+   personal nueva).
+   - ⚠️ Pendiente del dev: abrir el enlace de participación en el móvil (cuenta tester) e
+     instalar; verificar que arranca sin crash, guardar/compartir links, ver pantalla de
+     privacidad. Pro/cloud backup pedirá Pro (esperado, sin key en esta build).
+
 ### 🔲 Pendiente (próximas sesiones)
-1. **Probar cloud backup en móvil real** — sign-in con Google + respaldar/restaurar contra
-   Firebase (APK release ya instalado). Confirmar que funciona end-to-end.
+0. **Confirmar pruebas de la prueba interna** (instalar desde el enlace, arranque sin crash,
+   flujo básico). Activar **GitHub Pages** + pegar URL de privacidad en Play.
+1. **Probar cloud backup en móvil real** — ✅ HECHO en sesión 11 (sign-in + respaldar/restaurar).
 2. **AdMob** (cuenta en verificación) — al activarse: crear app (manual, sin Play) + ad unit
    Banner; reemplazar App ID de test en `AndroidManifest.xml` (línea ~41) por el real
    (`ca-app-pub-xxx~yyy`); el ad unit real va por `--dart-define=ADMOB_BANNER_ID=` SOLO en
@@ -235,10 +267,9 @@ Link detail, add link, edit link y collection form NO son rutas — son bottom s
      Sign-In falla en la app publicada.
    - Configurar RTDN (Pub/Sub) para revocar entitlement en reembolsos.
    - Probar compras sandbox (tester licenciado), subir AAB.
-4. **Quitar los 2 bloques TEMP** de `main.dart` antes del AAB de release: (a) el que resetea
-   onboarding/tour cada arranque, y (b) el `provider.setPro(true)` de Pro forzado (este 2º
-   está SIN committear, solo en el working tree).
-5. **Política de privacidad** — URL pública (obligatoria por anuncios + compras + datos).
+4. ~~Quitar los 2 bloques TEMP de main.dart~~ — ✅ HECHO (sesión 11, main.dart limpio).
+5. ~~Política de privacidad~~ — ✅ pantalla + HTML listos (sesión 11). Solo falta activar
+   GitHub Pages y pegar la URL pública en Play.
 6. **Onboarding assets** — las 3 pantallas usan arte vectorial generado en código (no imágenes externas)
 7. (Opcional) Tema claro — la fila de Settings es informativa por ahora
 
@@ -272,11 +303,11 @@ flutter clean && flutter pub get
 ## Servicios Externos
 | Servicio | Estado | Notas |
 |----------|--------|-------|
-| Google Play Console | En verificación | Bundle ID: com.rayancode98.linkvault |
+| Google Play Console | Aprobada · prueba interna PUBLICADA | Bundle ID: com.rayancode98.linkvault. AAB v1.2.0+1 "disponible para verificadores internos". Play App Signing activo (SHA-1 14:E6:D1:3A…). Faltan subs + Play↔RevenueCat + RTDN para producción |
 | RevenueCat | Test Store OK | Org "Lunasof Apps"; entitlement `Link Vault Pro`; offering Monthly+Yearly. `test_` key en `dart_defines.json` (gitignored). Falta conectar Play → key `goog_` |
-| Firebase | Activo (Blaze) | Proyecto `linkvault-e0799`; Auth Google + Cloud Storage; reglas publicadas. `google-services.json` en `android/app/` (committeado, repo privado) |
+| Firebase | Activo (Blaze) | Proyecto `linkvault-e0799`; Auth Google + Cloud Storage; reglas publicadas. `google-services.json` en `android/app/` con SHA-1/256 de Play App Signing + debug/upload (committeado) |
 | AdMob | En verificación | IDs de TEST en código; reemplazar al activarse la cuenta |
-| GitHub | Activo (privado) | github.com/RayanCode28/linkvault |
+| GitHub | Activo (**PÚBLICO**) | github.com/RayanCode28/linkvault. GitHub Pages para `docs/privacy-policy.html` (pendiente activar) |
 
 ## Notas Importantes
 - Gradle directo requiere `JAVA_HOME="/Applications/Android Studio.app/Contents/jbr/Contents/Home"` (no hay JDK del sistema); `flutter build` lo resuelve solo
