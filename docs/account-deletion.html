@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>LinkVault — Account &amp; Data Deletion</title>
+  <style>
+    :root {
+      --bg: #030A06;
+      --surface: #091410;
+      --accent: #00FFD1;
+      --text: #E8FFF8;
+      --text-sec: #9FB8AF;
+      --text-muted: #5E7268;
+      --border: #14241C;
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      background: var(--bg);
+      color: var(--text);
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+      line-height: 1.6;
+    }
+    .wrap {
+      max-width: 720px;
+      margin: 0 auto;
+      padding: 48px 24px 80px;
+    }
+    header {
+      border-bottom: 1px solid var(--border);
+      padding-bottom: 20px;
+      margin-bottom: 28px;
+    }
+    h1 {
+      font-size: 28px;
+      margin: 0 0 6px;
+      color: var(--accent);
+    }
+    .updated { color: var(--text-muted); font-size: 13px; }
+    .intro { color: var(--text-sec); font-size: 16px; }
+    h2 {
+      font-size: 18px;
+      margin: 32px 0 8px;
+      color: var(--text);
+    }
+    p { color: var(--text-sec); font-size: 15px; margin: 0; }
+    ol, ul { color: var(--text-sec); font-size: 15px; padding-left: 22px; }
+    li { margin: 6px 0; }
+    a { color: var(--accent); text-decoration: none; }
+    a:hover { text-decoration: underline; }
+    footer {
+      margin-top: 48px;
+      padding-top: 20px;
+      border-top: 1px solid var(--border);
+      color: var(--text-muted);
+      font-size: 13px;
+    }
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <header>
+      <h1>LinkVault — Account &amp; Data Deletion</h1>
+      <p class="updated">Last updated: 20 June 2026</p>
+    </header>
+
+    <p class="intro">
+      This page explains how to delete your LinkVault account and the data
+      associated with it. LinkVault is developed by Lunasof Apps.
+    </p>
+
+    <h2>About your account</h2>
+    <p>
+      LinkVault works with no account at all. An account is created only if you
+      turn on the optional Cloud backup feature, where you sign in with your
+      Google account through Firebase Authentication. If you never used Cloud
+      backup, there is no account or cloud data to delete &mdash; your links live
+      only on your device and are removed when you uninstall the app.
+    </p>
+
+    <h2>How to request deletion</h2>
+    <p>
+      To delete your account and cloud data, send us an email:
+    </p>
+    <ol>
+      <li>
+        Email
+        <a href="mailto:lunasoftapps@gmail.com">lunasoftapps@gmail.com</a>
+        from the Google account you used to sign in to Cloud backup.
+      </li>
+      <li>Use the subject line <strong>&ldquo;LinkVault account deletion&rdquo;</strong>.</li>
+      <li>
+        We will delete your Firebase Authentication account and your cloud backup
+        file, and confirm by email once it is done.
+      </li>
+    </ol>
+    <p>
+      You can also open <strong>Settings &rarr; Cloud backup &rarr; Sign out</strong>
+      in the app at any time to disconnect your Google account from the device.
+      Signing out stops further backups but does not by itself erase the backup
+      already stored in the cloud &mdash; use the email request above for full
+      deletion.
+    </p>
+
+    <h2>What data is deleted</h2>
+    <ul>
+      <li>Your Firebase Authentication account (email address and account identifier).</li>
+      <li>Your cloud backup file, including the copy of the links and collections it contains.</li>
+    </ul>
+
+    <h2>What data is retained</h2>
+    <p>
+      We do not keep your personal data after deletion. Purchase and subscription
+      records held by Google Play and RevenueCat may be retained by those
+      providers as required for tax, accounting and fraud-prevention purposes,
+      under their own policies. Any data stored only on your device is removed
+      when you uninstall the app or clear its storage.
+    </p>
+
+    <h2>Timing</h2>
+    <p>
+      Email deletion requests are processed within 30 days of receipt.
+    </p>
+
+    <h2>Contact</h2>
+    <p>
+      Questions about deleting your data? Email
+      <a href="mailto:lunasoftapps@gmail.com">lunasoftapps@gmail.com</a>.
+    </p>
+
+    <footer>
+      &copy; 2026 Lunasof Apps · LinkVault
+    </footer>
+  </div>
+</body>
+</html>
