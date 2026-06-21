@@ -251,9 +251,67 @@ Link detail, add link, edit link y collection form NO son rutas — son bottom s
      instalar; verificar que arranca sin crash, guardar/compartir links, ver pantalla de
      privacidad. Pro/cloud backup pedirá Pro (esperado, sin key en esta build).
 
+### ✅ Completado (Sesión 12)
+1. **Prueba interna validada en móvil real** — la build de prueba interna (`v1.2.0+1`, sin
+   keys) se instaló desde el enlace de participación y arrancó sin crash; flujo básico OK
+   (guardar/compartir links, pantalla de privacidad). Pro/cloud backup pidió Pro, como se
+   esperaba en esa build. ✅
+2. **GitHub Pages ACTIVO** — la política de privacidad ya se sirve pública (HTTP 200):
+   `https://rayancode28.github.io/linkvault/privacy-policy.html` (`<title>LinkVault — Privacy
+   Policy</title>` confirmado). No hizo falta tocar el repo: `docs/privacy-policy.html` ya
+   estaba committeado.
+   - ⚠️ **ÚNICO pendiente accionable ahora (manual en Play Console):** pegar esa URL en
+     (a) **Contenido de la app → Política de privacidad** y (b) **Seguridad de los datos
+     (Data Safety)** + completar el formulario. Declarar: datos locales (links), fetch Open
+     Graph (metadata), cloud backup Firebase (opcional/Pro, login Google), compras
+     (Play+RevenueCat), AdMob (solo Free). Sin cambios de código.
+
+### ✅ Completado (Sesión 13) — commit dc68444
+**Foco: llenar las declaraciones y la ficha de Play Console (con asistencia, campo por campo).**
+1. **Detalles de acceso (App access) → "No (sin restricciones)".** Decisión estratégica clave:
+   esta sección es para **muros de login**, y LinkVault **no tiene** (se usa todo sin cuenta).
+   Pro NO está atado a un login in-app: en `purchase_service.dart` RevenueCat usa **App User ID
+   anónimo** (no hace `logIn` con Firebase/Google), así que Pro vive en la **cuenta de Google
+   Play del dispositivo**. Por eso "dar un usuario de prueba con Pro" NO activa Pro al revisor;
+   el IAP lo revisa Google por su lado. (Se descartó la ruta "Sí + credenciales".)
+2. **Clasificación de contenido (IARC):** compra de productos digitales = **Sí**; artículos
+   aleatorios/cajas de botín = **No**; recompensas monetarias/tarjetas/cripto/NFT = **No**.
+3. **Público objetivo y contenido:** grupo etario **solo 18+**; **restringir acceso a menores =
+   Sí** (queda FUERA del programa Diseñado para Familias). No apela a niños.
+4. **Seguridad de los datos (Data Safety) — llenada por IMPORTACIÓN CSV.** Play exporta/importa
+   un CSV (`~/Downloads/data_safety_export.csv`). Se generó el lleno con script:
+   `~/Downloads/data_safety_export_filled.csv`. Respuestas: recopila datos = Sí; encriptados en
+   tránsito = Sí; método de cuenta = **OAuth** (Google Sign-In); borrado por el usuario = **No**;
+   URL de eliminación de cuenta agregada. **10 tipos de datos declarados**: Nombre, Correo, ID de
+   usuario, Historial de compras, Otro contenido del usuario (respaldo de links), Ubicación
+   aproximada, Interacciones en la app, ID de dispositivo, Registros de fallos, Diagnóstico.
+   Criterio: Firebase/RevenueCat = **solo Recopila** (proveedor de servicio); **AdMob =
+   Recopila + Comparte** (Publicidad+Estadísticas+Seguridad). Nombre/Correo/backup = **Opcional**;
+   ID/compras/AdMob = **Obligatorio**. ⚠️ El campo `..._EPHEMERAL` exige valor explícito → se puso
+   **`false`** en los 10 (no efímeros). Script en `/tmp/fill_ds.py` (regenerable).
+5. **ID de publicidad = Sí** (AdMob inyecta `AD_ID`); finalidades: Publicidad, Estadísticas,
+   Seguridad/prevención de fraudes.
+6. **Funciones financieras = ninguna.**
+7. **Etiquetas de la app:** **Productividad + Bloc de notas** (el catálogo cerrado de Play NO
+   tiene "bookmark/read later/organizador"; esas dos son las más fieles). Categoría: Productividad.
+8. **Detalles de contacto:** correo `lunasoftapps@gmail.com`; teléfono **vacío** (opcional, es
+   público); sitio web `https://rayancode28.github.io/linkvault/`.
+9. **Ficha de Play Store (idioma predeterminado = ESPAÑOL):** copy lista en español (nombre
+   `LinkVault: Guarda Links` 23 chars; descripción corta 72/80; descripción larga 2976/4000).
+   Traducida del documento ASO (`~/Desktop/Brayan/linkvault-aso-document.md`).
+10. **Nuevas páginas en GitHub Pages (docs/, committeadas + LIVE HTTP 200):**
+    - `docs/account-deletion.html` → `https://rayancode28.github.io/linkvault/account-deletion.html`
+      (borrado de cuenta/datos vía correo; la app solo tiene `signOut`, NO borra el blob de la
+      nube — el borrado real es por correo a 30 días).
+    - `docs/index.html` → landing Neon en la **raíz** `https://rayancode28.github.io/linkvault/`
+      (hero + 6 features + 3 pasos + footer con privacidad/eliminación/contacto). Sin botón GitHub.
+
 ### 🔲 Pendiente (próximas sesiones)
-0. **Confirmar pruebas de la prueba interna** (instalar desde el enlace, arranque sin crash,
-   flujo básico). Activar **GitHub Pages** + pegar URL de privacidad en Play.
+-1. **Recursos gráficos de la ficha** (Play los exige, NO son texto): **ícono 512×512** PNG,
+   **gráfico destacado 1024×500**, **mín. 2 capturas** (idealmente las 5 del plan ASO sección 3).
+   Bloquea publicar la ficha.
+0. **Pegar URL de privacidad en Play Console** (Contenido de la app + Data Safety) — manual,
+   sin código. Es lo único accionable sin esperar verificaciones de cuentas.
 1. **Probar cloud backup en móvil real** — ✅ HECHO en sesión 11 (sign-in + respaldar/restaurar).
 2. **AdMob** (cuenta en verificación) — al activarse: crear app (manual, sin Play) + ad unit
    Banner; reemplazar App ID de test en `AndroidManifest.xml` (línea ~41) por el real
@@ -268,8 +326,8 @@ Link detail, add link, edit link y collection form NO son rutas — son bottom s
    - Configurar RTDN (Pub/Sub) para revocar entitlement en reembolsos.
    - Probar compras sandbox (tester licenciado), subir AAB.
 4. ~~Quitar los 2 bloques TEMP de main.dart~~ — ✅ HECHO (sesión 11, main.dart limpio).
-5. ~~Política de privacidad~~ — ✅ pantalla + HTML listos (sesión 11). Solo falta activar
-   GitHub Pages y pegar la URL pública en Play.
+5. ~~Política de privacidad~~ — ✅ pantalla + HTML listos (sesión 11), **GitHub Pages activo
+   (sesión 12)**. Solo falta pegar la URL pública en Play Console (ver punto 0).
 6. **Onboarding assets** — las 3 pantallas usan arte vectorial generado en código (no imágenes externas)
 7. (Opcional) Tema claro — la fila de Settings es informativa por ahora
 
@@ -307,7 +365,7 @@ flutter clean && flutter pub get
 | RevenueCat | Test Store OK | Org "Lunasof Apps"; entitlement `Link Vault Pro`; offering Monthly+Yearly. `test_` key en `dart_defines.json` (gitignored). Falta conectar Play → key `goog_` |
 | Firebase | Activo (Blaze) | Proyecto `linkvault-e0799`; Auth Google + Cloud Storage; reglas publicadas. `google-services.json` en `android/app/` con SHA-1/256 de Play App Signing + debug/upload (committeado) |
 | AdMob | En verificación | IDs de TEST en código; reemplazar al activarse la cuenta |
-| GitHub | Activo (**PÚBLICO**) | github.com/RayanCode28/linkvault. GitHub Pages para `docs/privacy-policy.html` (pendiente activar) |
+| GitHub | Activo (**PÚBLICO**) | github.com/RayanCode28/linkvault. **GitHub Pages activo (HTTP 200)** → landing raíz `https://rayancode28.github.io/linkvault/` + `/privacy-policy.html` + `/account-deletion.html` (todo en `docs/`) |
 
 ## Notas Importantes
 - Gradle directo requiere `JAVA_HOME="/Applications/Android Studio.app/Contents/jbr/Contents/Home"` (no hay JDK del sistema); `flutter build` lo resuelve solo
