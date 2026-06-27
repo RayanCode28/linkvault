@@ -306,30 +306,134 @@ Link detail, add link, edit link y collection form NO son rutas — son bottom s
     - `docs/index.html` → landing Neon en la **raíz** `https://rayancode28.github.io/linkvault/`
       (hero + 6 features + 3 pasos + footer con privacidad/eliminación/contacto). Sin botón GitHub.
 
+### ✅ Completado (Sesión 14) — sin commits de código (trabajo en consolas)
+1. **Cuenta de Google Play 100% APROBADA.**
+2. **Recursos gráficos + contenido de la ficha** — el dev generó ícono 512×512, gráfico
+   destacado 1024×500 (estilo Neon: fondo `#030A06`, acento `#00FFD1`) y capturas; llenó el
+   contenido de la ficha en Play Console.
+3. **Suscripciones Pro creadas y ACTIVAS** (Monetizar→Productos→Suscripciones):
+   - `linkvault_pro_monthly` — "LinkVault Pro (Mensual)" — plan base `monthly`, **P1M**, **$1.99 USD**
+   - `linkvault_pro_yearly` — "LinkVault Pro (Anual)" — plan base `yearly`, **P1Y**, **$9.99 USD**
+   - Ambas: categoría fiscal "Ventas de apps digitales", cumplimiento "Servicio", gracia 7 días,
+     suspensión auto, "volver a suscribirse" Permitir. USD base + autoconversión por región.
+     Sin free trial al inicio (se añade luego en Ofertas). Google retiene 15% (primeros $1M/año).
+   - **Identificadores para RevenueCat** (formato `suscripción:planBase`):
+     `linkvault_pro_monthly:monthly` y `linkvault_pro_yearly:yearly` → entitlement `Link Vault Pro`,
+     offering `default`. El paywall carga precios reales de la store, NADA hardcodeado que tocar.
+4. **Plan de prueba cerrada (12 testers × 14 días):** el dev contratará 12 personas. La build
+   de prueba interna actual corre Free (sin keys). Para que prueben TODO (Pro/cloud backup) hay
+   que **compilar un AAB NUEVO CON la key `goog_`** (subir versionCode, ej. `1.2.1+2`) y agregar
+   a los 12 como **License testers** (compras de prueba SIN cobro real). AdMob: dejar IDs de TEST
+   en esa build. Ficha es compartida (no se rehace); subir versiones nuevas NO reinicia el contador.
+
+### ✅ Completado (Sesión 15) — sin commits (`.gitignore` modificado, sin commit todavía)
+**Foco: avanzar la integración Play ↔ RevenueCat. Fases 1, 2 y parte de 3 hechas; faltan
+productos + `goog_` (bloqueado por propagación de permisos de Google, hasta 24h).**
+
+1. **Correo de Verificación de Desarrolladores de Android (Play)** — Google registró
+   automáticamente LinkVault con la clave de Play App Signing. **NO hay nada que hacer**: la
+   app aparece "Registrada" en la página principal de la cuenta. El correo solo pediría acción
+   si distribuyeras fuera de Play (no es el caso). Confirmado por el dev.
+2. **FASE 1 ✅ — Service Account en Google Cloud creado.**
+   - Proyecto: `linkvault-e0799` (reusando el de Firebase, decisión deliberada para no duplicar
+     consolas/facturación).
+   - SA: **`revenuecat-play-integration@linkvault-e0799.iam.gserviceaccount.com`**.
+   - Clave JSON descargada y movida al proyecto como **`revenuecat-service-account.json`**
+     (raíz). **Gitignored** vía patrón nuevo `*-service-account*.json` en `.gitignore` (+ línea
+     explícita del archivo). Original en `~/Downloads` ya **borrada** — única copia vive en el
+     working tree, NO en repo. `git check-ignore` verificado.
+   - **API "Google Play Android Developer" habilitada** en el mismo proyecto GCloud.
+3. **FASE 2 ✅ — Service Account invitado en Play Console** con permisos mínimos:
+   - ☑ Ver la información de la app (requerido por Play como prerequisito; auto-marca también
+     "Ver información de calidad" — no se puede desmarcar, no afecta).
+   - ☑ Ver los datos financieros
+   - ☑ Administrar los pedidos y las suscripciones
+   - **Sin Administrador**, ni Versiones, ni Play Store, ni nada de escritura — principio de
+     mínimo privilegio.
+4. **FASE 3 (parcial) — RevenueCat configurado, productos pendientes.**
+   - **Proyecto renombrado** en RevenueCat de "Lunasof Apps" (duplicaba la org) a **"LinkVault"**.
+     Solo cosmético, no afecta keys/IDs/entitlement/código.
+   - **App de Google Play creada en RevenueCat** con package `com.rayancode98.linkvault`.
+     Campo "Financial reports bucket ID" dejado VACÍO (solo sirve para importar historial
+     de ventas viejas; LinkVault no tiene).
+   - **JSON del SA subido a RevenueCat** correctamente.
+   - ⚠️ Apareció warning **Pub/Sub (RTDN)** — **DECISIÓN: POSTPONER**. Suscripciones funcionan
+     igual sin RTDN; solo los refunds/cancels tardan minutos/horas en revocarse en lugar de
+     segundos. Aceptable para prueba cerrada (12 testers). **Cerrar antes del lanzamiento
+     público a producción** (queda en pendientes abajo).
+   - ⏳ "**Credentials need attention**" (3 APIs en rojo: subscriptions/inappproducts/monetization)
+     al terminar la subida del JSON. **Es la propagación de permisos del SA en Play**
+     (oficial Google: hasta 24h; típicamente 5–30 min). NO es error — solo esperar. Al pasar
+     a verde, retomamos creación de productos.
+
+### ✅ Completado (Sesión 16) — sin commits aún (`.gitignore` + `pubspec.yaml` + CLAUDE.md modificados)
+**Foco: cerrar Play ↔ RevenueCat end-to-end + AAB v1.2.1+2 con `goog_` publicado en
+pista Alpha + testers de Fiverr enrolados. Todo el flujo Pro ya es comprable en sandbox.**
+
+1. **FASE 3 COMPLETADA en RevenueCat** (credenciales pasaron a verde tras propagación, < 24h):
+   - **Productos creados vía "Import Products"** (RevenueCat los trajo automáticamente
+     desde Play con los IDs correctos `linkvault_pro_monthly:monthly` /
+     `linkvault_pro_yearly:yearly`; Backwards compatible quedó en `Sí` para ambos —
+     coincide con Play, no se tocó). Más rápido que el formulario manual.
+   - **Entitlement `Link Vault Pro`**: se hizo **Detach** de los 2 productos viejos de
+     Test Store (sesión 10) y se hizo **Attach** de los 2 nuevos de LinkVault Android.
+   - **Offering `default`**: en cada package (Monthly $rc_monthly / Yearly $rc_annual) el
+     slot LinkVault Android se vinculó al producto correspondiente; el slot Test Store
+     se puso en `No product` (limpieza, ya no se usa).
+2. **API key `goog_BZTfYEtKHSskkbORYrniCsFOETI`** copiada y pegada en `dart_defines.json`
+   (reemplazó la `test_` anterior). Archivo sigue gitignored.
+3. **`pubspec.yaml`** subido de `1.2.0+1` → **`1.2.1+2`** (versionCode +1 obligatorio).
+4. **AAB compilado y firmado** (`build/app/outputs/bundle/release/app-release.aab`, 68 MB)
+   con `flutter build appbundle --release --dart-define-from-file=dart_defines.json`.
+   - Warnings de KGP/cupertino_icons son de siempre, no rompen.
+   - Firmado con `upload-keystore.jks` + `key.properties` (intactos).
+   - AdMob con IDs de TEST (cuenta aún en verificación, no se pasa `ADMOB_BANNER_ID`).
+5. **Pista de prueba cerrada "Alpha" en Play Console**:
+   - Países: **177 + Resto del mundo** (todos).
+   - Lista de probadores: se subió el **CSV de testers que mandó el seller de Fiverr**.
+   - **License testers**: la MISMA lista se seleccionó en Configuración → Pruebas de
+     licencias con respuesta `LICENSED` (compras sandbox sin cobro real). Una sola lista
+     para los 2 propósitos (testers de pista + license testers) — más limpio que mantener
+     dos espejos.
+   - Versión `2 (1.2.1)` enviada a Google para revisión.
+6. **Enlace de participación enviado al seller de Fiverr.** Seller confirmó recepción y
+   empezará a enrolar a los testers en cuanto Google publique (4–12h típicos). Primer
+   update de progreso esperado en 2-3 días; reporte final en 14 días.
+7. **Decisión sobre demo Pro account para testers**: NO se da credencial de Pro. La app
+   no tiene login in-app; Pro vive en la cuenta de Google Play del tester. La forma
+   correcta de que prueben Pro es justamente License testers (compras sandbox). Se
+   explicó al seller en el mensaje de respuesta.
+8. **`.gitignore`** confirmado con el patrón `*-service-account*.json` de sesión 15
+   (queda en este commit junto con `pubspec.yaml` y la documentación).
+
+### 🔜 Mientras corre la prueba cerrada (próximos 14 días, sin sesión activa)
+- **Esperar publicación de Google** (revisar Vista General de Publicación). Cuando pase
+  a "Disponible para verificadores internos", los testers se enrolarán solos vía el link.
+- **Updates parciales del seller** llegan ~día 2-3. Pasarlos a Claude si surgen bugs.
+- **Pequeña actualización obligatoria** en algún momento entre día 5-12 (Google requiere
+  ≥1 update de versionCode durante la ventana). Cualquier cambio mínimo cuenta — subir
+  `1.2.2+3` y resubir AAB a la misma pista. NO reinicia el contador de 14 días.
+
 ### 🔲 Pendiente (próximas sesiones)
--1. **Recursos gráficos de la ficha** (Play los exige, NO son texto): **ícono 512×512** PNG,
-   **gráfico destacado 1024×500**, **mín. 2 capturas** (idealmente las 5 del plan ASO sección 3).
-   Bloquea publicar la ficha.
 0. **Pegar URL de privacidad en Play Console** (Contenido de la app + Data Safety) — manual,
-   sin código. Es lo único accionable sin esperar verificaciones de cuentas.
-1. **Probar cloud backup en móvil real** — ✅ HECHO en sesión 11 (sign-in + respaldar/restaurar).
-2. **AdMob** (cuenta en verificación) — al activarse: crear app (manual, sin Play) + ad unit
+   sin código. Pendiente de confirmar si ya quedó pegada en sesión 14 (cuando se llenó la
+   ficha). Si no, hacerlo cuanto antes (Play lo exige para publicar a producción).
+1. **AdMob** (cuenta en verificación) — al activarse: crear app (manual, sin Play) + ad unit
    Banner; reemplazar App ID de test en `AndroidManifest.xml` (línea ~41) por el real
    (`ca-app-pub-xxx~yyy`); el ad unit real va por `--dart-define=ADMOB_BANNER_ID=` SOLO en
    release (en dev se dejan los de test para no arriesgar ban por auto-clics).
-3. **Google Play** (cuenta en verificación) — al activarse:
-   - Crear suscripciones `linkvault_pro_monthly` / `linkvault_pro_yearly` (mismos IDs en RevenueCat).
-   - Conectar Play↔RevenueCat (Service Account JSON) → aparece la key `goog_`; ponerla en
-     `dart_defines.json` para release.
-   - Agregar a Firebase la **SHA-1 de Play App Signing** (Google re-firma el AAB) o Google
-     Sign-In falla en la app publicada.
-   - Configurar RTDN (Pub/Sub) para revocar entitlement en reembolsos.
-   - Probar compras sandbox (tester licenciado), subir AAB.
-4. ~~Quitar los 2 bloques TEMP de main.dart~~ — ✅ HECHO (sesión 11, main.dart limpio).
-5. ~~Política de privacidad~~ — ✅ pantalla + HTML listos (sesión 11), **GitHub Pages activo
-   (sesión 12)**. Solo falta pegar la URL pública en Play Console (ver punto 0).
-6. **Onboarding assets** — las 3 pantallas usan arte vectorial generado en código (no imágenes externas)
-7. (Opcional) Tema claro — la fila de Settings es informativa por ahora
+2. **Pequeña actualización durante los 14 días** — Google exige ≥1 update de versionCode
+   mientras corre la ventana de prueba cerrada (lo recordó el seller de Fiverr). Cualquier
+   cambio mínimo cuenta. Hacer entre día 5-12. NO reinicia el contador.
+3. **Configurar RTDN (Pub/Sub)** Play↔RevenueCat para revocar entitlement en reembolsos en
+   SEGUNDOS en vez de minutos/horas. Postpuesto en sesión 15 (warning de Pub/Sub visible
+   en RevenueCat). **OBLIGATORIO antes del lanzamiento público a producción.**
+4. **Recibir update del seller** (~día 2-3) con hallazgos iniciales. Procesar bugs/regresiones
+   que reporte si los hay.
+5. **Reporte final del seller** (~día 14) + guía para envío a producción.
+6. **Promover a producción** una vez completados los 14 días con ≥12 testers activos.
+7. **Onboarding assets** — las 3 pantallas usan arte vectorial generado en código (no imágenes externas)
+8. (Opcional) Tema claro — la fila de Settings es informativa por ahora
 
 ## Comandos Útiles
 ```bash
@@ -361,8 +465,8 @@ flutter clean && flutter pub get
 ## Servicios Externos
 | Servicio | Estado | Notas |
 |----------|--------|-------|
-| Google Play Console | Aprobada · prueba interna PUBLICADA | Bundle ID: com.rayancode98.linkvault. AAB v1.2.0+1 "disponible para verificadores internos". Play App Signing activo (SHA-1 14:E6:D1:3A…). Faltan subs + Play↔RevenueCat + RTDN para producción |
-| RevenueCat | Test Store OK | Org "Lunasof Apps"; entitlement `Link Vault Pro`; offering Monthly+Yearly. `test_` key en `dart_defines.json` (gitignored). Falta conectar Play → key `goog_` |
+| Google Play Console | **Aprobada** · prueba cerrada Alpha PUBLICANDO `v1.2.1+2` | Bundle ID: com.rayancode98.linkvault. Subs `linkvault_pro_monthly` ($1.99, plan base `monthly`) + `linkvault_pro_yearly` ($9.99, plan base `yearly`) ACTIVAS y vinculadas a RevenueCat. Play App Signing activo (SHA-1 14:E6:D1:3A…). Service Account de RevenueCat con permisos mínimos (Ver info app + Ver datos financieros + Administrar pedidos). Pista **Alpha** con AAB v1.2.1+2 enviado a revisión (sesión 16); testers del seller Fiverr en lista (también License testers vía la misma lista). Pendiente: pegar URL de privacidad en Contenido + Data Safety, RTDN |
+| RevenueCat | **Conectado end-to-end** | Org "Lunasof Apps", proyecto **"LinkVault"**; entitlement `Link Vault Pro` con productos `linkvault_pro_monthly:monthly` + `linkvault_pro_yearly:yearly` (LinkVault Android, importados vía "Import Products" desde Play); offering `default` con packages Monthly/Yearly apuntando a esos productos. `goog_BZTfYEtKHSskkbORYrniCsFOETI` en `dart_defines.json` (gitignored, sin la `test_`). Pub/Sub warning visible → RTDN POSTPUESTO (obligatorio antes de producción pública) |
 | Firebase | Activo (Blaze) | Proyecto `linkvault-e0799`; Auth Google + Cloud Storage; reglas publicadas. `google-services.json` en `android/app/` con SHA-1/256 de Play App Signing + debug/upload (committeado) |
 | AdMob | En verificación | IDs de TEST en código; reemplazar al activarse la cuenta |
 | GitHub | Activo (**PÚBLICO**) | github.com/RayanCode28/linkvault. **GitHub Pages activo (HTTP 200)** → landing raíz `https://rayancode28.github.io/linkvault/` + `/privacy-policy.html` + `/account-deletion.html` (todo en `docs/`) |

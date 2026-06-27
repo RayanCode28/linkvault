@@ -26,6 +26,10 @@ migrate_working_dir/
 # Local secrets injected via --dart-define-from-file (RevenueCat/AdMob keys)
 dart_defines.json
 
+# Service Account JSON para RevenueCat ↔ Google Play (NO subir al repo)
+revenuecat-service-account.json
+*-service-account*.json
+
 # Flutter/Dart/Pub related
 **/doc/api/
 **/ios/Flutter/.last_build_id
