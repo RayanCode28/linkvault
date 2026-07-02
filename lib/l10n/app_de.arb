@@ -96,6 +96,8 @@
   "backupNow": "Jetzt sichern",
   "restoreNow": "Wiederherstellen",
   "signOut": "Abmelden",
+  "signOutConfirmTitle": "Abmelden?",
+  "signOutConfirmBody": "Du musst dich erneut anmelden, um zu sichern oder wiederherzustellen.",
   "backupComplete": "Backup abgeschlossen",
   "backupFailed": "Backup fehlgeschlagen. Bitte erneut versuchen.",
   "restoreConfirmTitle": "Backup wiederherstellen?",

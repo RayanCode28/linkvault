@@ -323,6 +323,13 @@ class AppLocalizationsPt extends AppLocalizations {
   String get signOut => 'Terminar sessão';
 
   @override
+  String get signOutConfirmTitle => 'Terminar sessão?';
+
+  @override
+  String get signOutConfirmBody =>
+      'Terás de iniciar sessão novamente para fazer backup ou restaurar.';
+
+  @override
   String get backupComplete => 'Backup concluído';
 
   @override

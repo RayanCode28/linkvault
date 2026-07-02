@@ -406,6 +406,53 @@ pista Alpha + testers de Fiverr enrolados. Todo el flujo Pro ya es comprable en 
 8. **`.gitignore`** confirmado con el patrón `*-service-account*.json` de sesión 15
    (queda en este commit junto con `pubspec.yaml` y la documentación).
 
+### ✅ Completado (Sesión 17) — AAB v1.2.2+4 (fixes de testers) subido a Alpha
+**Foco: implementar el primer lote de feedback de testers (Oppo CPH2127, Android 12) uno
+por uno con prueba entre cada punto, + AAB nuevo que cumple el update mínimo obligatorio de
+la ventana de prueba cerrada.** Todo probado en emulador por el dev. `flutter analyze` limpio,
+15 tests ✓.
+1. **Fix favoritos (el más importante)** — `LinksProvider.toggleFavorite` hacía `await` de la
+   escritura en SQLite ANTES de `notifyListeners`, así que en móviles de gama baja el corazón
+   no respondía al primer toque (el usuario tocaba 2-3 veces). Ahora es **actualización
+   optimista**: `_replace(updated)` refresca UI y notifica primero, luego persiste en DB. Arregla
+   también una carrera latente. `markRead` tiene el mismo patrón pero NO se tocó (no reportado).
+2. **Confirmación al cerrar sesión** — `cloud_backup_sheet.dart` `_signOut` ahora muestra
+   `AlertDialog` (confirmar en color danger) antes de salir. 2 strings nuevas × 5 idiomas
+   (`signOutConfirmTitle` / `signOutConfirmBody`).
+3. **Pantalla de inicio (splash)** — antes fondo blanco/default → destello blanco. Ahora
+   fondo oscuro de marca + ícono centrado, en TODAS las versiones de Android:
+   - `res/values/colors.xml` (nuevo): `splash_bg = #FF030A06` (AppColors.bg).
+   - `drawable/launch_background.xml` + `drawable-v21/`: color + `@mipmap/ic_launcher_foreground`
+     centrado (Android ≤11).
+   - `res/values-v31/styles.xml` + `res/values-night-v31/` (nuevos): SplashScreen API de
+     **Android 12+** (`windowSplashScreenBackground` + `windowSplashScreenAnimatedIcon`). Sin
+     esto Android 12 mostraba splash claro por defecto. **Este era el caso del tester del Oppo.**
+   - Nota: el splash nativo NO admite texto arbitrario; "nombre de la app" quedó fuera (se haría
+     con un splash en Flutter si se pide). El dev aprobó "fondo oscuro + ícono".
+4. **Contraste del botón "cerrar sesión"** — era `textSec` (#5E9278) a 12.5px (muy tenue).
+   Ahora `TextButton.icon` con ícono logout + `AppColors.text` (#E4F5EE) a 14px seminegrita.
+5. **"Restaurar compras" en Ajustes** (añadido a raíz de una duda del dev sobre "iniciar
+   sesión"). **Decisión clave de arquitectura reafirmada:** NO se agrega login genérico. Pro
+   está atado a la cuenta de Google Play (App User ID anónimo en RevenueCat), NO a login in-app,
+   y así se declaró a Play ("App access = No"). El caso "cambié de móvil" se resuelve con
+   **restaurar compras**, no con login. El enlace bajo el banner de Ajustes ahora es dinámico:
+   Pro → "Administrar suscripción" (como antes); Free → **"Restaurar compras"** (llama a
+   `PurchaseService.restore()`, activa Pro si hay suscripción en esa cuenta Play). Reutiliza
+   strings del paywall (`restorePurchases`/`restoreSuccess`/`restoreNothing`/`purchasesUnavailable`),
+   nada nuevo que traducir. El sign-in de Google **sigue solo** para cloud backup (Pro).
+   - Validado: con cuenta que NO ha comprado, restore dice "No se encontraron compras previas"
+     = correcto (solo busca compras existentes). El dev NO está en License testers, así que no
+     probó el ciclo de compra completo — se dio por bueno.
+6. **Tema claro/sistema y "borrar datos" — APLAZADOS a producción** (post-aprobación). Toda la
+   app usa `AppColors` oscuros hardcodeados; tema claro = refactor grande, mal momento a mitad
+   de prueba, y contradice "solo oscuro" (sesión 6). El tester lo pidió; se le avisó que llega después.
+7. **URL de privacidad en Play Console: YA PEGADA** (lo confirmó el dev). Pendiente 0 cerrado.
+8. **`pubspec.yaml` → `1.2.2+4`**. Ojo: `1.2.2+3` (versionCode 3) dio error "ya se usó el código
+   de la versión 3" al subir → se subió a **+4**. AAB firmado (upload keystore), key `goog_`,
+   AdMob IDs de TEST (cuenta aún en verificación). Copia en `~/Downloads/linkvault-1.2.2+4.aab`.
+   Se subió a la MISMA pista **Alpha** (cumple el update mínimo, NO reinicia el contador de 14 días).
+9. Mensaje de "qué probar" entregado al seller en ES e inglés (5 puntos de arriba).
+
 ### 🔜 Mientras corre la prueba cerrada (próximos 14 días, sin sesión activa)
 - **Esperar publicación de Google** (revisar Vista General de Publicación). Cuando pase
   a "Disponible para verificadores internos", los testers se enrolarán solos vía el link.
@@ -415,16 +462,15 @@ pista Alpha + testers de Fiverr enrolados. Todo el flujo Pro ya es comprable en 
   `1.2.2+3` y resubir AAB a la misma pista. NO reinicia el contador de 14 días.
 
 ### 🔲 Pendiente (próximas sesiones)
-0. **Pegar URL de privacidad en Play Console** (Contenido de la app + Data Safety) — manual,
-   sin código. Pendiente de confirmar si ya quedó pegada en sesión 14 (cuando se llenó la
-   ficha). Si no, hacerlo cuanto antes (Play lo exige para publicar a producción).
+0. ✅ **URL de privacidad en Play Console — HECHO** (confirmado por el dev en sesión 17).
+0b. ✅ **Update mínimo de versionCode — HECHO** (AAB v1.2.2+4 subido a Alpha en sesión 17).
 1. **AdMob** (cuenta en verificación) — al activarse: crear app (manual, sin Play) + ad unit
    Banner; reemplazar App ID de test en `AndroidManifest.xml` (línea ~41) por el real
    (`ca-app-pub-xxx~yyy`); el ad unit real va por `--dart-define=ADMOB_BANNER_ID=` SOLO en
    release (en dev se dejan los de test para no arriesgar ban por auto-clics).
-2. **Pequeña actualización durante los 14 días** — Google exige ≥1 update de versionCode
-   mientras corre la ventana de prueba cerrada (lo recordó el seller de Fiverr). Cualquier
-   cambio mínimo cuenta. Hacer entre día 5-12. NO reinicia el contador.
+2. **Tema claro/oscuro/sistema + "borrar datos"** (pedido por testers, APLAZADO en sesión 17
+   a post-aprobación) — tema claro implica refactor grande de la paleta (todo `AppColors` es
+   oscuro hardcodeado). Hacer en producción, no durante la prueba cerrada.
 3. **Configurar RTDN (Pub/Sub)** Play↔RevenueCat para revocar entitlement en reembolsos en
    SEGUNDOS en vez de minutos/horas. Postpuesto en sesión 15 (warning de Pub/Sub visible
    en RevenueCat). **OBLIGATORIO antes del lanzamiento público a producción.**
@@ -465,7 +511,7 @@ flutter clean && flutter pub get
 ## Servicios Externos
 | Servicio | Estado | Notas |
 |----------|--------|-------|
-| Google Play Console | **Aprobada** · prueba cerrada Alpha PUBLICANDO `v1.2.1+2` | Bundle ID: com.rayancode98.linkvault. Subs `linkvault_pro_monthly` ($1.99, plan base `monthly`) + `linkvault_pro_yearly` ($9.99, plan base `yearly`) ACTIVAS y vinculadas a RevenueCat. Play App Signing activo (SHA-1 14:E6:D1:3A…). Service Account de RevenueCat con permisos mínimos (Ver info app + Ver datos financieros + Administrar pedidos). Pista **Alpha** con AAB v1.2.1+2 enviado a revisión (sesión 16); testers del seller Fiverr en lista (también License testers vía la misma lista). Pendiente: pegar URL de privacidad en Contenido + Data Safety, RTDN |
+| Google Play Console | **Aprobada** · prueba cerrada Alpha en `v1.2.2+4` | Bundle ID: com.rayancode98.linkvault. Subs `linkvault_pro_monthly` ($1.99, plan base `monthly`) + `linkvault_pro_yearly` ($9.99, plan base `yearly`) ACTIVAS y vinculadas a RevenueCat. Play App Signing activo (SHA-1 14:E6:D1:3A…). Service Account de RevenueCat con permisos mínimos (Ver info app + Ver datos financieros + Administrar pedidos). Pista **Alpha**: AAB **v1.2.2+4** (fixes de testers, sesión 17) — ojo versionCode 3 salió "ya usado", se subió a +4. Testers del seller Fiverr en lista (también License testers vía la misma lista). URL de privacidad YA pegada (Contenido + Data Safety). Pendiente: RTDN antes de producción |
 | RevenueCat | **Conectado end-to-end** | Org "Lunasof Apps", proyecto **"LinkVault"**; entitlement `Link Vault Pro` con productos `linkvault_pro_monthly:monthly` + `linkvault_pro_yearly:yearly` (LinkVault Android, importados vía "Import Products" desde Play); offering `default` con packages Monthly/Yearly apuntando a esos productos. `goog_BZTfYEtKHSskkbORYrniCsFOETI` en `dart_defines.json` (gitignored, sin la `test_`). Pub/Sub warning visible → RTDN POSTPUESTO (obligatorio antes de producción pública) |
 | Firebase | Activo (Blaze) | Proyecto `linkvault-e0799`; Auth Google + Cloud Storage; reglas publicadas. `google-services.json` en `android/app/` con SHA-1/256 de Play App Signing + debug/upload (committeado) |
 | AdMob | En verificación | IDs de TEST en código; reemplazar al activarse la cuenta |

@@ -323,6 +323,13 @@ class AppLocalizationsEn extends AppLocalizations {
   String get signOut => 'Sign out';
 
   @override
+  String get signOutConfirmTitle => 'Sign out?';
+
+  @override
+  String get signOutConfirmBody =>
+      'You\'ll need to sign in again to back up or restore.';
+
+  @override
   String get backupComplete => 'Backup complete';
 
   @override

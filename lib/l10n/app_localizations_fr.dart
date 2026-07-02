@@ -322,6 +322,13 @@ class AppLocalizationsFr extends AppLocalizations {
   String get signOut => 'Se déconnecter';
 
   @override
+  String get signOutConfirmTitle => 'Se déconnecter ?';
+
+  @override
+  String get signOutConfirmBody =>
+      'Vous devrez vous reconnecter pour sauvegarder ou restaurer.';
+
+  @override
   String get backupComplete => 'Sauvegarde terminée';
 
   @override

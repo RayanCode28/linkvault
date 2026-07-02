@@ -96,6 +96,8 @@
   "backupNow": "Fazer backup agora",
   "restoreNow": "Restaurar",
   "signOut": "Terminar sessão",
+  "signOutConfirmTitle": "Terminar sessão?",
+  "signOutConfirmBody": "Terás de iniciar sessão novamente para fazer backup ou restaurar.",
   "backupComplete": "Backup concluído",
   "backupFailed": "Falha no backup. Tenta novamente.",
   "restoreConfirmTitle": "Restaurar backup?",

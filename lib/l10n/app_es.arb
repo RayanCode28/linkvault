@@ -96,6 +96,8 @@
   "backupNow": "Respaldar ahora",
   "restoreNow": "Restaurar",
   "signOut": "Cerrar sesión",
+  "signOutConfirmTitle": "¿Cerrar sesión?",
+  "signOutConfirmBody": "Tendrás que iniciar sesión de nuevo para respaldar o restaurar.",
   "backupComplete": "Respaldo completado",
   "backupFailed": "Falló el respaldo. Inténtalo de nuevo.",
   "restoreConfirmTitle": "¿Restaurar respaldo?",

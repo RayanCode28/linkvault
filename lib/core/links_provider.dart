@@ -131,7 +131,13 @@ class LinksProvider extends ChangeNotifier {
   Future<void> toggleFavorite(int id) async {
     final link = linkById(id);
     if (link == null) return;
-    await updateLink(link.copyWith(favorite: !link.favorite));
+    // Optimistic update: flip in memory and notify the UI first so the heart
+    // responds on the first tap, then persist to SQLite in the background.
+    // Awaiting the DB write before notifying made the toggle feel unresponsive
+    // on slower devices (users tapped 2-3 times) and risked a race.
+    final updated = link.copyWith(favorite: !link.favorite);
+    _replace(updated);
+    await _db.updateLink(updated);
   }
 
   Future<void> markRead(int id) async {

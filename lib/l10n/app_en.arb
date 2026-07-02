@@ -137,6 +137,8 @@
   "backupNow": "Back up now",
   "restoreNow": "Restore",
   "signOut": "Sign out",
+  "signOutConfirmTitle": "Sign out?",
+  "signOutConfirmBody": "You'll need to sign in again to back up or restore.",
   "backupComplete": "Backup complete",
   "backupFailed": "Backup failed. Please try again.",
   "restoreConfirmTitle": "Restore backup?",

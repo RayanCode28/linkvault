@@ -96,6 +96,8 @@
   "backupNow": "Sauvegarder maintenant",
   "restoreNow": "Restaurer",
   "signOut": "Se déconnecter",
+  "signOutConfirmTitle": "Se déconnecter ?",
+  "signOutConfirmBody": "Vous devrez vous reconnecter pour sauvegarder ou restaurer.",
   "backupComplete": "Sauvegarde terminée",
   "backupFailed": "Échec de la sauvegarde. Réessaie.",
   "restoreConfirmTitle": "Restaurer la sauvegarde ?",

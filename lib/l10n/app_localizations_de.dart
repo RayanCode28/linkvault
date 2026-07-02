@@ -325,6 +325,13 @@ class AppLocalizationsDe extends AppLocalizations {
   String get signOut => 'Abmelden';
 
   @override
+  String get signOutConfirmTitle => 'Abmelden?';
+
+  @override
+  String get signOutConfirmBody =>
+      'Du musst dich erneut anmelden, um zu sichern oder wiederherzustellen.';
+
+  @override
   String get backupComplete => 'Backup abgeschlossen';
 
   @override

@@ -324,6 +324,13 @@ class AppLocalizationsEs extends AppLocalizations {
   String get signOut => 'Cerrar sesión';
 
   @override
+  String get signOutConfirmTitle => '¿Cerrar sesión?';
+
+  @override
+  String get signOutConfirmBody =>
+      'Tendrás que iniciar sesión de nuevo para respaldar o restaurar.';
+
+  @override
   String get backupComplete => 'Respaldo completado';
 
   @override

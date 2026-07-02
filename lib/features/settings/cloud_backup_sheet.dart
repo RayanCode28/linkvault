@@ -67,6 +67,29 @@ class _CloudBackupSheetState extends State<CloudBackupSheet> {
   }
 
   Future<void> _signOut() async {
+    final confirmed = await showDialog<bool>(
+      context: context,
+      builder: (ctx) => AlertDialog(
+        backgroundColor: AppColors.elevated,
+        title: Text(ctx.l10n.signOutConfirmTitle,
+            style: const TextStyle(color: AppColors.text, fontSize: 16)),
+        content: Text(ctx.l10n.signOutConfirmBody,
+            style: const TextStyle(color: AppColors.textSec, fontSize: 13)),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(ctx, false),
+            child: Text(ctx.l10n.cancel,
+                style: const TextStyle(color: AppColors.textSec)),
+          ),
+          TextButton(
+            onPressed: () => Navigator.pop(ctx, true),
+            child: Text(ctx.l10n.signOut,
+                style: const TextStyle(color: AppColors.danger)),
+          ),
+        ],
+      ),
+    );
+    if (confirmed != true) return;
     await BackupService.signOut();
     if (!mounted) return;
     setState(() {
@@ -258,11 +281,15 @@ class _CloudBackupSheetState extends State<CloudBackupSheet> {
                 ),
               ],
               const SizedBox(height: 6),
-              TextButton(
+              TextButton.icon(
                 onPressed: _busy ? null : _signOut,
-                child: Text(context.l10n.signOut,
+                icon: const Icon(Icons.logout_rounded,
+                    color: AppColors.text, size: 18),
+                label: Text(context.l10n.signOut,
                     style: const TextStyle(
-                        color: AppColors.textSec, fontSize: 12.5)),
+                        color: AppColors.text,
+                        fontSize: 14,
+                        fontWeight: FontWeight.w600)),
               ),
             ],
           ],

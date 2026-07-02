@@ -11,6 +11,7 @@ import 'package:url_launcher/url_launcher.dart';
 
 import '../../core/links_provider.dart';
 import '../../core/locale_provider.dart';
+import '../../core/purchase_service.dart';
 import '../../core/theme.dart';
 import '../../shared/l10n.dart';
 import '../../shared/widgets/screen_header.dart';
@@ -155,6 +156,24 @@ class _SettingsScreenState extends State<SettingsScreen> {
     );
   }
 
+  /// Restores a subscription bought on this Google Play account (e.g. after
+  /// reinstalling or switching phones). Pro is tied to the Play account, not
+  /// to an in-app login, so restoring is the correct recovery path.
+  Future<void> _restorePurchases() async {
+    if (!PurchaseService.isConfigured) {
+      _toast(context.l10n.purchasesUnavailable);
+      return;
+    }
+    final restored = await PurchaseService.restore();
+    if (!mounted) return;
+    if (restored) {
+      context.read<LinksProvider>().setPro(true);
+      _toast(context.l10n.restoreSuccess);
+    } else {
+      _toast(context.l10n.restoreNothing);
+    }
+  }
+
   Future<void> _sendFeedback() async {
     final uri = Uri(
       scheme: 'mailto',
@@ -225,24 +244,28 @@ class _SettingsScreenState extends State<SettingsScreen> {
                   ),
                 );
               }),
-              // Manage subscription link (Pro only): opens Google Play, where
-              // the user can cancel or switch plans. Google handles those.
+              // Under the banner: Pro users get "Manage subscription" (opens
+              // Google Play to cancel/switch plans); Free users get "Restore
+              // purchases" to recover a subscription bought on this Play
+              // account (e.g. after reinstalling or switching phones).
               Builder(builder: (context) {
-                if (!context.watch<LinksProvider>().isPro) {
-                  return const SizedBox.shrink();
-                }
+                final isPro = context.watch<LinksProvider>().isPro;
                 return Align(
                   alignment: Alignment.centerLeft,
                   child: TextButton(
-                    onPressed: () => _openUrl(
-                        'https://play.google.com/store/account/subscriptions'),
+                    onPressed: isPro
+                        ? () => _openUrl(
+                            'https://play.google.com/store/account/subscriptions')
+                        : _restorePurchases,
                     style: TextButton.styleFrom(
                       padding: const EdgeInsets.symmetric(horizontal: 4),
                       minimumSize: const Size(0, 0),
                       tapTargetSize: MaterialTapTargetSize.shrinkWrap,
                     ),
                     child: Text(
-                      context.l10n.manageSubscription,
+                      isPro
+                          ? context.l10n.manageSubscription
+                          : context.l10n.restorePurchases,
                       style: const TextStyle(
                         color: AppColors.textSec,
                         fontSize: 13,
