@@ -6,7 +6,6 @@ import '../features/onboarding/onboarding_screen.dart';
 import '../features/home/home_screen.dart';
 import '../features/collections/collections_screen.dart';
 import '../features/collections/collection_detail_screen.dart';
-import '../features/search/search_screen.dart';
 import '../features/settings/settings_screen.dart';
 import '../features/settings/privacy_policy_screen.dart';
 import '../features/paywall/paywall_screen.dart';
@@ -48,11 +47,6 @@ Future<GoRouter> buildRouter() async {
                 builder: (ctx, state) => const SettingsScreen()),
           ]),
         ],
-      ),
-      // Search is no longer a tab: it opens from the search bar on Links.
-      GoRoute(
-        path: '/search',
-        builder: (ctx, state) => const SearchScreen(),
       ),
       GoRoute(
         path: '/collections/:id',

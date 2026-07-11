@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:go_router/go_router.dart';
 import 'package:provider/provider.dart';
 import '../../core/models.dart';
 import '../../core/theme.dart';
@@ -22,6 +21,14 @@ class HomeScreen extends StatefulWidget {
 
 class _HomeScreenState extends State<HomeScreen> {
   LinkFilter _filter = LinkFilter.all;
+  final _searchCtrl = TextEditingController();
+  String _query = '';
+
+  @override
+  void dispose() {
+    _searchCtrl.dispose();
+    super.dispose();
+  }
 
   @override
   void initState() {
@@ -64,38 +71,82 @@ class _HomeScreenState extends State<HomeScreen> {
     );
   }
 
+  // In-place search: filters the list right here instead of pushing a
+  // near-identical /search screen (the transition between the two read as
+  // a glitchy overlap — tester feedback).
   Widget _searchBar(BuildContext context) {
-    return GestureDetector(
-      onTap: () => context.push('/search'),
-      child: Container(
-        key: FeatureTour.searchKey,
-        margin: const EdgeInsets.fromLTRB(16, 0, 16, 10),
-        padding: const EdgeInsets.symmetric(vertical: 11, horizontal: 14),
-        decoration: BoxDecoration(
-          color: AppColors.surface,
-          borderRadius: AppRadius.card,
-          border: Border.all(color: AppColors.border, width: 1),
-        ),
-        child: Row(
-          children: [
-            const Icon(Icons.search_rounded,
-                color: AppColors.textMuted, size: 17),
-            const SizedBox(width: 8),
-            Text(
-              context.l10n.searchHint,
-              style: const TextStyle(color: AppColors.textMuted, fontSize: 14),
+    final active = _query.isNotEmpty;
+    return Container(
+      key: FeatureTour.searchKey,
+      margin: const EdgeInsets.fromLTRB(16, 0, 16, 10),
+      padding: const EdgeInsets.symmetric(horizontal: 14),
+      decoration: BoxDecoration(
+        color: AppColors.surface,
+        borderRadius: AppRadius.card,
+        border: Border.all(
+            color: active ? AppColors.accentBorder : AppColors.border,
+            width: 1),
+      ),
+      child: Row(
+        children: [
+          Icon(Icons.search_rounded,
+              color: active ? AppColors.accent : AppColors.textMuted, size: 17),
+          const SizedBox(width: 8),
+          Expanded(
+            child: TextField(
+              controller: _searchCtrl,
+              style: const TextStyle(color: AppColors.text, fontSize: 14),
+              decoration: InputDecoration(
+                isDense: true,
+                filled: false,
+                border: InputBorder.none,
+                enabledBorder: InputBorder.none,
+                focusedBorder: InputBorder.none,
+                hintText: context.l10n.searchHint,
+                hintStyle:
+                    const TextStyle(color: AppColors.textMuted, fontSize: 14),
+                contentPadding: const EdgeInsets.symmetric(vertical: 12),
+              ),
+              onChanged: (v) => setState(() => _query = v.trim()),
             ),
-          ],
-        ),
+          ),
+          if (active)
+            GestureDetector(
+              onTap: () {
+                _searchCtrl.clear();
+                setState(() => _query = '');
+              },
+              child: const Icon(Icons.close_rounded,
+                  color: AppColors.textMuted, size: 18),
+            ),
+        ],
       ),
     );
+  }
+
+  List<LinkItem> _visibleLinks(LinksProvider provider) {
+    if (_query.isEmpty) return provider.filtered(_filter);
+    final results = provider.search(_query);
+    switch (_filter) {
+      case LinkFilter.unread:
+        return results.where((l) => !l.read).toList();
+      case LinkFilter.read:
+        return results.where((l) => l.read).toList();
+      case LinkFilter.favorites:
+        return results.where((l) => l.favorite).toList();
+      default:
+        return results;
+    }
   }
 
   Widget _linksArea(BuildContext context) {
     return Consumer<LinksProvider>(
       builder: (ctx, provider, _) {
-        final items = provider.filtered(_filter);
+        final items = _visibleLinks(provider);
         return CustomScrollView(
+          // Empty state is a static view: no scroll gesture when there is
+          // nothing to scroll through.
+          physics: items.isEmpty ? const NeverScrollableScrollPhysics() : null,
           slivers: [
             if (items.isEmpty)
               SliverFillRemaining(
@@ -109,7 +160,9 @@ class _HomeScreenState extends State<HomeScreen> {
                       Text(
                         provider.links.isEmpty
                             ? context.l10n.emptyNoLinks
-                            : context.l10n.emptyNoMatch,
+                            : _query.isNotEmpty
+                                ? context.l10n.noResults(_query)
+                                : context.l10n.emptyNoMatch,
                         style: const TextStyle(
                             color: AppColors.textSec, fontSize: 14),
                       ),
@@ -129,14 +182,16 @@ class _HomeScreenState extends State<HomeScreen> {
                   ),
                 ),
               )
-            else
+            else ...[
               SliverList(
                 delegate: SliverChildBuilderDelegate(
                   (ctx, i) => LinkCard(link: items[i]),
                   childCount: items.length,
                 ),
               ),
-            const SliverToBoxAdapter(child: SizedBox(height: 130)),
+              // Room so the FAB and ad banner never cover the last card.
+              const SliverToBoxAdapter(child: SizedBox(height: 130)),
+            ],
           ],
         );
       },

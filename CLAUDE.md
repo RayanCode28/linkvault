@@ -41,7 +41,7 @@ lib/
 ├── features/
 │   ├── onboarding/onboarding_screen.dart    # 3 pasos, PageView manual, SharedPreferences 'onboarded'
 │   ├── home/
-│   │   ├── home_screen.dart                 # AppBar, search bar tappable, FilterChipsBar, lista, FAB → AddLinkSheet
+│   │   ├── home_screen.dart                 # AppBar, búsqueda in-place (TextField filtra la lista), FilterChipsBar, lista, FAB → AddLinkSheet
 │   │   ├── add_link_sheet.dart              # Bottom sheet: URL + paste + CollectionPicker, valida con parseWebUrl
 │   │   ├── link_card.dart                   # Card con thumbnail (og:image), título, dominio, colección, status dot/heart
 │   │   └── filter_chips_bar.dart            # All | Unread | Read | ♥ Saved
@@ -49,7 +49,6 @@ lib/
 │   │   ├── collections_screen.dart          # Lista + crear (límite Free 3 → paywall) + long-press rename/delete
 │   │   ├── collection_form_sheet.dart       # Crear/renombrar colección con picker de emoji
 │   │   └── collection_detail_screen.dart    # Links por collectionId (desde provider), FAB agrega a la colección
-│   ├── search/search_screen.dart            # TextField autofocus, busca título/dominio/url/descripción
 │   ├── link_detail/
 │   │   ├── link_detail_sheet.dart           # Sheet: thumbnail, URL real, badges, Share/Favorite/Edit/Delete(confirm)/Open
 │   │   └── edit_link_sheet.dart             # Editar título + colección
@@ -74,7 +73,6 @@ lib/
 | `/onboarding` | OnboardingScreen (solo si `onboarded == false` en SharedPreferences) |
 | `/` | HomeScreen (dentro de MainShell con BottomNav) |
 | `/collections` | CollectionsScreen |
-| `/search` | SearchScreen |
 | `/settings` | SettingsScreen |
 | `/collections/:id` | CollectionDetailScreen (push sobre el shell; resuelve la colección desde el provider) |
 | `/paywall` | PaywallScreen (push sobre el shell) |
@@ -452,6 +450,46 @@ la ventana de prueba cerrada.** Todo probado en emulador por el dev. `flutter an
    AdMob IDs de TEST (cuenta aún en verificación). Copia en `~/Downloads/linkvault-1.2.2+4.aab`.
    Se subió a la MISMA pista **Alpha** (cumple el update mínimo, NO reinicia el contador de 14 días).
 9. Mensaje de "qué probar" entregado al seller en ES e inglés (5 puntos de arriba).
+
+### ✅ Completado (Sesión 18) — 2º lote de fixes de testers (reporte QA PDF) — commit 5e1dd81
+**Reporte QA de Kefayatullah (Fiverr) sobre v1.2.2, Galaxy A15 / Android 16: 3 bugs menores +
+1 sugerencia, 0 críticos/mayores. NO exige subida nueva durante la ventana (el update mínimo
+ya se cumplió con v1.2.2+4); estos fixes van en el build de producción.** Los 3 verificados en
+emulador (Android 17, también simulando A15: 720x1600 + 3 botones + font scale 1.5) con
+capturas antes/durante/después. `flutter analyze` limpio, 15 tests ✓. Sin commit/AAB aún.
+1. **Fix skip del tour (Issue #1)** — el "Skip pegado a la barra de navegación" NO era el
+   onboarding (ese ya usa SafeArea y su Skip va arriba) sino el **spotlight tour**
+   (`feature_tour.dart`): `TutorialCoachMark` usa `alignSkip: bottomRight` por defecto →
+   chip encimado con el FAB destacado (paso 1), el bottom nav (paso 4) y la barra del
+   sistema. Ahora `alignSkip: Alignment.topRight` (consistente con el Skip del onboarding).
+   El margen del chip (`top: 6`) delataba que esa era la intención original.
+2. **Fix scroll con lista vacía (Issue #2)** — el Home tenía un `SliverToBoxAdapter` de
+   130px SIEMPRE (colchón para FAB/ad) → con 0 links el contenido medía viewport+130 y se
+   arrastraba. Ahora `physics: NeverScrollableScrollPhysics` cuando está vacío y el spacer
+   solo va con items. Search y collection detail ya estaban bien (Center estático).
+3. **Fix transiciones transparentes (Issue #3)** — dos causas:
+   - `SearchScreen` era la ÚNICA ruta pushada sin `NeonBg` (Scaffold 100% transparente) →
+     se envolvió en `NeonBg` como collection detail/paywall/privacy.
+   - `FadeUpwardsPageTransitionsBuilder` (theme.dart) es un **fade**: la ruta entrante se
+     pinta semitransparente y la anterior se ve debajo (verificado con captura a mitad de
+     animación: chips/textos en doble exposición). Ahora `CupertinoPageTransitionsBuilder`
+     (slide horizontal, pantalla entrante 100% opaca desde el primer frame). Ojo Flutter
+     3.44: ya no lo exporta material — `import 'package:flutter/cupertino.dart' show
+     CupertinoPageTransitionsBuilder;`.
+3b. **Búsqueda in-place en Home (eliminada la pantalla /search)** — feedback directo del dev:
+   aunque el slide ya era opaco, Home y Search eran casi gemelas (misma barra + chips), así
+   que CUALQUIER transición entre ellas se leía como superposición. Ahora la barra del Home
+   es un `TextField` real que filtra la lista en vivo (busca título/dominio/url/descripción
+   via `provider.search` + respeta el filtro activo; borde/ícono accent + botón × al
+   escribir; sin resultados → `noResults(query)`). Se borró `lib/features/search/` y la ruta
+   `/search` del router. La clave `startTyping` de l10n quedó sin uso (inofensiva). Probado
+   end-to-end en emulador (share intent → guardar link → filtrar "flutter" → "zzz" sin
+   resultados → limpiar).
+4. **Sugerencia S1 identificada** (opcional, no urge): el "keyboard emoji" del reporte es el
+   🎬 de "Watch later" (onboarding pág. 3 + colección seed), que a tamaño pequeño parece un
+   teclado. Cambiarlo por ícono vectorial Material cuando toque pulir.
+5. Dato del emulador: en Android 15+ el `systemNavigationBarColor` oscuro de main.dart se
+   ignora (edge-to-edge forzado); la barra de 3 botones sale gris clara del sistema.
 
 ### 🔜 Mientras corre la prueba cerrada (próximos 14 días, sin sesión activa)
 - **Esperar publicación de Google** (revisar Vista General de Publicación). Cuando pase

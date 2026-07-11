@@ -1,3 +1,4 @@
+import 'package:flutter/cupertino.dart' show CupertinoPageTransitionsBuilder;
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 
@@ -159,10 +160,12 @@ ThemeData buildAppTheme() {
     ),
     fontFamily: GoogleFonts.plusJakartaSans().fontFamily,
     // The default M3 zoom transition paints a surface-coloured scrim while
-    // pushing a route (e.g. the paywall), which reads as a background flash.
-    // FadeUpwards transitions cleanly over the existing background.
+    // pushing a route (e.g. the paywall), which reads as a background flash,
+    // and fade-based transitions let the previous screen bleed through the
+    // incoming one. The Cupertino slide keeps the incoming screen fully
+    // opaque from the first frame, so routes never overlap mid-transition.
     pageTransitionsTheme: const PageTransitionsTheme(builders: {
-      TargetPlatform.android: FadeUpwardsPageTransitionsBuilder(),
+      TargetPlatform.android: CupertinoPageTransitionsBuilder(),
     }),
     appBarTheme: AppBarTheme(
       backgroundColor: AppColors.bg,

@@ -34,6 +34,8 @@ class FeatureTour {
     final l = context.l10n;
     TutorialCoachMark(
       textSkip: l.tourSkip,
+      // Top-right, clear of the FAB, bottom nav and system navigation bar.
+      alignSkip: Alignment.topRight,
       skipWidget: _skipChip(l.tourSkip),
       colorShadow: const Color(0xFF010604),
       opacityShadow: 0.9,
