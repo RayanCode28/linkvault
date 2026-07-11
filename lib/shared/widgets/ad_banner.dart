@@ -7,12 +7,20 @@ import 'package:provider/provider.dart';
 
 import '../../core/links_provider.dart';
 
-/// Google's public test banner unit. The real one is injected at build time:
+/// Real unit id injected at build time:
 ///   flutter build appbundle --dart-define=ADMOB_BANNER_ID=ca-app-pub-xxx/yyy
-const _bannerAdUnitId = String.fromEnvironment(
-  'ADMOB_BANNER_ID',
-  defaultValue: 'ca-app-pub-3940256099942544/6300978111',
-);
+const _envBannerId = String.fromEnvironment('ADMOB_BANNER_ID');
+
+/// In release, ads exist only when the real unit id was injected — a build
+/// without the define ships completely ad-free (AdMob SDK never initializes).
+/// Debug/profile builds fall back to Google's public test unit.
+const _bannerAdUnitId = kReleaseMode
+    ? _envBannerId
+    : (_envBannerId == '' ? 'ca-app-pub-3940256099942544/6300978111' : _envBannerId);
+
+/// Whether this build serves ads at all. main.dart skips MobileAds
+/// initialization when false.
+const adsEnabled = _bannerAdUnitId != '';
 
 /// Anchored banner shown to Free users only. Takes no space while the ad
 /// loads, on non-Android platforms, or once the user is Pro.
@@ -30,7 +38,7 @@ class _AdBannerState extends State<AdBanner> {
   @override
   void initState() {
     super.initState();
-    if (kIsWeb || !Platform.isAndroid) return;
+    if (!adsEnabled || kIsWeb || !Platform.isAndroid) return;
     final ad = BannerAd(
       adUnitId: _bannerAdUnitId,
       size: AdSize.banner,

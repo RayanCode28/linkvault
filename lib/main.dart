@@ -10,6 +10,7 @@ import 'core/links_provider.dart';
 import 'core/locale_provider.dart';
 import 'core/purchase_service.dart';
 import 'shared/router.dart';
+import 'shared/widgets/ad_banner.dart';
 import 'app.dart';
 
 void main() async {
@@ -33,7 +34,7 @@ void main() async {
   // Purchases and ads start in the background; the app launches as Free
   // and upgrades as soon as the entitlement is known.
   unawaited(PurchaseService.init(onProChanged: provider.setPro));
-  if (!kIsWeb && Platform.isAndroid) {
+  if (adsEnabled && !kIsWeb && Platform.isAndroid) {
     unawaited(MobileAds.instance.initialize());
   }
   final localeProvider = LocaleProvider();

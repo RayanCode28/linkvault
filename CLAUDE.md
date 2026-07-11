@@ -491,6 +491,30 @@ capturas antes/durante/después. `flutter analyze` limpio, 15 tests ✓. Sin com
 5. Dato del emulador: en Android 15+ el `systemNavigationBarColor` oscuro de main.dart se
    ignora (edge-to-edge forzado); la barra de 3 botones sale gris clara del sistema.
 
+### ✅ Completado (Sesión 19) — build de PRODUCCIÓN v1.2.3+5 SIN anuncios
+**Contexto: la cuenta de AdMob sigue sin poder verificarse (Google no envía el código SMS al
+teléfono del dev). Decisión: lanzar a producción SIN anuncios y reactivarlos en un update
+cuando AdMob verifique. NO hay penalización de Play por esto (los anuncios son opcionales).**
+1. **Ads apagados por defecto en release** — `ad_banner.dart`: el unit id ya NO tiene fallback
+   de test en release; `const adsEnabled = _bannerAdUnitId != ''`. Sin
+   `--dart-define=ADMOB_BANNER_ID=...` el banner nunca se crea y `main.dart` NO llama a
+   `MobileAds.instance.initialize()` (SDK muerto, cero tráfico de ads). En debug/profile se
+   mantiene el unit de TEST de Google como fallback (para desarrollo, igual que antes).
+   - El SDK `google_mobile_ads` SIGUE como dependencia (el manifest sigue mergeando el permiso
+     `AD_ID`) → las declaraciones de Play (ID de publicidad = Sí, Data Safety con AdMob) se
+     quedan COMO ESTÁN, siguen siendo consistentes. Lo único a cambiar en Play Console:
+     **"¿Contiene anuncios?" → No** (App content → Anuncios); volver a "Sí" al reactivar.
+   - **Reactivar ads después** = crear app+ad unit en AdMob, reemplazar el App ID de test en
+     `AndroidManifest.xml` (~línea 41) por el real, recompilar con
+     `--dart-define=ADMOB_BANNER_ID=ca-app-pub-xxx/yyy` y flip "Contiene anuncios = Sí".
+     Cero cambios de código Dart.
+2. **`pubspec.yaml` → `1.2.3+5`**. AAB firmado compilado con
+   `flutter build appbundle --release --dart-define-from-file=dart_defines.json` (solo la key
+   `goog_` de RevenueCat, SIN ADMOB_BANNER_ID). Copia en `~/Downloads/linkvault-1.2.3+5.aab`.
+3. `flutter analyze` limpio, 15 tests ✓.
+4. ⚠️ **Antes de enviar a producción quedan 2 cosas** (ver Pendientes): configurar **RTDN**
+   (obligatorio, decidido en sesión 15) y flip de "¿Contiene anuncios?" a No.
+
 ### 🔜 Mientras corre la prueba cerrada (próximos 14 días, sin sesión activa)
 - **Esperar publicación de Google** (revisar Vista General de Publicación). Cuando pase
   a "Disponible para verificadores internos", los testers se enrolarán solos vía el link.
@@ -502,10 +526,12 @@ capturas antes/durante/después. `flutter analyze` limpio, 15 tests ✓. Sin com
 ### 🔲 Pendiente (próximas sesiones)
 0. ✅ **URL de privacidad en Play Console — HECHO** (confirmado por el dev en sesión 17).
 0b. ✅ **Update mínimo de versionCode — HECHO** (AAB v1.2.2+4 subido a Alpha en sesión 17).
-1. **AdMob** (cuenta en verificación) — al activarse: crear app (manual, sin Play) + ad unit
-   Banner; reemplazar App ID de test en `AndroidManifest.xml` (línea ~41) por el real
-   (`ca-app-pub-xxx~yyy`); el ad unit real va por `--dart-define=ADMOB_BANNER_ID=` SOLO en
-   release (en dev se dejan los de test para no arriesgar ban por auto-clics).
+1. **AdMob — POSTPUESTO a post-lanzamiento** (sesión 19: verificación de teléfono bloqueada,
+   Google no envía el SMS; producción sale SIN anuncios). Al verificarse la cuenta: crear app
+   (manual, sin Play) + ad unit Banner; reemplazar App ID de test en `AndroidManifest.xml`
+   (línea ~41) por el real (`ca-app-pub-xxx~yyy`); compilar con
+   `--dart-define=ADMOB_BANNER_ID=` SOLO en release (en dev quedan los de test para no
+   arriesgar ban por auto-clics); y en Play Console flip "¿Contiene anuncios?" → Sí.
 2. **Tema claro/oscuro/sistema + "borrar datos"** (pedido por testers, APLAZADO en sesión 17
    a post-aprobación) — tema claro implica refactor grande de la paleta (todo `AppColors` es
    oscuro hardcodeado). Hacer en producción, no durante la prueba cerrada.
@@ -552,7 +578,7 @@ flutter clean && flutter pub get
 | Google Play Console | **Aprobada** · prueba cerrada Alpha en `v1.2.2+4` | Bundle ID: com.rayancode98.linkvault. Subs `linkvault_pro_monthly` ($1.99, plan base `monthly`) + `linkvault_pro_yearly` ($9.99, plan base `yearly`) ACTIVAS y vinculadas a RevenueCat. Play App Signing activo (SHA-1 14:E6:D1:3A…). Service Account de RevenueCat con permisos mínimos (Ver info app + Ver datos financieros + Administrar pedidos). Pista **Alpha**: AAB **v1.2.2+4** (fixes de testers, sesión 17) — ojo versionCode 3 salió "ya usado", se subió a +4. Testers del seller Fiverr en lista (también License testers vía la misma lista). URL de privacidad YA pegada (Contenido + Data Safety). Pendiente: RTDN antes de producción |
 | RevenueCat | **Conectado end-to-end** | Org "Lunasof Apps", proyecto **"LinkVault"**; entitlement `Link Vault Pro` con productos `linkvault_pro_monthly:monthly` + `linkvault_pro_yearly:yearly` (LinkVault Android, importados vía "Import Products" desde Play); offering `default` con packages Monthly/Yearly apuntando a esos productos. `goog_BZTfYEtKHSskkbORYrniCsFOETI` en `dart_defines.json` (gitignored, sin la `test_`). Pub/Sub warning visible → RTDN POSTPUESTO (obligatorio antes de producción pública) |
 | Firebase | Activo (Blaze) | Proyecto `linkvault-e0799`; Auth Google + Cloud Storage; reglas publicadas. `google-services.json` en `android/app/` con SHA-1/256 de Play App Signing + debug/upload (committeado) |
-| AdMob | En verificación | IDs de TEST en código; reemplazar al activarse la cuenta |
+| AdMob | Bloqueado (verificación SMS falla) → POSTPUESTO | Producción sale SIN anuncios (ads apagados en release desde v1.2.3+5 salvo `--dart-define=ADMOB_BANNER_ID`); SDK sigue en el app (AD_ID intacto, declaraciones de Play sin cambios). Al verificar: App ID real en manifest + dart-define + "Contiene anuncios = Sí" |
 | GitHub | Activo (**PÚBLICO**) | github.com/RayanCode28/linkvault. **GitHub Pages activo (HTTP 200)** → landing raíz `https://rayancode28.github.io/linkvault/` + `/privacy-policy.html` + `/account-deletion.html` (todo en `docs/`) |
 
 ## Notas Importantes
