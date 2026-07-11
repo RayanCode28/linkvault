@@ -514,6 +514,36 @@ cuando AdMob verifique. NO hay penalización de Play por esto (los anuncios son 
 3. `flutter analyze` limpio, 15 tests ✓.
 4. ⚠️ **Antes de enviar a producción quedan 2 cosas** (ver Pendientes): configurar **RTDN**
    (obligatorio, decidido en sesión 15) y flip de "¿Contiene anuncios?" a No.
+5. **Guía de producción entregada al dev** (trabajo de consolas, en curso):
+   - **RTDN en 3 fases**: (A) GCloud IAM → rol **`roles/pubsub.admin`** al SA
+     `revenuecat-play-integration@…` — ojo: es "Administrador de Pub/Sub" a secas, NO
+     "Pub/Sub Lite" (producto distinto; filtrar por el ID `pubsub.admin` en el buscador de
+     roles); (B) RevenueCat → app LinkVault (Play Store) → "Connect to Google" crea el topic
+     y da el Topic ID; (C) Play Console → Monetizar → Configuración de monetización → pegar
+     Topic ID + "Enviar notificación de prueba".
+   - **Flip anuncios**: Contenido de la app → Anuncios → "¿Contiene anuncios?" = **No**
+     (resto de declaraciones intactas). Volver a "Sí" al reactivar AdMob.
+   - **Solicitar acceso a producción**: respuestas del formulario redactadas (12 testers QA
+     de Fiverr, hallazgos reportados, 2 updates durante la ventana v1.2.1→v1.2.2).
+   - **Notas de la versión** para el release de producción (pegar al subir el AAB):
+     ```
+     <es-419>
+     ¡Bienvenido a LinkVault! Guarda y organiza links desde cualquier app.
+     • Guarda enlaces al instante desde el menú Compartir
+     • Organízalos en colecciones con vista previa automática
+     • Búsqueda integrada, favoritos y modo leído/no leído
+     • LinkVault Pro: colecciones ilimitadas y respaldo en la nube
+     </es-419>
+     <en-US>
+     Welcome to LinkVault! Save and organize links from any app.
+     • Save links instantly from the Share menu
+     • Organize them into collections with automatic previews
+     • Built-in search, favorites, and read/unread tracking
+     • LinkVault Pro: unlimited collections and cloud backup
+     </en-US>
+     ```
+   - Advertencia de "archivo de desofuscación" al subir el AAB = ignorable (como siempre).
+   - Próximo objetivo del dev tras enviar: preparar cuentas de redes sociales para difusión.
 
 ### 🔜 Mientras corre la prueba cerrada (próximos 14 días, sin sesión activa)
 - **Esperar publicación de Google** (revisar Vista General de Publicación). Cuando pase
