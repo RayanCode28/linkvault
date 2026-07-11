@@ -451,7 +451,7 @@ la ventana de prueba cerrada.** Todo probado en emulador por el dev. `flutter an
    Se subió a la MISMA pista **Alpha** (cumple el update mínimo, NO reinicia el contador de 14 días).
 9. Mensaje de "qué probar" entregado al seller en ES e inglés (5 puntos de arriba).
 
-### ✅ Completado (Sesión 18) — 2º lote de fixes de testers (reporte QA PDF) — commit 5e1dd81
+### ✅ Completado (Sesión 18) — 2º lote de fixes de testers (reporte QA PDF) — commit 510ceb9
 **Reporte QA de Kefayatullah (Fiverr) sobre v1.2.2, Galaxy A15 / Android 16: 3 bugs menores +
 1 sugerencia, 0 críticos/mayores. NO exige subida nueva durante la ventana (el update mínimo
 ya se cumplió con v1.2.2+4); estos fixes van en el build de producción.** Los 3 verificados en
