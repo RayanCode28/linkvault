@@ -545,6 +545,35 @@ cuando AdMob verifique. NO hay penalización de Play por esto (los anuncios son 
    - Advertencia de "archivo de desofuscación" al subir el AAB = ignorable (como siempre).
    - Próximo objetivo del dev tras enviar: preparar cuentas de redes sociales para difusión.
 
+### ✅ Completado (Sesión 20) — RTDN Play↔RevenueCat CONFIGURADO end-to-end
+**Foco: cerrar el pendiente obligatorio de RTDN antes de producción. Todo trabajo de consolas
+guiado paso a paso; sin cambios de código.**
+1. **Fase A — rol Pub/Sub en GCloud:** el primer intento del dev quedó guardado en el lugar
+   equivocado (la consola mostraba "Administrador de Pub/Sub" en el SA pero la API devolvía
+   403 `IAM_PERMISSION_DENIED` — casi seguro se otorgó en Cuentas de servicio → pestaña
+   Permisos, que concede sobre el SA *como recurso*, no sobre el proyecto). Se re-otorgó desde
+   **IAM → "+ Otorgar acceso"** (principal `revenuecat-play-integration@…` + rol
+   `roles/pubsub.admin`, sin condición) → activo al instante.
+   - **Truco de diagnóstico reutilizable**: script Python local (stdlib + openssl, sin gcloud)
+     que firma el JWT del SA con `revenuecat-service-account.json`, saca token OAuth y llama a
+     la API de Pub/Sub. Permitió confirmar que el 403 era real de Google (no caché de
+     RevenueCat) y ver el momento exacto en que el permiso quedó vivo. Cloud Shell NO sirvió
+     (bug del gcloud nuevo: "Regional Access Boundary… Gaia id not found").
+   - La **API Cloud Pub/Sub** ya estaba habilitada en `linkvault-e0799` (verificado).
+2. **Fase B — RevenueCat "Connect to Google"**: con el permiso vivo, el desplegable (antes
+   vacío + popup de "no permissions") ofreció el topic sugerido y conectó a la primera.
+   Verificado por API: topic **`projects/linkvault-e0799/topics/Play-Store-Notifications`**
+   creado, con `google-play-developer-notifications@system.gserviceaccount.com` como
+   **Pub/Sub Publisher** y la suscripción **`RevenueCat-Subscriber-app36d0efaeb2`** escuchando.
+3. **Fase C — Play Console**: Monetizar con Play → Configuración de monetización → Topic ID
+   pegado (ojo: respeta MAYÚSCULAS, `Play-Store-Notifications`), alcance **"Suscripciones,
+   compras anuladas y todos los productos únicos"** (lo que recomienda RevenueCat; future-proof
+   si algún día hay producto único), **"Enviar notificación de prueba" → OK**. Desde ahora los
+   refunds/cancels revocan el entitlement Pro en segundos.
+4. **Para enviar a producción quedan solo 2 pasos manuales** (sin código): (a) flip
+   "¿Contiene anuncios?" = **No** (Contenido de la app → Anuncios); (b) solicitar acceso a
+   producción + subir `~/Downloads/linkvault-1.2.3+5.aab` con las notas de versión de sesión 19.
+
 ### 🔜 Mientras corre la prueba cerrada (próximos 14 días, sin sesión activa)
 - **Esperar publicación de Google** (revisar Vista General de Publicación). Cuando pase
   a "Disponible para verificadores internos", los testers se enrolarán solos vía el link.
@@ -565,15 +594,16 @@ cuando AdMob verifique. NO hay penalización de Play por esto (los anuncios son 
 2. **Tema claro/oscuro/sistema + "borrar datos"** (pedido por testers, APLAZADO en sesión 17
    a post-aprobación) — tema claro implica refactor grande de la paleta (todo `AppColors` es
    oscuro hardcodeado). Hacer en producción, no durante la prueba cerrada.
-3. **Configurar RTDN (Pub/Sub)** Play↔RevenueCat para revocar entitlement en reembolsos en
-   SEGUNDOS en vez de minutos/horas. Postpuesto en sesión 15 (warning de Pub/Sub visible
-   en RevenueCat). **OBLIGATORIO antes del lanzamiento público a producción.**
-4. **Recibir update del seller** (~día 2-3) con hallazgos iniciales. Procesar bugs/regresiones
-   que reporte si los hay.
-5. **Reporte final del seller** (~día 14) + guía para envío a producción.
-6. **Promover a producción** una vez completados los 14 días con ≥12 testers activos.
-7. **Onboarding assets** — las 3 pantallas usan arte vectorial generado en código (no imágenes externas)
-8. (Opcional) Tema claro — la fila de Settings es informativa por ahora
+3. ✅ **RTDN (Pub/Sub) — HECHO en sesión 20** (topic `Play-Store-Notifications`, publisher de
+   Google Play + suscripción de RevenueCat verificados por API, notificación de prueba OK).
+4. ✅ **Updates del seller — PROCESADOS** (1er lote sesión 17, reporte QA final sesión 18;
+   guía de envío a producción entregada en sesión 19).
+5. **Promover a producción — SIGUIENTE PASO INMEDIATO**: (a) flip "¿Contiene anuncios?" = No;
+   (b) solicitar acceso a producción (formulario: 12 testers QA de Fiverr, hallazgos
+   reportados, 2 updates v1.2.1→v1.2.2); (c) subir `~/Downloads/linkvault-1.2.3+5.aab` con
+   las notas de versión de sesión 19.
+6. **Onboarding assets** — las 3 pantallas usan arte vectorial generado en código (no imágenes externas)
+7. (Opcional) Tema claro — la fila de Settings es informativa por ahora
 
 ## Comandos Útiles
 ```bash
@@ -605,8 +635,8 @@ flutter clean && flutter pub get
 ## Servicios Externos
 | Servicio | Estado | Notas |
 |----------|--------|-------|
-| Google Play Console | **Aprobada** · prueba cerrada Alpha en `v1.2.2+4` | Bundle ID: com.rayancode98.linkvault. Subs `linkvault_pro_monthly` ($1.99, plan base `monthly`) + `linkvault_pro_yearly` ($9.99, plan base `yearly`) ACTIVAS y vinculadas a RevenueCat. Play App Signing activo (SHA-1 14:E6:D1:3A…). Service Account de RevenueCat con permisos mínimos (Ver info app + Ver datos financieros + Administrar pedidos). Pista **Alpha**: AAB **v1.2.2+4** (fixes de testers, sesión 17) — ojo versionCode 3 salió "ya usado", se subió a +4. Testers del seller Fiverr en lista (también License testers vía la misma lista). URL de privacidad YA pegada (Contenido + Data Safety). Pendiente: RTDN antes de producción |
-| RevenueCat | **Conectado end-to-end** | Org "Lunasof Apps", proyecto **"LinkVault"**; entitlement `Link Vault Pro` con productos `linkvault_pro_monthly:monthly` + `linkvault_pro_yearly:yearly` (LinkVault Android, importados vía "Import Products" desde Play); offering `default` con packages Monthly/Yearly apuntando a esos productos. `goog_BZTfYEtKHSskkbORYrniCsFOETI` en `dart_defines.json` (gitignored, sin la `test_`). Pub/Sub warning visible → RTDN POSTPUESTO (obligatorio antes de producción pública) |
+| Google Play Console | **Aprobada** · prueba cerrada Alpha en `v1.2.2+4` | Bundle ID: com.rayancode98.linkvault. Subs `linkvault_pro_monthly` ($1.99, plan base `monthly`) + `linkvault_pro_yearly` ($9.99, plan base `yearly`) ACTIVAS y vinculadas a RevenueCat. Play App Signing activo (SHA-1 14:E6:D1:3A…). Service Account de RevenueCat con permisos mínimos (Ver info app + Ver datos financieros + Administrar pedidos). Pista **Alpha**: AAB **v1.2.2+4** (fixes de testers, sesión 17) — ojo versionCode 3 salió "ya usado", se subió a +4. Testers del seller Fiverr en lista (también License testers vía la misma lista). URL de privacidad YA pegada (Contenido + Data Safety). **RTDN configurado** (topic pegado en Configuración de monetización, prueba OK, sesión 20). Pendiente: flip "¿Contiene anuncios?"=No + solicitar producción + subir AAB v1.2.3+5 |
+| RevenueCat | **Conectado end-to-end** | Org "Lunasof Apps", proyecto **"LinkVault"**; entitlement `Link Vault Pro` con productos `linkvault_pro_monthly:monthly` + `linkvault_pro_yearly:yearly` (LinkVault Android, importados vía "Import Products" desde Play); offering `default` con packages Monthly/Yearly apuntando a esos productos. `goog_BZTfYEtKHSskkbORYrniCsFOETI` en `dart_defines.json` (gitignored, sin la `test_`). **RTDN ACTIVO** (sesión 20): topic `projects/linkvault-e0799/topics/Play-Store-Notifications` + suscripción `RevenueCat-Subscriber-app36d0efaeb2`; SA con rol `pubsub.admin` a nivel proyecto; notificación de prueba OK |
 | Firebase | Activo (Blaze) | Proyecto `linkvault-e0799`; Auth Google + Cloud Storage; reglas publicadas. `google-services.json` en `android/app/` con SHA-1/256 de Play App Signing + debug/upload (committeado) |
 | AdMob | Bloqueado (verificación SMS falla) → POSTPUESTO | Producción sale SIN anuncios (ads apagados en release desde v1.2.3+5 salvo `--dart-define=ADMOB_BANNER_ID`); SDK sigue en el app (AD_ID intacto, declaraciones de Play sin cambios). Al verificar: App ID real en manifest + dart-define + "Contiene anuncios = Sí" |
 | GitHub | Activo (**PÚBLICO**) | github.com/RayanCode28/linkvault. **GitHub Pages activo (HTTP 200)** → landing raíz `https://rayancode28.github.io/linkvault/` + `/privacy-policy.html` + `/account-deletion.html` (todo en `docs/`) |
