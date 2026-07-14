@@ -570,9 +570,23 @@ guiado paso a paso; sin cambios de código.**
    compras anuladas y todos los productos únicos"** (lo que recomienda RevenueCat; future-proof
    si algún día hay producto único), **"Enviar notificación de prueba" → OK**. Desde ahora los
    refunds/cancels revocan el entitlement Pro en segundos.
-4. **Para enviar a producción quedan solo 2 pasos manuales** (sin código): (a) flip
-   "¿Contiene anuncios?" = **No** (Contenido de la app → Anuncios); (b) solicitar acceso a
-   producción + subir `~/Downloads/linkvault-1.2.3+5.aab` con las notas de versión de sesión 19.
+4. **Flip de anuncios HECHO** — Contenido de la app → Anuncios → "¿Contiene anuncios?" = **No**
+   (enviado a revisión vía Vista general de publicación). Resto de declaraciones intactas
+   (AD_ID = Sí, Data Safety con AdMob siguen siendo consistentes porque el SDK va empaquetado).
+5. **Solicitud de acceso a producción ENVIADA** (Dashboard → "Solicitar acceso a producción").
+   El seller mandó una guía del cuestionario (`~/Downloads/Production Application Guide.pdf`,
+   9 preguntas). Se respondió con textos personalizados para LinkVault (máx 300 chars por
+   campo, verificados por script): reclutamiento = proveedor de testing de pago (Fiverr, 12
+   testers, license testers); Q2 = "Fácil"; engagement = 2 rondas de feedback + reporte QA
+   formal; público = adultos 18+; valor = guardar links en 2 toques + colecciones + Pro;
+   Q6 instalaciones = 0–10k; cambios = 2 updates v1.2.1→v1.2.2 con el 100% de hallazgos;
+   listo para producción = 0 bugs críticos/mayores en reporte QA final + compras validadas
+   en sandbox. NO se subió AAB nuevo antes de solicitar (no hace falta: Google evalúa la
+   prueba cerrada ya completada con v1.2.2+4).
+6. **SIGUIENTE SESIÓN — cuando Google apruebe el acceso** (horas a ~7 días): pista
+   **Producción** → Crear versión → subir `~/Downloads/linkvault-1.2.3+5.aab` + notas de
+   versión de sesión 19 → enviar a revisión (advertencia de desofuscación = ignorable).
+   Tras publicar: preparar redes sociales para difusión.
 
 ### 🔜 Mientras corre la prueba cerrada (próximos 14 días, sin sesión activa)
 - **Esperar publicación de Google** (revisar Vista General de Publicación). Cuando pase
@@ -598,10 +612,9 @@ guiado paso a paso; sin cambios de código.**
    Google Play + suscripción de RevenueCat verificados por API, notificación de prueba OK).
 4. ✅ **Updates del seller — PROCESADOS** (1er lote sesión 17, reporte QA final sesión 18;
    guía de envío a producción entregada en sesión 19).
-5. **Promover a producción — SIGUIENTE PASO INMEDIATO**: (a) flip "¿Contiene anuncios?" = No;
-   (b) solicitar acceso a producción (formulario: 12 testers QA de Fiverr, hallazgos
-   reportados, 2 updates v1.2.1→v1.2.2); (c) subir `~/Downloads/linkvault-1.2.3+5.aab` con
-   las notas de versión de sesión 19.
+5. **Promover a producción — EN ESPERA DE GOOGLE**: flip anuncios=No ✅ y solicitud de acceso
+   a producción ✅ ENVIADOS en sesión 20. Al aprobar Google (horas a ~7 días): crear versión
+   de Producción → subir `~/Downloads/linkvault-1.2.3+5.aab` + notas de versión de sesión 19.
 6. **Onboarding assets** — las 3 pantallas usan arte vectorial generado en código (no imágenes externas)
 7. (Opcional) Tema claro — la fila de Settings es informativa por ahora
 
@@ -635,7 +648,7 @@ flutter clean && flutter pub get
 ## Servicios Externos
 | Servicio | Estado | Notas |
 |----------|--------|-------|
-| Google Play Console | **Aprobada** · prueba cerrada Alpha en `v1.2.2+4` | Bundle ID: com.rayancode98.linkvault. Subs `linkvault_pro_monthly` ($1.99, plan base `monthly`) + `linkvault_pro_yearly` ($9.99, plan base `yearly`) ACTIVAS y vinculadas a RevenueCat. Play App Signing activo (SHA-1 14:E6:D1:3A…). Service Account de RevenueCat con permisos mínimos (Ver info app + Ver datos financieros + Administrar pedidos). Pista **Alpha**: AAB **v1.2.2+4** (fixes de testers, sesión 17) — ojo versionCode 3 salió "ya usado", se subió a +4. Testers del seller Fiverr en lista (también License testers vía la misma lista). URL de privacidad YA pegada (Contenido + Data Safety). **RTDN configurado** (topic pegado en Configuración de monetización, prueba OK, sesión 20). Pendiente: flip "¿Contiene anuncios?"=No + solicitar producción + subir AAB v1.2.3+5 |
+| Google Play Console | **Aprobada** · prueba cerrada Alpha en `v1.2.2+4` | Bundle ID: com.rayancode98.linkvault. Subs `linkvault_pro_monthly` ($1.99, plan base `monthly`) + `linkvault_pro_yearly` ($9.99, plan base `yearly`) ACTIVAS y vinculadas a RevenueCat. Play App Signing activo (SHA-1 14:E6:D1:3A…). Service Account de RevenueCat con permisos mínimos (Ver info app + Ver datos financieros + Administrar pedidos). Pista **Alpha**: AAB **v1.2.2+4** (fixes de testers, sesión 17) — ojo versionCode 3 salió "ya usado", se subió a +4. Testers del seller Fiverr en lista (también License testers vía la misma lista). URL de privacidad YA pegada (Contenido + Data Safety). **RTDN configurado** (topic pegado en Configuración de monetización, prueba OK, sesión 20). "¿Contiene anuncios?"=No enviado a revisión + **solicitud de acceso a producción ENVIADA** (sesión 20). Al aprobar: subir AAB v1.2.3+5 a Producción |
 | RevenueCat | **Conectado end-to-end** | Org "Lunasof Apps", proyecto **"LinkVault"**; entitlement `Link Vault Pro` con productos `linkvault_pro_monthly:monthly` + `linkvault_pro_yearly:yearly` (LinkVault Android, importados vía "Import Products" desde Play); offering `default` con packages Monthly/Yearly apuntando a esos productos. `goog_BZTfYEtKHSskkbORYrniCsFOETI` en `dart_defines.json` (gitignored, sin la `test_`). **RTDN ACTIVO** (sesión 20): topic `projects/linkvault-e0799/topics/Play-Store-Notifications` + suscripción `RevenueCat-Subscriber-app36d0efaeb2`; SA con rol `pubsub.admin` a nivel proyecto; notificación de prueba OK |
 | Firebase | Activo (Blaze) | Proyecto `linkvault-e0799`; Auth Google + Cloud Storage; reglas publicadas. `google-services.json` en `android/app/` con SHA-1/256 de Play App Signing + debug/upload (committeado) |
 | AdMob | Bloqueado (verificación SMS falla) → POSTPUESTO | Producción sale SIN anuncios (ads apagados en release desde v1.2.3+5 salvo `--dart-define=ADMOB_BANNER_ID`); SDK sigue en el app (AD_ID intacto, declaraciones de Play sin cambios). Al verificar: App ID real en manifest + dart-define + "Contiene anuncios = Sí" |
