@@ -602,6 +602,19 @@ guiado paso a paso; sin cambios de código.**
    difusión; luego pendientes post-lanzamiento (AdMob cuando verifique, tema claro,
    borrar datos).
 
+### ✅ Completado (Sesión 22) — 🎉 v1.2.3+5 DISPONIBLE GLOBALMENTE en Google Play
+1. **LinkVault publicada y disponible al público en Google Play** (confirmado por el dev,
+   22-jul-2026). La revisión de producción pasó; la app corre sin anuncios, con Pro
+   (RevenueCat) y RTDN operativos, y compras ya reales para usuarios normales (los
+   License testers del seller siguen en sandbox).
+2. Con la app en vivo, el foco pasa de desarrollo/Play Console a **marketing y
+   adquisición de usuarios**.
+3. **Decisión de marketing:** un solo perfil de empresa ("casa de apps", no un perfil por
+   app individual) para promocionar LinkVault ahora y futuras apps del dev bajo la misma
+   marca — consolida audiencia/esfuerzo de contenido en vez de fragmentar por app.
+4. **SIGUIENTE:** preparar cuentas de redes sociales y contenido (video corto) para el
+   lanzamiento, bajo ese perfil único.
+
 ### 🔲 Pendiente (próximas sesiones)
 0. ✅ **URL de privacidad en Play Console — HECHO** (confirmado por el dev en sesión 17).
 0b. ✅ **Update mínimo de versionCode — HECHO** (AAB v1.2.2+4 subido a Alpha en sesión 17).
@@ -618,9 +631,10 @@ guiado paso a paso; sin cambios de código.**
    Google Play + suscripción de RevenueCat verificados por API, notificación de prueba OK).
 4. ✅ **Updates del seller — PROCESADOS** (1er lote sesión 17, reporte QA final sesión 18;
    guía de envío a producción entregada en sesión 19).
-5. ✅ **Promover a producción — HECHO en sesión 21**: Google aprobó el acceso y la versión
-   v1.2.3+5 se envió a revisión de producción (22-jul-2026). Esperando "Disponible en
-   Google Play"; después: redes sociales para difusión.
+5. ✅ **Promover a producción — HECHO en sesión 21, PUBLICADA en sesión 22**: Google aprobó
+   el acceso, la versión v1.2.3+5 se envió a revisión (22-jul-2026) y ya está **disponible
+   globalmente en Google Play**. Siguiente: redes sociales para difusión (perfil único de
+   empresa, ver sesión 22).
 6. **Onboarding assets** — las 3 pantallas usan arte vectorial generado en código (no imágenes externas)
 7. (Opcional) Tema claro — la fila de Settings es informativa por ahora
 
@@ -654,7 +668,7 @@ flutter clean && flutter pub get
 ## Servicios Externos
 | Servicio | Estado | Notas |
 |----------|--------|-------|
-| Google Play Console | **🚀 v1.2.3+5 en REVISIÓN DE PRODUCCIÓN** (enviada 22-jul-2026, sesión 21) | Bundle ID: com.rayancode98.linkvault. Subs `linkvault_pro_monthly` ($1.99, plan base `monthly`) + `linkvault_pro_yearly` ($9.99, plan base `yearly`) ACTIVAS y vinculadas a RevenueCat. Play App Signing activo (SHA-1 14:E6:D1:3A…). Service Account de RevenueCat con permisos mínimos (Ver info app + Ver datos financieros + Administrar pedidos). Pista **Alpha**: AAB **v1.2.2+4** (fixes de testers, sesión 17) — ojo versionCode 3 salió "ya usado", se subió a +4. Testers del seller Fiverr en lista (también License testers vía la misma lista). URL de privacidad YA pegada (Contenido + Data Safety). **RTDN configurado** (topic pegado en Configuración de monetización, prueba OK, sesión 20). "¿Contiene anuncios?"=No enviado a revisión + **solicitud de acceso a producción ENVIADA** (sesión 20). Al aprobar: subir AAB v1.2.3+5 a Producción |
+| Google Play Console | **🎉 v1.2.3+5 DISPONIBLE GLOBALMENTE** (publicada, sesión 22 — enviada a revisión 22-jul-2026, sesión 21) | Bundle ID: com.rayancode98.linkvault. Subs `linkvault_pro_monthly` ($1.99, plan base `monthly`) + `linkvault_pro_yearly` ($9.99, plan base `yearly`) ACTIVAS y vinculadas a RevenueCat, compras ya reales en producción. Play App Signing activo (SHA-1 14:E6:D1:3A…). Service Account de RevenueCat con permisos mínimos (Ver info app + Ver datos financieros + Administrar pedidos). Pista **Alpha** (histórica, testers Fiverr) queda con AAB v1.2.2+4. URL de privacidad pegada (Contenido + Data Safety). **RTDN activo** (topic Play-Store-Notifications + suscripción RC, sesión 20). Sin anuncios (AdMob postpuesto). Foco ahora: marketing/adquisición de usuarios |
 | RevenueCat | **Conectado end-to-end** | Org "Lunasof Apps", proyecto **"LinkVault"**; entitlement `Link Vault Pro` con productos `linkvault_pro_monthly:monthly` + `linkvault_pro_yearly:yearly` (LinkVault Android, importados vía "Import Products" desde Play); offering `default` con packages Monthly/Yearly apuntando a esos productos. `goog_BZTfYEtKHSskkbORYrniCsFOETI` en `dart_defines.json` (gitignored, sin la `test_`). **RTDN ACTIVO** (sesión 20): topic `projects/linkvault-e0799/topics/Play-Store-Notifications` + suscripción `RevenueCat-Subscriber-app36d0efaeb2`; SA con rol `pubsub.admin` a nivel proyecto; notificación de prueba OK |
 | Firebase | Activo (Blaze) | Proyecto `linkvault-e0799`; Auth Google + Cloud Storage; reglas publicadas. `google-services.json` en `android/app/` con SHA-1/256 de Play App Signing + debug/upload (committeado) |
 | AdMob | Bloqueado (verificación SMS falla) → POSTPUESTO | Producción sale SIN anuncios (ads apagados en release desde v1.2.3+5 salvo `--dart-define=ADMOB_BANNER_ID`); SDK sigue en el app (AD_ID intacto, declaraciones de Play sin cambios). Al verificar: App ID real en manifest + dart-define + "Contiene anuncios = Sí" |
