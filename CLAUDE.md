@@ -588,13 +588,19 @@ guiado paso a paso; sin cambios de código.**
    versión de sesión 19 → enviar a revisión (advertencia de desofuscación = ignorable).
    Tras publicar: preparar redes sociales para difusión.
 
-### 🔜 Mientras corre la prueba cerrada (próximos 14 días, sin sesión activa)
-- **Esperar publicación de Google** (revisar Vista General de Publicación). Cuando pase
-  a "Disponible para verificadores internos", los testers se enrolarán solos vía el link.
-- **Updates parciales del seller** llegan ~día 2-3. Pasarlos a Claude si surgen bugs.
-- **Pequeña actualización obligatoria** en algún momento entre día 5-12 (Google requiere
-  ≥1 update de versionCode durante la ventana). Cualquier cambio mínimo cuenta — subir
-  `1.2.2+3` y resubir AAB a la misma pista. NO reinicia el contador de 14 días.
+### ✅ Completado (Sesión 21) — 🚀 v1.2.3+5 ENVIADA A PRODUCCIÓN (en revisión)
+1. **Google APROBÓ el acceso a producción** (confirmado por el dev el 22-jul-2026).
+2. La copia del AAB en Downloads se había borrado; se restauró desde
+   `build/app/outputs/bundle/release/app-release.aab` (68 MB, build del 11-jul, es el
+   v1.2.3+5 con key `goog_` y sin anuncios) → `~/Downloads/linkvault-1.2.3+5.aab`.
+3. **El dev creó la versión de Producción en Play Console**: AAB v5 (1.2.3) subido, notas
+   de versión de sesión 19 (es-419 + en-US) pegadas, **enviada a revisión**. Estado actual:
+   "cambios de lanzamiento en revisión". Revisión típica del primer release: 1–7 días.
+4. Al publicarse: las compras pasan a ser reales para usuarios normales (license testers
+   siguen en sandbox); la app corre sin anuncios y con Pro/RTDN operativos.
+5. **SIGUIENTE**: cuando pase a "Disponible en Google Play" → preparar redes sociales para
+   difusión; luego pendientes post-lanzamiento (AdMob cuando verifique, tema claro,
+   borrar datos).
 
 ### 🔲 Pendiente (próximas sesiones)
 0. ✅ **URL de privacidad en Play Console — HECHO** (confirmado por el dev en sesión 17).
@@ -612,9 +618,9 @@ guiado paso a paso; sin cambios de código.**
    Google Play + suscripción de RevenueCat verificados por API, notificación de prueba OK).
 4. ✅ **Updates del seller — PROCESADOS** (1er lote sesión 17, reporte QA final sesión 18;
    guía de envío a producción entregada en sesión 19).
-5. **Promover a producción — EN ESPERA DE GOOGLE**: flip anuncios=No ✅ y solicitud de acceso
-   a producción ✅ ENVIADOS en sesión 20. Al aprobar Google (horas a ~7 días): crear versión
-   de Producción → subir `~/Downloads/linkvault-1.2.3+5.aab` + notas de versión de sesión 19.
+5. ✅ **Promover a producción — HECHO en sesión 21**: Google aprobó el acceso y la versión
+   v1.2.3+5 se envió a revisión de producción (22-jul-2026). Esperando "Disponible en
+   Google Play"; después: redes sociales para difusión.
 6. **Onboarding assets** — las 3 pantallas usan arte vectorial generado en código (no imágenes externas)
 7. (Opcional) Tema claro — la fila de Settings es informativa por ahora
 
@@ -648,7 +654,7 @@ flutter clean && flutter pub get
 ## Servicios Externos
 | Servicio | Estado | Notas |
 |----------|--------|-------|
-| Google Play Console | **Aprobada** · prueba cerrada Alpha en `v1.2.2+4` | Bundle ID: com.rayancode98.linkvault. Subs `linkvault_pro_monthly` ($1.99, plan base `monthly`) + `linkvault_pro_yearly` ($9.99, plan base `yearly`) ACTIVAS y vinculadas a RevenueCat. Play App Signing activo (SHA-1 14:E6:D1:3A…). Service Account de RevenueCat con permisos mínimos (Ver info app + Ver datos financieros + Administrar pedidos). Pista **Alpha**: AAB **v1.2.2+4** (fixes de testers, sesión 17) — ojo versionCode 3 salió "ya usado", se subió a +4. Testers del seller Fiverr en lista (también License testers vía la misma lista). URL de privacidad YA pegada (Contenido + Data Safety). **RTDN configurado** (topic pegado en Configuración de monetización, prueba OK, sesión 20). "¿Contiene anuncios?"=No enviado a revisión + **solicitud de acceso a producción ENVIADA** (sesión 20). Al aprobar: subir AAB v1.2.3+5 a Producción |
+| Google Play Console | **🚀 v1.2.3+5 en REVISIÓN DE PRODUCCIÓN** (enviada 22-jul-2026, sesión 21) | Bundle ID: com.rayancode98.linkvault. Subs `linkvault_pro_monthly` ($1.99, plan base `monthly`) + `linkvault_pro_yearly` ($9.99, plan base `yearly`) ACTIVAS y vinculadas a RevenueCat. Play App Signing activo (SHA-1 14:E6:D1:3A…). Service Account de RevenueCat con permisos mínimos (Ver info app + Ver datos financieros + Administrar pedidos). Pista **Alpha**: AAB **v1.2.2+4** (fixes de testers, sesión 17) — ojo versionCode 3 salió "ya usado", se subió a +4. Testers del seller Fiverr en lista (también License testers vía la misma lista). URL de privacidad YA pegada (Contenido + Data Safety). **RTDN configurado** (topic pegado en Configuración de monetización, prueba OK, sesión 20). "¿Contiene anuncios?"=No enviado a revisión + **solicitud de acceso a producción ENVIADA** (sesión 20). Al aprobar: subir AAB v1.2.3+5 a Producción |
 | RevenueCat | **Conectado end-to-end** | Org "Lunasof Apps", proyecto **"LinkVault"**; entitlement `Link Vault Pro` con productos `linkvault_pro_monthly:monthly` + `linkvault_pro_yearly:yearly` (LinkVault Android, importados vía "Import Products" desde Play); offering `default` con packages Monthly/Yearly apuntando a esos productos. `goog_BZTfYEtKHSskkbORYrniCsFOETI` en `dart_defines.json` (gitignored, sin la `test_`). **RTDN ACTIVO** (sesión 20): topic `projects/linkvault-e0799/topics/Play-Store-Notifications` + suscripción `RevenueCat-Subscriber-app36d0efaeb2`; SA con rol `pubsub.admin` a nivel proyecto; notificación de prueba OK |
 | Firebase | Activo (Blaze) | Proyecto `linkvault-e0799`; Auth Google + Cloud Storage; reglas publicadas. `google-services.json` en `android/app/` con SHA-1/256 de Play App Signing + debug/upload (committeado) |
 | AdMob | Bloqueado (verificación SMS falla) → POSTPUESTO | Producción sale SIN anuncios (ads apagados en release desde v1.2.3+5 salvo `--dart-define=ADMOB_BANNER_ID`); SDK sigue en el app (AD_ID intacto, declaraciones de Play sin cambios). Al verificar: App ID real en manifest + dart-define + "Contiene anuncios = Sí" |
